@@ -1,0 +1,52 @@
+name: pyApy checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16.15-alpine
+        env:
+          POSTGRES_DB: pyapy_ci
+          POSTGRES_USER: pyapy_ci
+          POSTGRES_PASSWORD: ci_ephemeral_only
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U pyapy_ci -d pyapy_ci"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://pyapy_ci:ci_ephemeral_only@127.0.0.1:5432/pyapy_ci
+      NODE_ENV: development
+      DEMO_MODE: "true"
+      WEB_ORIGIN: http://127.0.0.1:5173
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - run: npm audit --audit-level=moderate
+      - run: npx expo install --check
+        working-directory: apps/mobile
+      - run: npx expo export --platform android --platform ios
+        working-directory: apps/mobile
+      - run: npm run db:migrate
+      - run: npm run db:seed
+      - run: npx playwright install --with-deps chromium
+      - run: node scripts/dev.mjs > .local/dev.log 2>&1 &
+      - run: node scripts/wait-ready.mjs
+      - run: npm run test:e2e
+      - run: node scripts/prepare-compose.mjs
+      - run: docker compose --env-file .local/compose.env config --quiet
+      - run: docker compose --env-file .local/compose.env build
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: verification-failures
+          path: test-results/

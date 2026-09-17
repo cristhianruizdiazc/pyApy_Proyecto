@@ -1,0 +1,92 @@
+name: pyapy
+services:
+  db:
+    image: postgres:16.15-alpine
+    environment:
+      POSTGRES_DB: pyapy
+      POSTGRES_USER: pyapy_bootstrap
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Generate .local/compose.env first}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?Missing app password}
+      REPORT_DB_PASSWORD: ${REPORT_DB_PASSWORD:?Missing report password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U pyapy_bootstrap -d pyapy"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://pyapy_bootstrap:${POSTGRES_PASSWORD}@db:5432/pyapy
+      NODE_ENV: development
+      DEMO_MODE: "false"
+    command: [node, scripts/migrate-container.mjs]
+    depends_on:
+      db:
+        condition: service_healthy
+    security_opt: [no-new-privileges:true]
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://pyapy_app:${APP_DB_PASSWORD}@db:5432/pyapy
+      NODE_ENV: ${RUN_MODE:-development}
+      HOST: 0.0.0.0
+      PORT: "4100"
+      TRUST_PROXY: "1"
+      WEB_ORIGIN: ${WEB_ORIGIN:-http://127.0.0.1:8080}
+      DEMO_MODE: "false"
+      UPLOAD_DIR: /data/uploads
+    volumes:
+      - uploads:/data/uploads
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:4100/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    restart: unless-stopped
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - "127.0.0.1:${WEB_PORT:-8080}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    read_only: true
+    tmpfs: [/tmp, /var/cache/nginx, /var/run]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    restart: unless-stopped
+  admin-report:
+    profiles: [tools]
+    build: ./apps/admin-php
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: pyapy
+      DB_USER: pyapy_reporter
+      DB_PASSWORD: ${REPORT_DB_PASSWORD}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    read_only: true
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+volumes:
+  postgres_data:
+  uploads:

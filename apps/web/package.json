@@ -1,0 +1,23 @@
+{
+  "name": "@pyapy/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "@pyapy/contracts": "*",
+    "@tanstack/react-query": "5.103.1",
+    "@vitejs/plugin-react": "6.1.1",
+    "leaflet": "1.9.4",
+    "lucide-react": "1.46.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-leaflet": "5.0.0",
+    "react-router-dom": "7.18.4",
+    "vite": "8.3.0"
+  }
+}
