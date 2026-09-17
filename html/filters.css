@@ -1,0 +1,211 @@
+/* Native controls filter the local demo catalog without JavaScript. */
+.catalog-scope:has(select[name="city"] option[value="san-bernardino"]:checked)
+  .property-card:not([data-city="san-bernardino"]) {
+  display: none;
+}
+.catalog-scope:has(select[name="city"] option[value="aregua"]:checked)
+  .property-card:not([data-city="aregua"]) {
+  display: none;
+}
+.catalog-scope:has(select[name="city"] option[value="altos"]:checked)
+  .property-card:not([data-city="altos"]) {
+  display: none;
+}
+.catalog-scope:has(select[name="city"] option[value="caacupe"]:checked)
+  .property-card:not([data-city="caacupe"]) {
+  display: none;
+}
+.catalog-scope:has(select[name="city"] option[value="luque"]:checked)
+  .property-card:not([data-city="luque"]) {
+  display: none;
+}
+.catalog-scope:has(select[name="city"] option[value="pirayu"]:checked)
+  .property-card:not([data-city="pirayu"]) {
+  display: none;
+}
+.catalog-scope:has(input[name="kind"][value="Quinta"]:checked)
+  .property-card:not([data-kind="Quinta"]) {
+  display: none;
+}
+.catalog-scope:has(input[name="kind"][value="Casa"]:checked)
+  .property-card:not([data-kind="Casa"]) {
+  display: none;
+}
+.catalog-scope:has(input[name="kind"][value="Quincho"]:checked)
+  .property-card:not([data-kind="Quincho"]) {
+  display: none;
+}
+.catalog-scope:has(input[name="kind"][value="Bungalow"]:checked)
+  .property-card:not([data-kind="Bungalow"]) {
+  display: none;
+}
+.catalog-scope:has(select[name="budget"] option[value="50000"]:checked)
+  .property-card[data-price="65000"] {
+  display: none;
+}
+.catalog-scope:has(select[name="budget"] option[value="50000"]:checked)
+  .property-card[data-price="85000"] {
+  display: none;
+}
+.catalog-scope:has(select[name="budget"] option[value="50000"]:checked)
+  .property-card[data-price="75000"] {
+  display: none;
+}
+.catalog-scope:has(select[name="budget"] option[value="50000"]:checked)
+  .property-card[data-price="55000"] {
+  display: none;
+}
+.catalog-scope:has(select[name="budget"] option[value="65000"]:checked)
+  .property-card[data-price="85000"] {
+  display: none;
+}
+.catalog-scope:has(select[name="budget"] option[value="65000"]:checked)
+  .property-card[data-price="75000"] {
+  display: none;
+}
+.catalog-scope:has(select[name="guests"] option[value="10"]:checked)
+  .property-card[data-guests="6"] {
+  display: none;
+}
+.catalog-scope:has(select[name="guests"] option[value="20"]:checked)
+  .property-card[data-guests="12"] {
+  display: none;
+}
+.catalog-scope:has(select[name="guests"] option[value="20"]:checked)
+  .property-card[data-guests="6"] {
+  display: none;
+}
+.catalog-scope:has(select[name="guests"] option[value="20"]:checked)
+  .property-card[data-guests="10"] {
+  display: none;
+}
+.catalog-scope:has(select[name="guests"] option[value="30"]:checked)
+  .property-card[data-guests="25"] {
+  display: none;
+}
+.catalog-scope:has(select[name="guests"] option[value="30"]:checked)
+  .property-card[data-guests="12"] {
+  display: none;
+}
+.catalog-scope:has(select[name="guests"] option[value="30"]:checked)
+  .property-card[data-guests="6"] {
+  display: none;
+}
+.catalog-scope:has(select[name="guests"] option[value="30"]:checked)
+  .property-card[data-guests="10"] {
+  display: none;
+}
+
+.catalog-empty {
+  padding: 28px 0;
+  border-bottom: 1px solid var(--line);
+}
+.catalog-empty h3 {
+  margin-bottom: 8px;
+}
+.catalog-empty p {
+  font-size: 14px;
+  color: var(--muted);
+}
+.catalog-scope:has(
+    select[name="city"] option[value="all"]:checked,
+    select[name="city"] option[value="san-bernardino"]:checked
+  ):has(
+    input[name="kind"][value="all"]:checked,
+    input[name="kind"][value="Quinta"]:checked
+  ):has(
+    select[name="guests"] option[value="all"]:checked,
+    select[name="guests"] option[value="6"]:checked,
+    select[name="guests"] option[value="10"]:checked,
+    select[name="guests"] option[value="20"]:checked
+  ):has(
+    select[name="budget"] option[value="all"]:checked,
+    select[name="budget"] option[value="65000"]:checked
+  )
+  .catalog-empty {
+  display: none;
+}
+.catalog-scope:has(
+    select[name="city"] option[value="all"]:checked,
+    select[name="city"] option[value="aregua"]:checked
+  ):has(
+    input[name="kind"][value="all"]:checked,
+    input[name="kind"][value="Casa"]:checked
+  ):has(
+    select[name="guests"] option[value="all"]:checked,
+    select[name="guests"] option[value="6"]:checked,
+    select[name="guests"] option[value="10"]:checked
+  ):has(select[name="budget"] option[value="all"]:checked)
+  .catalog-empty {
+  display: none;
+}
+.catalog-scope:has(
+    select[name="city"] option[value="all"]:checked,
+    select[name="city"] option[value="altos"]:checked
+  ):has(
+    input[name="kind"][value="all"]:checked,
+    input[name="kind"][value="Quincho"]:checked
+  ):has(
+    select[name="guests"] option[value="all"]:checked,
+    select[name="guests"] option[value="6"]:checked,
+    select[name="guests"] option[value="10"]:checked,
+    select[name="guests"] option[value="20"]:checked,
+    select[name="guests"] option[value="30"]:checked
+  ):has(
+    select[name="budget"] option[value="all"]:checked,
+    select[name="budget"] option[value="50000"]:checked,
+    select[name="budget"] option[value="65000"]:checked
+  )
+  .catalog-empty {
+  display: none;
+}
+.catalog-scope:has(
+    select[name="city"] option[value="all"]:checked,
+    select[name="city"] option[value="caacupe"]:checked
+  ):has(
+    input[name="kind"][value="all"]:checked,
+    input[name="kind"][value="Bungalow"]:checked
+  ):has(
+    select[name="guests"] option[value="all"]:checked,
+    select[name="guests"] option[value="6"]:checked
+  ):has(
+    select[name="budget"] option[value="all"]:checked,
+    select[name="budget"] option[value="50000"]:checked,
+    select[name="budget"] option[value="65000"]:checked
+  )
+  .catalog-empty {
+  display: none;
+}
+.catalog-scope:has(
+    select[name="city"] option[value="all"]:checked,
+    select[name="city"] option[value="luque"]:checked
+  ):has(
+    input[name="kind"][value="all"]:checked,
+    input[name="kind"][value="Quinta"]:checked
+  ):has(
+    select[name="guests"] option[value="all"]:checked,
+    select[name="guests"] option[value="6"]:checked,
+    select[name="guests"] option[value="10"]:checked,
+    select[name="guests"] option[value="20"]:checked,
+    select[name="guests"] option[value="30"]:checked
+  ):has(select[name="budget"] option[value="all"]:checked)
+  .catalog-empty {
+  display: none;
+}
+.catalog-scope:has(
+    select[name="city"] option[value="all"]:checked,
+    select[name="city"] option[value="pirayu"]:checked
+  ):has(
+    input[name="kind"][value="all"]:checked,
+    input[name="kind"][value="Casa"]:checked
+  ):has(
+    select[name="guests"] option[value="all"]:checked,
+    select[name="guests"] option[value="6"]:checked,
+    select[name="guests"] option[value="10"]:checked
+  ):has(
+    select[name="budget"] option[value="all"]:checked,
+    select[name="budget"] option[value="65000"]:checked
+  )
+  .catalog-empty {
+  display: none;
+}

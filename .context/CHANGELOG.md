@@ -1,5 +1,14 @@
 # Historial de trabajo
 
+## Vista HTML solicitada por el usuario
+
+- Creado index.html en raiz y 39 pantallas HTML adicionales con indice de navegacion completo.
+- Recursos locales, CSS responsive y filtros sin JavaScript; no requiere Docker ni servidor para visualizar.
+- Portada, catalogo, seis fichas y ejemplos de reserva, cliente, propietario y administrador.
+- Datos ficticios y acciones de backend deshabilitadas; sin exportar credenciales ni informacion de la base.
+- Verificadas las 40 pantallas a 1440/390/320 px usando file:// con red desactivada, 1754 enlaces/recursos y filtros CSS.
+- README actualizado con acceso directo. Se conserva la aplicacion React/API original.
+
 ## 2026-09-17 - Implementacion local 0.1.0
 
 - Autorizacion de continuidad recibida; arquitectura y contratos compartidos implementados desde cero.

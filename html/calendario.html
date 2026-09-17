@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="pyApy - Calendario. Vista local de demostracion."
+    />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Calendario | pyApy</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="assets/icons/House.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="filters.css" />
+  </head>
+  <body class="">
+    <a class="skip" href="#contenido">Saltar al contenido</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="../index.html">pyApy<span>&#8599;</span></a>
+        <nav class="header-nav" aria-label="Navegacion principal">
+          <a href="explorar.html">Explorar</a
+          ><a href="ubicaciones.html">Ubicaciones</a
+          ><a href="propietario.html">Mi espacio</a
+          ><a href="indice.html">Indice</a>
+        </nav>
+        <div class="header-end">
+          <span class="demo">Demo HTML</span
+          ><a class="button" href="ingresar.html">Ingresar</a>
+          <details class="mobile-menu">
+            <summary title="Abrir menu" aria-label="Menu">
+              <img
+                class="icon"
+                src="assets/icons/Menu.svg"
+                alt=""
+                width="24"
+                height="24"
+              />
+            </summary>
+            <nav aria-label="Menu movil">
+              <a href="explorar.html">Explorar</a
+              ><a href="ubicaciones.html">Ubicaciones</a
+              ><a href="cuenta.html">Mi cuenta</a
+              ><a href="propietario.html">Propietario</a
+              ><a href="administracion.html">Administracion</a
+              ><a href="indice.html">Indice completo</a>
+            </nav>
+          </details>
+        </div>
+      </div>
+    </header>
+    <div class="workspace">
+      <aside class="sidebar">
+        <p class="sidebar-label">Mi espacio</p>
+        <nav aria-label="Panel propietario">
+          <a href="propietario.html"
+            ><img
+              class="icon"
+              src="assets/icons/LayoutDashboard.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Resumen</a
+          ><a href="mis-propiedades.html"
+            ><img
+              class="icon"
+              src="assets/icons/House.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Propiedades</a
+          ><a href="calendario.html" aria-current="page"
+            ><img
+              class="icon"
+              src="assets/icons/CalendarRange.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Calendario</a
+          ><a href="reservas-propietario.html"
+            ><img
+              class="icon"
+              src="assets/icons/ListChecks.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Reservas</a
+          ><a href="estadisticas.html"
+            ><img
+              class="icon"
+              src="assets/icons/ChartNoAxesCombined.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Estadisticas</a
+          ><a href="planes.html"
+            ><img
+              class="icon"
+              src="assets/icons/CreditCard.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Mi plan</a
+          >
+        </nav>
+        <div class="sidebar-foot">
+          Cuenta de demostracion<br />Sin sesion real<br /><a href="indice.html"
+            ><img
+              class="icon"
+              src="assets/icons/LayoutDashboard.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Todos los paneles</a
+          >
+        </div>
+      </aside>
+      <main class="workspace-main" id="contenido">
+        <div class="page-heading">
+          <div class="breadcrumbs">
+            <a href="../index.html">Inicio</a
+            ><img
+              class="icon"
+              src="assets/icons/ChevronRight.svg"
+              alt=""
+              width="24"
+              height="24"
+            /><span>Calendario</span>
+          </div>
+          <div class="title-row">
+            <h1>Calendario</h1>
+            <a class="button primary" href="nueva-ocupacion.html"
+              ><img
+                class="icon"
+                src="assets/icons/Plus.svg"
+                alt=""
+                width="24"
+                height="24"
+              />Nueva ocupacion</a
+            >
+          </div>
+          <p>Quinta Yvytu</p>
+        </div>
+        <div class="notice" role="note">
+          Datos ficticios. Vista HTML sin conexion a la base de datos.
+        </div>
+        <div class="month-heading">
+          <h2>Enero 2030</h2>
+          <span class="muted">Mes de demostracion</span>
+        </div>
+        <div class="calendar" aria-label="Calendario de enero de 2030">
+          <div class="weekday">Lun</div>
+          <div class="weekday">Mar</div>
+          <div class="weekday">Mie</div>
+          <div class="weekday">Jue</div>
+          <div class="weekday">Vie</div>
+          <div class="weekday">Sab</div>
+          <div class="weekday">Dom</div>
+          <div class="outside">31</div>
+          <div>1</div>
+          <div>2</div>
+          <div>3</div>
+          <div>4</div>
+          <div>5</div>
+          <div>6</div>
+          <div>7</div>
+          <div>8</div>
+          <div>9</div>
+          <div>10</div>
+          <div>11</div>
+          <div>
+            12<span class="event pyapy">09-13 h<br />pyApy</span>
+          </div>
+          <div>13</div>
+          <div>
+            14<span class="event owner">09-13 h<br />Particular</span>
+          </div>
+          <div>15</div>
+          <div>16</div>
+          <div>17</div>
+          <div>18</div>
+          <div>19<span class="event block">Bloqueado</span></div>
+          <div>20</div>
+          <div>21</div>
+          <div>22</div>
+          <div>23</div>
+          <div>24</div>
+          <div>25</div>
+          <div>26</div>
+          <div>27</div>
+          <div>28</div>
+          <div>29</div>
+          <div>30</div>
+          <div>31</div>
+          <div class="outside">1</div>
+          <div class="outside">2</div>
+          <div class="outside">3</div>
+        </div>
+        <div class="legend">
+          <span><i class="dot"></i>pyApy</span
+          ><span><i class="dot blue"></i>Particular</span
+          ><span><i class="dot red"></i>Bloqueo</span>
+        </div>
+      </main>
+    </div>
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <a class="brand" href="../index.html">pyApy<span>&#8599;</span></a
+        ><small>Un lugar. Tu gente. Un buen plan.</small>
+        <nav aria-label="Pie de pagina">
+          <a href="indice.html">Indice de pantallas</a
+          ><a href="ubicaciones.html">Ubicaciones</a
+          ><a href="ayuda.html">Ayuda</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

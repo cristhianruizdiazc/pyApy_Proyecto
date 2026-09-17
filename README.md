@@ -2,7 +2,17 @@
 
 Marketplace de espacios por horas en Paraguay. Version local **0.1.0**, con datos ficticios, API y PostgreSQL reales. No es una release de produccion.
 
-## Probar ahora
+## Visualizar sin Docker ni servidor
+
+Abrir [index.html](index.html) directamente en el navegador. El [indice completo](html/indice.html) enlaza las 40 pantallas: catalogo, propiedades, ejemplos de reserva, cuenta de cliente, propietario y administracion.
+
+Esta vista esta hecha en HTML y CSS, sin React, JavaScript de aplicacion, npm, API ni base de datos para visualizarla. Fotos e iconos estan incluidos en `html/assets`. Conservar `index.html` junto a la carpeta `html` si se traslada a otro directorio.
+
+Los filtros de ciudad, tipo, capacidad y presupuesto funcionan con CSS. Los formularios y las reservas son demostrativos: no autentican usuarios, no guardan cambios ni confirman disponibilidad. El mapa OpenStreetMap opcional requiere Internet. La aplicacion conectada original se conserva por separado.
+
+Ver [detalles de la vista HTML](html/README.md). Verificacion automatizada: `node scripts/verify-static.mjs` (solo para desarrollo, requiere las dependencias y Chromium de Playwright instalados).
+
+## Probar la aplicacion conectada
 
 Web: http://127.0.0.1:5173. La URL y los procesos de la instancia actual se registran en `.local/dev.json`.
 

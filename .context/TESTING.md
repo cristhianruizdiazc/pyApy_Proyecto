@@ -1,5 +1,11 @@
 # Evidencias de verificacion
 
+## Vista HTML sin servidor
+
+`node scripts/verify-static.mjs`: PASS. 40 pantallas a 1440, 390 y 320 px abiertas por file:// con la red desactivada. 1754 enlaces/recursos locales validos y todas las pantallas incluidas en el indice. Fotos presentes, un h1 por pagina, cero scripts de aplicacion, filtros CSS de ciudad/tipo/capacidad/precio, menu movil y checkbox de favorito verificados. Sin desborde horizontal del documento. Capturas inspeccionadas en .local/screenshots/static.
+
+Estas pruebas solo validan la vista HTML, no sustituyen las pruebas de backend ni afirman que los formularios estaticos persistan datos. No se levanto un servidor para esta vista. El mapa externo es opcional y requiere conexion.
+
 Fecha: 2026-09-17. Windows/PowerShell, C:\pyApy_Proyecto. Las pruebas no constituyen aceptacion de produccion.
 
 ## Ejecutado

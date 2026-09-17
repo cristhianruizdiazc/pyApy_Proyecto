@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="pyApy - Favoritos. Vista local de demostracion."
+    />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Favoritos | pyApy</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="assets/icons/House.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="filters.css" />
+  </head>
+  <body class="">
+    <a class="skip" href="#contenido">Saltar al contenido</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="../index.html">pyApy<span>&#8599;</span></a>
+        <nav class="header-nav" aria-label="Navegacion principal">
+          <a href="explorar.html">Explorar</a
+          ><a href="ubicaciones.html">Ubicaciones</a
+          ><a href="propietario.html">Mi espacio</a
+          ><a href="indice.html">Indice</a>
+        </nav>
+        <div class="header-end">
+          <span class="demo">Demo HTML</span
+          ><a class="button" href="ingresar.html">Ingresar</a>
+          <details class="mobile-menu">
+            <summary title="Abrir menu" aria-label="Menu">
+              <img
+                class="icon"
+                src="assets/icons/Menu.svg"
+                alt=""
+                width="24"
+                height="24"
+              />
+            </summary>
+            <nav aria-label="Menu movil">
+              <a href="explorar.html">Explorar</a
+              ><a href="ubicaciones.html">Ubicaciones</a
+              ><a href="cuenta.html">Mi cuenta</a
+              ><a href="propietario.html">Propietario</a
+              ><a href="administracion.html">Administracion</a
+              ><a href="indice.html">Indice completo</a>
+            </nav>
+          </details>
+        </div>
+      </div>
+    </header>
+    <div class="workspace">
+      <aside class="sidebar">
+        <p class="sidebar-label">Mi cuenta</p>
+        <nav aria-label="Panel cliente">
+          <a href="cuenta.html"
+            ><img
+              class="icon"
+              src="assets/icons/CalendarDays.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Mis reservas</a
+          ><a href="favoritos.html" aria-current="page"
+            ><img
+              class="icon"
+              src="assets/icons/Heart.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Favoritos</a
+          ><a href="notificaciones.html"
+            ><img
+              class="icon"
+              src="assets/icons/Bell.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Notificaciones</a
+          ><a href="perfil.html"
+            ><img
+              class="icon"
+              src="assets/icons/Users.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Mi perfil</a
+          >
+        </nav>
+        <div class="sidebar-foot">
+          Cuenta de demostracion<br />Sin sesion real<br /><a href="indice.html"
+            ><img
+              class="icon"
+              src="assets/icons/LayoutDashboard.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Todos los paneles</a
+          >
+        </div>
+      </aside>
+      <main class="workspace-main" id="contenido">
+        <div class="page-heading">
+          <div class="breadcrumbs">
+            <a href="../index.html">Inicio</a
+            ><img
+              class="icon"
+              src="assets/icons/ChevronRight.svg"
+              alt=""
+              width="24"
+              height="24"
+            /><span>Tus lugares favoritos</span>
+          </div>
+          <div class="title-row"><h1>Tus lugares favoritos</h1></div>
+          <p>Una seleccion de demostracion para tu proxima escapada.</p>
+        </div>
+        <div class="property-grid" id="espacios">
+          <article
+            class="property-card"
+            data-city="san-bernardino"
+            data-kind="Quinta"
+            data-guests="25"
+            data-price="65000"
+          >
+            <a class="property-photo" href="quinta-yvytu.html"
+              ><img
+                src="assets/pool.jpg"
+                alt="Quinta Yvytu: fotografia ilustrativa de quinta"
+                width="700"
+                height="467"
+                loading="lazy"
+              /><span class="tag">Demo</span></a
+            ><label class="favorite" title="Marcar favorito en esta pantalla"
+              ><input
+                type="checkbox"
+                aria-label="Marcar Quinta Yvytu como favorito" /><img
+                class="icon"
+                src="assets/icons/Heart.svg"
+                alt=""
+                width="24"
+                height="24"
+            /></label>
+            <div class="card-meta">
+              <span>Quinta</span><span>25 personas</span>
+            </div>
+            <h3><a href="quinta-yvytu.html">Quinta Yvytu</a></h3>
+            <span class="location"
+              ><img
+                class="icon"
+                src="assets/icons/MapPin.svg"
+                alt=""
+                width="24"
+                height="24"
+              />San Bernardino, Paraguay</span
+            >
+            <div class="card-price">
+              <span><strong>Gs. 65.000</strong> / hora</span
+              ><small>Min. 4 h</small>
+            </div>
+          </article>
+          <article
+            class="property-card"
+            data-city="aregua"
+            data-kind="Casa"
+            data-guests="12"
+            data-price="85000"
+          >
+            <a class="property-photo" href="casa-del-lago.html"
+              ><img
+                src="assets/house.jpg"
+                alt="Casa del Lago: fotografia ilustrativa de casa"
+                width="700"
+                height="467"
+                loading="lazy"
+              /><span class="tag">Demo</span></a
+            ><label class="favorite" title="Marcar favorito en esta pantalla"
+              ><input
+                type="checkbox"
+                aria-label="Marcar Casa del Lago como favorito" /><img
+                class="icon"
+                src="assets/icons/Heart.svg"
+                alt=""
+                width="24"
+                height="24"
+            /></label>
+            <div class="card-meta">
+              <span>Casa</span><span>12 personas</span>
+            </div>
+            <h3><a href="casa-del-lago.html">Casa del Lago</a></h3>
+            <span class="location"
+              ><img
+                class="icon"
+                src="assets/icons/MapPin.svg"
+                alt=""
+                width="24"
+                height="24"
+              />Aregua, Paraguay</span
+            >
+            <div class="card-price">
+              <span><strong>Gs. 85.000</strong> / hora</span
+              ><small>Min. 4 h</small>
+            </div>
+          </article>
+          <article
+            class="property-card"
+            data-city="altos"
+            data-kind="Quincho"
+            data-guests="40"
+            data-price="50000"
+          >
+            <a class="property-photo" href="patio-de-altos.html"
+              ><img
+                src="assets/garden.jpg"
+                alt="El Patio de Altos: fotografia ilustrativa de quincho"
+                width="700"
+                height="467"
+                loading="lazy"
+              /><span class="tag">Demo</span></a
+            ><label class="favorite" title="Marcar favorito en esta pantalla"
+              ><input
+                type="checkbox"
+                aria-label="Marcar El Patio de Altos como favorito" /><img
+                class="icon"
+                src="assets/icons/Heart.svg"
+                alt=""
+                width="24"
+                height="24"
+            /></label>
+            <div class="card-meta">
+              <span>Quincho</span><span>40 personas</span>
+            </div>
+            <h3><a href="patio-de-altos.html">El Patio de Altos</a></h3>
+            <span class="location"
+              ><img
+                class="icon"
+                src="assets/icons/MapPin.svg"
+                alt=""
+                width="24"
+                height="24"
+              />Altos, Paraguay</span
+            >
+            <div class="card-price">
+              <span><strong>Gs. 50.000</strong> / hora</span
+              ><small>Min. 4 h</small>
+            </div>
+          </article>
+        </div>
+      </main>
+    </div>
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <a class="brand" href="../index.html">pyApy<span>&#8599;</span></a
+        ><small>Un lugar. Tu gente. Un buen plan.</small>
+        <nav aria-label="Pie de pagina">
+          <a href="indice.html">Indice de pantallas</a
+          ><a href="ubicaciones.html">Ubicaciones</a
+          ><a href="ayuda.html">Ayuda</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

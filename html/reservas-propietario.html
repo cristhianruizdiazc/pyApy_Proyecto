@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="pyApy - Reservas del propietario. Vista local de demostracion."
+    />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Reservas del propietario | pyApy</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="assets/icons/House.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="filters.css" />
+  </head>
+  <body class="">
+    <a class="skip" href="#contenido">Saltar al contenido</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="../index.html">pyApy<span>&#8599;</span></a>
+        <nav class="header-nav" aria-label="Navegacion principal">
+          <a href="explorar.html">Explorar</a
+          ><a href="ubicaciones.html">Ubicaciones</a
+          ><a href="propietario.html">Mi espacio</a
+          ><a href="indice.html">Indice</a>
+        </nav>
+        <div class="header-end">
+          <span class="demo">Demo HTML</span
+          ><a class="button" href="ingresar.html">Ingresar</a>
+          <details class="mobile-menu">
+            <summary title="Abrir menu" aria-label="Menu">
+              <img
+                class="icon"
+                src="assets/icons/Menu.svg"
+                alt=""
+                width="24"
+                height="24"
+              />
+            </summary>
+            <nav aria-label="Menu movil">
+              <a href="explorar.html">Explorar</a
+              ><a href="ubicaciones.html">Ubicaciones</a
+              ><a href="cuenta.html">Mi cuenta</a
+              ><a href="propietario.html">Propietario</a
+              ><a href="administracion.html">Administracion</a
+              ><a href="indice.html">Indice completo</a>
+            </nav>
+          </details>
+        </div>
+      </div>
+    </header>
+    <div class="workspace">
+      <aside class="sidebar">
+        <p class="sidebar-label">Mi espacio</p>
+        <nav aria-label="Panel propietario">
+          <a href="propietario.html"
+            ><img
+              class="icon"
+              src="assets/icons/LayoutDashboard.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Resumen</a
+          ><a href="mis-propiedades.html"
+            ><img
+              class="icon"
+              src="assets/icons/House.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Propiedades</a
+          ><a href="calendario.html"
+            ><img
+              class="icon"
+              src="assets/icons/CalendarRange.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Calendario</a
+          ><a href="reservas-propietario.html" aria-current="page"
+            ><img
+              class="icon"
+              src="assets/icons/ListChecks.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Reservas</a
+          ><a href="estadisticas.html"
+            ><img
+              class="icon"
+              src="assets/icons/ChartNoAxesCombined.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Estadisticas</a
+          ><a href="planes.html"
+            ><img
+              class="icon"
+              src="assets/icons/CreditCard.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Mi plan</a
+          >
+        </nav>
+        <div class="sidebar-foot">
+          Cuenta de demostracion<br />Sin sesion real<br /><a href="indice.html"
+            ><img
+              class="icon"
+              src="assets/icons/LayoutDashboard.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Todos los paneles</a
+          >
+        </div>
+      </aside>
+      <main class="workspace-main" id="contenido">
+        <div class="page-heading">
+          <div class="breadcrumbs">
+            <a href="../index.html">Inicio</a
+            ><img
+              class="icon"
+              src="assets/icons/ChevronRight.svg"
+              alt=""
+              width="24"
+              height="24"
+            /><span>Reservas</span>
+          </div>
+          <div class="title-row">
+            <h1>Reservas</h1>
+            <a class="button" href="nueva-ocupacion.html"
+              ><img
+                class="icon"
+                src="assets/icons/Plus.svg"
+                alt=""
+                width="24"
+                height="24"
+              />Nueva ocupacion</a
+            >
+          </div>
+          <p>pyApy y particulares</p>
+        </div>
+        <div class="notice" role="note">
+          Datos ficticios. Vista HTML sin conexion a la base de datos.
+        </div>
+        <div
+          class="table-wrap"
+          tabindex="0"
+          role="region"
+          aria-label="Espacio, Fecha y horario, Origen, Importe, Estado, Detalle"
+        >
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Espacio</th>
+                <th scope="col">Fecha y horario</th>
+                <th scope="col">Origen</th>
+                <th scope="col">Importe</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Detalle</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="cell-property">
+                    <img
+                      class="table-photo"
+                      src="assets/pool.jpg"
+                      alt=""
+                      width="64"
+                      height="49"
+                    /><span
+                      ><strong>Quinta Yvytu</strong
+                      ><small>San Bernardino</small></span
+                    >
+                  </div>
+                </td>
+                <td>12 ene. 2030<small>09:00 a 13:00</small></td>
+                <td><span class="tag green">pyApy</span></td>
+                <td>Gs. 260.000</td>
+                <td><span class="tag green">Confirmada</span></td>
+                <td>
+                  <a
+                    class="icon-button"
+                    href="reserva-quinta-yvytu.html"
+                    aria-label="Ver ejemplo de reserva de Quinta Yvytu"
+                    title="Ver reserva"
+                    ><img
+                      class="icon"
+                      src="assets/icons/Eye.svg"
+                      alt=""
+                      width="24"
+                      height="24"
+                  /></a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="cell-property">
+                    <img
+                      class="table-photo"
+                      src="assets/house.jpg"
+                      alt=""
+                      width="64"
+                      height="49"
+                    /><span
+                      ><strong>Casa del Lago</strong><small>Aregua</small></span
+                    >
+                  </div>
+                </td>
+                <td>13 ene. 2030<small>09:00 a 13:00</small></td>
+                <td><span class="tag green">pyApy</span></td>
+                <td>Gs. 340.000</td>
+                <td><span class="tag red">Cancelada</span></td>
+                <td>
+                  <a
+                    class="icon-button"
+                    href="reserva-casa-del-lago.html"
+                    aria-label="Ver ejemplo de reserva de Casa del Lago"
+                    title="Ver reserva"
+                    ><img
+                      class="icon"
+                      src="assets/icons/Eye.svg"
+                      alt=""
+                      width="24"
+                      height="24"
+                  /></a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="cell-property">
+                    <img
+                      class="table-photo"
+                      src="assets/garden.jpg"
+                      alt=""
+                      width="64"
+                      height="49"
+                    /><span
+                      ><strong>El Patio de Altos</strong
+                      ><small>Altos</small></span
+                    >
+                  </div>
+                </td>
+                <td>14 ene. 2030<small>09:00 a 13:00</small></td>
+                <td><span class="tag blue">Particular</span></td>
+                <td>Gs. 200.000</td>
+                <td><span class="tag green">Confirmada</span></td>
+                <td>
+                  <a
+                    class="icon-button"
+                    href="reserva-patio-de-altos.html"
+                    aria-label="Ver ejemplo de reserva de El Patio de Altos"
+                    title="Ver reserva"
+                    ><img
+                      class="icon"
+                      src="assets/icons/Eye.svg"
+                      alt=""
+                      width="24"
+                      height="24"
+                  /></a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <a class="brand" href="../index.html">pyApy<span>&#8599;</span></a
+        ><small>Un lugar. Tu gente. Un buen plan.</small>
+        <nav aria-label="Pie de pagina">
+          <a href="indice.html">Indice de pantallas</a
+          ><a href="ubicaciones.html">Ubicaciones</a
+          ><a href="ayuda.html">Ayuda</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

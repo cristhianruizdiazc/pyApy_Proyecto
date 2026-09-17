@@ -4,6 +4,8 @@ Actualizado: 2026-09-17, America/Asuncion.
 
 ## Estado vigente
 
+Peticion posterior del usuario: visualizar todo mediante HTML/CSS sin Docker. Se agrego una vista estatica independiente con entrada `index.html` y 39 documentos en `html/`, todos enlazados desde `html/indice.html`. Fotos, iconos y CSS locales; no requiere servidor. Los flujos de escritura/autenticacion son solo ilustrativos y no consultan PostgreSQL. La aplicacion original se conserva.
+
 Version 0.1.0: implementacion funcional local de web, API y PostgreSQL, con app React Native inicial. No es pyApy 1.0, release candidate ni produccion. Las fases del prompt tienen avances y brechas registradas en [BACKLOG.md](BACKLOG.md); no se declaran completadas por compilar.
 
 El usuario confirmo que no existia base anterior y autorizo continuar sin nuevas preguntas. No hay `notas.md` ni auditoria original; no se atribuyen requisitos a documentos inexistentes.

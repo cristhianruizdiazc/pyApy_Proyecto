@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="pyApy - Editar propiedad. Vista local de demostracion."
+    />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Editar propiedad | pyApy</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="assets/icons/House.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="filters.css" />
+  </head>
+  <body class="">
+    <a class="skip" href="#contenido">Saltar al contenido</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="../index.html">pyApy<span>&#8599;</span></a>
+        <nav class="header-nav" aria-label="Navegacion principal">
+          <a href="explorar.html">Explorar</a
+          ><a href="ubicaciones.html">Ubicaciones</a
+          ><a href="propietario.html">Mi espacio</a
+          ><a href="indice.html">Indice</a>
+        </nav>
+        <div class="header-end">
+          <span class="demo">Demo HTML</span
+          ><a class="button" href="ingresar.html">Ingresar</a>
+          <details class="mobile-menu">
+            <summary title="Abrir menu" aria-label="Menu">
+              <img
+                class="icon"
+                src="assets/icons/Menu.svg"
+                alt=""
+                width="24"
+                height="24"
+              />
+            </summary>
+            <nav aria-label="Menu movil">
+              <a href="explorar.html">Explorar</a
+              ><a href="ubicaciones.html">Ubicaciones</a
+              ><a href="cuenta.html">Mi cuenta</a
+              ><a href="propietario.html">Propietario</a
+              ><a href="administracion.html">Administracion</a
+              ><a href="indice.html">Indice completo</a>
+            </nav>
+          </details>
+        </div>
+      </div>
+    </header>
+    <div class="workspace">
+      <aside class="sidebar">
+        <p class="sidebar-label">Mi espacio</p>
+        <nav aria-label="Panel propietario">
+          <a href="propietario.html"
+            ><img
+              class="icon"
+              src="assets/icons/LayoutDashboard.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Resumen</a
+          ><a href="mis-propiedades.html"
+            ><img
+              class="icon"
+              src="assets/icons/House.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Propiedades</a
+          ><a href="calendario.html"
+            ><img
+              class="icon"
+              src="assets/icons/CalendarRange.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Calendario</a
+          ><a href="reservas-propietario.html"
+            ><img
+              class="icon"
+              src="assets/icons/ListChecks.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Reservas</a
+          ><a href="estadisticas.html"
+            ><img
+              class="icon"
+              src="assets/icons/ChartNoAxesCombined.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Estadisticas</a
+          ><a href="planes.html"
+            ><img
+              class="icon"
+              src="assets/icons/CreditCard.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Mi plan</a
+          >
+        </nav>
+        <div class="sidebar-foot">
+          Cuenta de demostracion<br />Sin sesion real<br /><a href="indice.html"
+            ><img
+              class="icon"
+              src="assets/icons/LayoutDashboard.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Todos los paneles</a
+          >
+        </div>
+      </aside>
+      <main class="workspace-main" id="contenido">
+        <div class="page-heading">
+          <div class="breadcrumbs">
+            <a href="../index.html">Inicio</a
+            ><img
+              class="icon"
+              src="assets/icons/ChevronRight.svg"
+              alt=""
+              width="24"
+              height="24"
+            /><span>Editar propiedad</span>
+          </div>
+          <div class="title-row">
+            <h1>Editar propiedad</h1>
+            <span class="tag amber">Borrador local</span>
+          </div>
+          <p>Quinta Yvytu &middot; Editor de demostracion</p>
+        </div>
+        <div class="notice" role="note">
+          Los campos se pueden editar en esta pantalla. Los cambios no se
+          guardan.
+        </div>
+        <section class="form-section">
+          <h2>Informacion del espacio</h2>
+          <div class="form-grid">
+            <label>Nombre<input value="Quinta Yvytu" /></label
+            ><label
+              >Tipo<select>
+                <option>Quinta</option>
+                <option>Casa</option>
+                <option>Quincho</option>
+                <option>Bungalow</option>
+              </select></label
+            ><label class="full"
+              >Descripcion<textarea>
+Un espacio para disfrutar al aire libre y compartir con tu gente en San Bernardino.</textarea></label
+            ><label
+              >Ciudad<select>
+                <option>San Bernardino</option>
+                <option>Aregua</option>
+                <option>Altos</option>
+                <option>Caacupe</option>
+                <option>Luque</option>
+                <option>Pirayu</option>
+              </select></label
+            ><label
+              >Capacidad<input type="number" min="1" max="500" value="25"
+            /></label>
+          </div>
+        </section>
+        <section class="form-section">
+          <h2>Tarifa y horarios</h2>
+          <div class="form-grid">
+            <label
+              >Precio por hora (Gs.)<input
+                type="number"
+                min="1000"
+                value="65000"
+                step="1000" /></label
+            ><label
+              >Estadia minima (horas)<input
+                type="number"
+                min="1"
+                value="4" /></label
+            ><label>Desde<input type="time" value="08:00" /></label
+            ><label>Hasta<input type="time" value="22:00" /></label>
+          </div>
+        </section>
+        <section class="form-section">
+          <h2>Servicios</h2>
+          <div class="checks">
+            <label class="check-row"
+              ><input type="checkbox" checked />Piscina</label
+            ><label class="check-row"
+              ><input type="checkbox" checked />Parrilla</label
+            ><label class="check-row"
+              ><input type="checkbox" checked />Estacionamiento</label
+            ><label class="check-row"
+              ><input type="checkbox" checked />Jardin</label
+            ><label class="check-row"><input type="checkbox" />Wi-Fi</label
+            ><label class="check-row"><input type="checkbox" />Cocina</label
+            ><label class="check-row"
+              ><input type="checkbox" />Aire acondicionado</label
+            ><label class="check-row"
+              ><input type="checkbox" />Acceso sin escalones</label
+            >
+          </div>
+        </section>
+        <section class="form-section">
+          <h2>Fotografias</h2>
+          <div class="location-grid">
+            <img
+              class="table-photo"
+              style="width: 100%; height: 160px"
+              src="assets/pool.jpg"
+              width="300"
+              height="160"
+              alt="Fotografia ilustrativa"
+            /><img
+              class="table-photo"
+              style="width: 100%; height: 160px"
+              src="assets/house.jpg"
+              width="300"
+              height="160"
+              alt="Fotografia ilustrativa"
+            /><img
+              class="table-photo"
+              style="width: 100%; height: 160px"
+              src="assets/garden.jpg"
+              width="300"
+              height="160"
+              alt="Fotografia ilustrativa"
+            />
+          </div>
+          <div class="form-actions">
+            <label
+              >Seleccionar archivo local<input
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                aria-label="Seleccionar fotografia; no se subira a ningun servidor"
+            /></label>
+          </div>
+        </section>
+        <section class="form-section">
+          <h2>Datos privados de llegada</h2>
+          <div class="form-grid">
+            <label class="full"
+              >Direccion<input
+                placeholder="Sin direccion real en esta demo" /></label
+            ><label
+              >Telefono<input
+                type="tel"
+                placeholder="Sin telefono real" /></label
+            ><label
+              >Estado<select>
+                <option>Borrador</option>
+                <option>Publicada</option>
+              </select></label
+            >
+          </div>
+        </section>
+        <div class="form-actions">
+          <button
+            class="button primary"
+            type="button"
+            disabled
+            title="Guardar requiere la API conectada"
+          >
+            Guardar propiedad</button
+          ><a class="button" href="mis-propiedades.html"
+            ><img
+              class="icon"
+              src="assets/icons/ArrowLeft.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Volver</a
+          >
+        </div>
+      </main>
+    </div>
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <a class="brand" href="../index.html">pyApy<span>&#8599;</span></a
+        ><small>Un lugar. Tu gente. Un buen plan.</small>
+        <nav aria-label="Pie de pagina">
+          <a href="indice.html">Indice de pantallas</a
+          ><a href="ubicaciones.html">Ubicaciones</a
+          ><a href="ayuda.html">Ayuda</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>
