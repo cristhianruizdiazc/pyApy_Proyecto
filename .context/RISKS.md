@@ -1,12 +1,12 @@
 # Riesgos y limites
 
-Actualizado: 2026-09-24. Ningun riesgo de produccion se considera aceptado por silencio.
+Actualizado: 2026-09-26. Ningun riesgo de produccion se considera aceptado por silencio.
 
 | ID | Prioridad | Estado | Evidencia / pendiente |
 | --- | --- | --- | --- |
 | R-001 | Alta | MITIGADO | No existen notas/auditoria; se usa prompt mas aclaracion de proyecto nuevo, sin inventar contenido |
 | R-002 | Alta | CORREGIDO | pyApy ejecuta PHP 8.5.10 local; XAMPP 7.2 queda fuera del proyecto |
-| R-003 | Alta | PENDIENTE | Compose instalado/config validada, pero sin motor Docker/WSL; falta build y arranque real |
+| R-003 | Alta | MITIGADO | Config validada e imagenes construidas en runner Linux; falta `compose up`, health/smoke y persistencia de volumenes |
 | R-004 | Media | CORREGIDO | PostgreSQL aislado, migraciones, roles y restore comprobados |
 | R-005 | Alta | MITIGADO | Primera versión ahora presente; auth/Firebase, tarifas y contratos incompatibles no se importan. Integración de presentación sobre API actual, ADR-003; auditoría estática no certifica servidor legado |
 | R-006 | Alta | MITIGADO | Auth/PII/IDOR/concurrencia cubiertos por pruebas; falta auditoria completa de produccion |
@@ -19,7 +19,7 @@ Actualizado: 2026-09-24. Ningun riesgo de produccion se considera aceptado por s
 | R-013 | Media | PENDIENTE | Email/push/WhatsApp/MCP no conectados; no se simulan entregas |
 | R-014 | Media | PENDIENTE | Planes y precios iniciales no validados comercialmente, sin pago automatico |
 | R-015 | Media | PENDIENTE | Licencias/identidad visual de lanzamiento y reemplazo de fotos demo por contenido autorizado |
-| R-016 | Alta | PENDIENTE | CI definido no ejecutado remotamente; release limpia y contenedores no certificados |
+| R-016 | Alta | MITIGADO | CI remoto aprobado sobre `656f899`; release candidata, runtime Compose y despliegue siguen sin certificarse |
 | R-017 | Media | CORREGIDO | UI 02: aislamiento por ID/usuario/selección, abort/revisión de cotizaciones, descarte al editar y guards de respuesta; E2E de respuestas tardías y cambio de propiedad en escritorio/móvil |
 | R-018 | Media | MITIGADO | Filtros/historial, error de consulta vs vacío, fallback de fotos, logout móvil y Axe 60/60 sin violaciones; falta auditoría WCAG integral, contraste manual y zoom/lectores |
 | R-019 | Media | PENDIENTE | Motivos SVG originales inspirados en ñandutí/encaje ju; revisión cultural y activos finales pendientes. Procedencia en design/ARTESANAL.md |

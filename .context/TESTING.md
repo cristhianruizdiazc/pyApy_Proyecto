@@ -11,6 +11,8 @@
 - Causa del fallo remoto: la prueba abortaba `*.jpg`, pero el navegador elegia las variantes WebP responsivas. La aplicacion funcionaba; el escenario ya no simulaba el fallo completo. Se cambio la intercepcion para JPG/JPEG/WebP y se prepara una segunda corrida.
 - `node scripts/verify-web-integration.mjs tests/e2e/marketplace-integration.spec.js --grep "imagen fallida"`: 2/2 aprobadas, desktop y mobile, despues de la correccion.
 - El runner advirtio que `checkout@v4`, `setup-node@v4` y `upload-artifact@v4` usaban runtime Node 20. Se actualizaron a las versiones compatibles con Node 24 (`v5`, `v5`, `v6`).
+- Segunda corrida GitHub Actions `36255899826` sobre `656f899`: `verify` aprobado sin advertencias/errores; instalacion/auditoria, lint, 23/23 pruebas, build web, compatibilidad/export Android+iOS, validacion y build Docker aprobados.
+- En la misma corrida, `e2e` aprobo 43 pruebas, omitio deliberadamente una repeticion responsive y no tuvo fallos. Ambos jobs concluyeron `success`.
 
 ## Fase 20 CI/CD - 2026-09-25
 

@@ -32,6 +32,6 @@ Se revisaron Dockerfiles, Compose, secretos, perfiles y procedimientos de desarr
 
 ## Gate de runtime y limites
 
-No fue posible ejecutar `docker build`, `up`, health checks de contenedor, volumenes ni el perfil test: el motor Docker/WSL no existe en este equipo y no se instalo Docker Desktop sin una solicitud expresa de administracion del host. Este no es un fallo de configuracion ni se reemplaza por una afirmacion ficticia.
+No fue posible ejecutar localmente `docker build`, `up`, health checks de contenedor, volumenes ni el perfil test: el motor Docker/WSL no existe en este equipo y no se instalo Docker Desktop sin una solicitud expresa de administracion del host. La Fase 20 comprobo posteriormente el build de las imagenes en GitHub Actions Linux; `up`, health checks, volumenes y el perfil test siguen pendientes.
 
 Antes de RC/preproduccion, ejecutar los comandos anteriores en un host con motor Docker y registrar build, health checks, migracion, smoke web/API, reporte PHP, pruebas del perfil `test`, persistencia de volumenes y parada/arranque. TLS, secretos administrados, backups de uploads, monitoreo y rollback siguen siendo trabajo de staging/produccion.

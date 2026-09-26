@@ -47,7 +47,7 @@ Ese procedimiento todavia no se ejecuto con contenedores ni una infraestructura 
 
 ## Despliegue y rollback pendiente
 
-CI configurado hace install/lint/test/build/audit/export/E2E y build Docker; no despliega. El remoto GitHub existe, pero la primera ejecucion del workflow aun no esta confirmada y no hay credenciales ni proveedor de despliegue configurados. Antes de liberar, fijar imagenes verificadas y migraciones compatibles, ejecutar staging y guardar un backup consistente. Rollback de aplicacion solo es seguro si el esquema sigue siendo compatible; una migracion destructiva necesita plan propio, no revertir SQL ciegamente. Ver [Fase 20](phases/phase-20-cicd.md).
+CI ejecuta install/lint/test/build/audit/export/E2E y build Docker; la corrida `36255899826` aprobo ambos jobs sobre `656f899`. No despliega y no hay credenciales ni proveedor de despliegue configurados. Antes de liberar, fijar imagenes verificadas y migraciones compatibles, ejecutar staging y guardar un backup consistente. Rollback de aplicacion solo es seguro si el esquema sigue siendo compatible; una migracion destructiva necesita plan propio, no revertir SQL ciegamente. Ver [Fase 20](phases/phase-20-cicd.md).
 
 TLS termina en infraestructura aun no configurada. TRUST_PROXY=1 solo es correcto con un proxy confiable y API no expuesta directamente. Rate limiting en memoria requiere almacen compartido al escalar.
 

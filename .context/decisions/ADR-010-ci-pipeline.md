@@ -19,4 +19,4 @@ No se define un job de deploy. Un despliegue solo se incorporara despues de apro
 
 ## Consecuencias
 
-Los cambios no llegan a produccion por una accion de GitHub. La primera corrida remota es aun evidencia pendiente y debe registrarse junto con los artefactos/fallos que produzca. El build de imagen no reemplaza el gate de `docker compose up`, health checks y volumenes en un host con motor Docker.
+Los cambios no llegan a produccion por una accion de GitHub. La corrida final `36255899826` aprobo los jobs `verify` y `e2e`; su evidencia y el fallo corregido de la corrida anterior constan en el informe de fase. El build de imagen no reemplaza el gate de `docker compose up`, health checks y volumenes en un host con motor Docker.

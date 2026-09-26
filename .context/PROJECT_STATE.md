@@ -1,10 +1,10 @@
 # Estado de pyApy
 
-Actualizado: 2026-09-24, America/Asuncion.
+Actualizado: 2026-09-26, America/Asuncion.
 
 ## Estado vigente
 
-Fase 20 configurada localmente: GitHub Actions separa gates de calidad/build/contenedores de E2E, usa PostgreSQL efimero y conserva diagnosticos ante fallo. No existe job de despliegue: falta aprobar staging, secretos gestionados, monitoreo, backup integral y rollback. La primera ejecucion remota aun no se confirma. Ver [Fase 20](phases/phase-20-cicd.md) y [ADR-010](decisions/ADR-010-ci-pipeline.md).
+Fase 20 cerrada: GitHub Actions separa gates de calidad/build/contenedores de E2E, usa PostgreSQL efimero y conserva diagnosticos ante fallo. La corrida final `36255899826` sobre `656f899` aprobo ambos jobs: 23 pruebas unitarias/API, builds web/mobile/Docker y 43 E2E con una repeticion responsive omitida deliberadamente. No existe job de despliegue: falta aprobar staging, secretos gestionados, monitoreo, backup integral y rollback. Ver [Fase 20](phases/phase-20-cicd.md) y [ADR-010](decisions/ADR-010-ci-pipeline.md).
 
 Fase 19 cerrada para configuracion local: Compose separa imagen `production` y perfil `test`, fixture demo explicito, secretos fuera de Git y ejemplo de produccion sin credenciales. La validacion estatica de ambas variantes paso; falta el gate real de build/up/health/volumenes porque este equipo no tiene motor Docker. Ver [Fase 19](phases/phase-19-docker.md) y [ADR-009](decisions/ADR-009-container-environments.md).
 
@@ -40,16 +40,17 @@ Web local: http://127.0.0.1:5173; instancia vigente en `.local/dev.json`. React 
 - Auditoría Axe final: 60 estados, 0 reglas incumplidas, 0 desbordamientos y 0 errores de página.
 - Lighthouse: accesibilidad 1.00 en las cuatro corridas; rendimiento 0.67/0.69 móvil y 0.93/0.94 desktop. El detalle desktop registró CLS 0.121. Es línea base, no SLO.
 - 23 pruebas automatizadas aprobadas, incluida concurrencia de diez solicitudes con una sola confirmacion.
+- CI remoto final: `verify` aprobado sin advertencias/errores; suite E2E con **43 aprobadas y una repeticion responsive omitida**, cero fallos.
 - UI 03: `npm run check` aprobado (23 pruebas); suite E2E final con **41 aprobadas y una repetición responsive omitida**, lint/build finales aprobados. Responsive de portada/ficha/cuenta/paneles verificado a 320/390/768/1024/1440 px. Fallos intermedios y correcciones en TESTING.md.
 - Backup restaurado en base temporal, conteos y exclusion conservados.
 - Reporte PHP ejecutado con rol de solo lectura.
 - npm audit: cero vulnerabilidades reportadas en la ejecucion registrada.
-- Compose validado sintacticamente; motor no disponible.
+- Compose validado sintacticamente; las imagenes Docker construyeron en GitHub Actions. `compose up`, health checks y volumenes siguen sin ejecutarse.
 
 ## Limites de entrega
 
 Entregadas las tres fases autorizadas de integración visual y el primer cierre automatizado de accesibilidad de la web conectada. Lighthouse ya tiene línea base, pero queda optimización móvil/CLS, validación cultural, WCAG integral, lector/zoom, revisión de navegación asistida, paginación real de servidor y recuperación de confirmaciones fuera de la pestaña actual. Base y API mantienen sus contratos; la integración no equivale a producción 1.0.
 
-Pendientes: primera ejecucion CI remota, paridad y pruebas nativas, pruebas de carga y accesibilidad completas, integraciones externas autorizadas, endurecimiento operacional, Docker ejecutado, staging, rollback y produccion. Detalle en [RIESGOS](RISKS.md) y [BACKLOG](BACKLOG.md).
+Pendientes: Fase 21 documental, paridad y pruebas nativas, pruebas de carga y accesibilidad completas, integraciones externas autorizadas, runtime Compose, endurecimiento operacional, staging, rollback y produccion. Detalle en [RIESGOS](RISKS.md) y [BACKLOG](BACKLOG.md).
 
 Los documentos de Fase 0 son historicos. Este estado reemplaza sus afirmaciones sobre workspace vacio y autorizacion pendiente.

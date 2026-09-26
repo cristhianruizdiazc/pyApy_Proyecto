@@ -1,6 +1,6 @@
 # Backlog y cobertura de fases
 
-Actualizado: 2026-09-24. Tres fases de integración visual expresamente autorizadas y entregadas; auditoría Axe automatizada cerrada sin violaciones. Estados parciales no equivalen al cierre de todas las fases ni a producción 1.0.
+Actualizado: 2026-09-26. Fase 20 cerrada con CI remoto aprobado; los estados parciales de otras fases no equivalen a produccion 1.0.
 
 ## Integración de la primera versión
 
@@ -31,10 +31,10 @@ Actualizado: 2026-09-24. Tres fases de integración visual expresamente autoriza
 | 14 Integraciones | Outbox/retry y notificacion interna | Email/push/WhatsApp/MCP con proveedores autorizados |
 | 15 Analytics | Eventos basicos y demanda guardada | Funnels, busquedas reales agregadas y proteccion antifraude |
 | 16 Seguridad | Controles y pruebas adversariales iniciales | Auditoria completa, secretos/TLS y contenedores |
-| 17 Pruebas | 23 pruebas; suite final de 41 E2E aprobadas, una repetición responsive omitida; Axe 60/60 sin violaciones | Carga, native, accesibilidad integral, recuperación operacional y todas las mutaciones admin |
+| 17 Pruebas | 23 pruebas; CI final con 43 E2E aprobadas, una repeticion responsive omitida; Axe 60/60 sin violaciones | Carga, native, accesibilidad integral, recuperacion operacional y todas las mutaciones admin |
 | 18 Rendimiento | Lazy routes/mapa, imagen optimizada, bundle medido; Lighthouse ejecutado: 0.67/0.69 mobile y 0.93/0.94 desktop | Optimizar LCP móvil (~8.2 s), estudiar CLS detalle desktop (0.121), perfiles, EXPLAIN ANALYZE y SLO reales |
-| 19 Docker | Dockerfiles, Compose validado | Motor y build/up/smoke/volumenes reales |
-| 20 CI/CD | Workflow con gates separados de calidad/contenedores y E2E | Primera ejecucion remota; staging, deploy y rollback aprobados |
+| 19 Docker | Dockerfiles, Compose validado e imagenes construidas en runner Linux | `compose up`, health/smoke y volumenes reales |
+| 20 CI/CD | Cerrada: corrida remota `36255899826`, ambos jobs aprobados | Deploy queda fuera hasta aprobar staging y rollback |
 | 21 Documentacion | README, API, DB, seguridad y operacion | Actualizar al cerrar cada brecha |
 | 22 Auditoria final | Registro de riesgos con estados/evidencia | No realizada como auditoria final 1.0 |
 | 23 RC | Version 0.1.0 local | Clean install, paridad, Docker y todos los gates |
@@ -43,9 +43,11 @@ Actualizado: 2026-09-24. Tres fases de integración visual expresamente autoriza
 
 ## Prioridad siguiente
 
-Fase 19 cerrada para configuracion: Dockerfiles production/test, Compose con perfil test y verificacion estatica aprobada. El gate de runtime sigue pendiente en un host Docker; no se declara certificado hasta ejecutar build/up/smoke/volumenes. Ver [Fase 19](phases/phase-19-docker.md).
+La siguiente fase del roadmap es la **Fase 21 - Documentacion**. Requiere autorizacion expresa antes de iniciarse y debe reconciliar las guias de instalacion, arquitectura, operacion y troubleshooting con el estado comprobado en CI.
 
-Fase 20 queda configurada localmente: Actions instala con lockfile, audita dependencias, valida lint/pruebas/builds/contenedores y despues ejecuta E2E con una base efimera independiente. No incluye deploy, porque staging y rollback no estan definidos. Ver [Fase 20](phases/phase-20-cicd.md).
+Fase 19 cerrada para configuracion: Dockerfiles production/test, Compose con perfil test, verificacion estatica e imagenes construidas en CI. El gate de runtime sigue pendiente; no se declara certificado hasta ejecutar `compose up`, health/smoke y volumenes. Ver [Fase 19](phases/phase-19-docker.md).
+
+Fase 20 cerrada: Actions instala con lockfile, audita dependencias, valida lint/pruebas/builds/contenedores y despues ejecuta E2E con una base efimera independiente. La corrida final aprobo ambos jobs. No incluye deploy, porque staging y rollback no estan definidos. Ver [Fase 20](phases/phase-20-cicd.md).
 
 Fase 18 cerrada para el entorno local: WebP responsivo, hero bajo demanda, skeleton de ficha y mapa diferido. Lighthouse final: 0.95/0.90 mobile, 0.93/0.97 desktop; CLS de ficha 0.003. EXPLAIN demo no amerita indice nuevo. Quedan SLO/carga/CDN/cache/produccion para fases de preproduccion y auditoria; ver [rendimiento UX 01](phases/performance-ux-01.md).
 

@@ -4,9 +4,11 @@
 
 - Corregida la incompatibilidad detectada por el gate mobile: Expo actualizado de 57.0.23 a `~57.0.25`, con lockfile regenerado.
 - Validados lint, 23 pruebas, build web, auditoria sin vulnerabilidades, configuracion de contenedores, compatibilidad y export Android/iOS.
-- Verificada instalacion limpia de 766 paquetes mediante `npm ci`; la primera corrida remota queda como ultimo gate para cerrar la fase.
+- Verificada instalacion limpia de 766 paquetes mediante `npm ci`; en ese punto la corrida remota era el ultimo gate pendiente.
 - Primera corrida remota: job principal aprobado con Docker; E2E expuso que una regresion de imagen rota no interceptaba las variantes WebP (41 aprobadas, una omitida, dos fallos equivalentes).
 - Ajustada la intercepcion a JPG/JPEG/WebP y actualizadas las acciones oficiales a runtimes Node 24 para eliminar advertencias de deprecacion.
+- Segunda corrida remota `36255899826` sobre `656f899`: `verify` y `e2e` aprobados; 23 pruebas unitarias/API y 43 E2E aprobadas, una repeticion responsive omitida.
+- Fase 20 cerrada y `.context` sincronizado. No se agrego deploy; staging y rollback continuan pendientes.
 
 ## 2026-09-25 - Fase 20 CI/CD
 

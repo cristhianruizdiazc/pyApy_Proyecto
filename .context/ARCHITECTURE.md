@@ -28,7 +28,7 @@ Uploads limitados, decodificados por Sharp, sin metadatos, convertidos a WebP y 
 
 ## Entornos
 
-Desarrollo: cluster exclusivo en .local y procesos locales; nunca reutiliza datos ajenos. Pruebas: base temporal con migraciones reales. Compose: PostgreSQL, migrador, API, web nginx no privilegiado y reporte opcional. Dockerfiles/configuracion existen, pero falta ejecucion con motor.
+Desarrollo: cluster exclusivo en .local y procesos locales; nunca reutiliza datos ajenos. Pruebas: base temporal con migraciones reales. Compose: PostgreSQL, migrador, API, web nginx no privilegiado y reporte opcional. Dockerfiles/configuracion existen y las imagenes construyen en CI Linux; falta ejecutar el stack completo, health checks y volumenes con motor Docker.
 
 Produccion requiere TLS, dominio, secretos administrados, monitoreo, backups externos, rollback y pruebas de staging. No hay proveedor elegido ni despliegue realizado.
 
