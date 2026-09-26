@@ -792,7 +792,7 @@ input[type="checkbox"] {
   background: var(--light);
   margin: 18px 0;
 }
-.empty h3 {
+.empty h2 {
   font-size: 21px;
 }
 .empty p {
@@ -827,6 +827,9 @@ input[type="checkbox"] {
   border-top-color: var(--green);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
+}
+.detail-route-loading {
+  min-height: 2721px;
 }
 @keyframes spin {
   to {
@@ -1117,7 +1120,7 @@ footer > span {
 .auth-visual .eyebrow {
   color: white;
 }
-.auth-visual h1 {
+.auth-visual-title {
   font-size: 58px;
   line-height: 1.2;
   margin-top: 20px;
@@ -1131,7 +1134,7 @@ footer > span {
 .auth-form > .brand {
   margin-bottom: 35px;
 }
-.auth-form h2 {
+.auth-form h1 {
   font-size: 26px;
 }
 .segmented {
@@ -1179,7 +1182,7 @@ footer > span {
   flex: 1;
   min-width: 0;
 }
-.reservation-main h3 {
+.reservation-main h2 {
   margin: 0 0 6px;
 }
 .reservation-main p {
@@ -1307,7 +1310,7 @@ footer > span {
   flex: 1;
   min-width: 0;
 }
-.owner-property-row h3 {
+.owner-property-row h2 {
   margin-bottom: 6px;
 }
 .owner-property-row p {
@@ -1829,7 +1832,7 @@ dialog::backdrop {
     flex: 1;
     font-size: 12px;
   }
-  .owner-property-row h3 {
+  .owner-property-row h2 {
     font-size: 16px;
   }
   .owner-property-row .row-actions {
@@ -1877,7 +1880,7 @@ dialog::backdrop {
   .dialog-head h2 {
     font-size: 19px;
   }
-  .auth-form h2 {
+  .auth-form h1 {
     font-size: 25px;
   }
   footer {

@@ -10,6 +10,16 @@ await new Promise((ok, fail) => {
     code === 0 ? ok() : fail(new Error("Fallo de migracion")),
   );
 });
+if (process.env.SEED_DEMO === "true")
+  await new Promise((ok, fail) => {
+    const child = spawn(process.execPath, ["apps/api/src/seed.mjs"], {
+      stdio: "inherit",
+    });
+    child.on("error", fail);
+    child.on("exit", (code) =>
+      code === 0 ? ok() : fail(new Error("Fallo de fixtures demo")),
+    );
+  });
 const db = new pg.Client({ connectionString: process.env.DATABASE_URL });
 await db.connect();
 try {

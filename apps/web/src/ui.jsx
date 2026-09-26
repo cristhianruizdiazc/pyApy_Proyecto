@@ -1,5 +1,13 @@
-import { createContext, useContext, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from "react";
+import { Link, useLocation } from "react-router-dom";
+import { detailHref } from "./booking-selection.js";
 import {
   Heart,
   MapPin,
@@ -18,9 +26,9 @@ export function ErrorMessage({ error }) {
     </p>
   ) : null;
 }
-export function Loading() {
+export function Loading({ className = "" }) {
   return (
-    <div className="loading" role="status">
+    <div className={`loading${className ? ` ${className}` : ""}`} role="status">
       <span />
       Cargando...
     </div>
@@ -29,35 +37,72 @@ export function Loading() {
 export function Empty({ title, children }) {
   return (
     <div className="empty">
-      <h3>{title}</h3>
+      <h2>{title}</h2>
       {children}
     </div>
   );
 }
 export function Photo({ src, alt, ...props }) {
-  return src ? (
+  return <PhotoImage key={src} src={src} alt={alt} {...props} />;
+}
+function PhotoImage({ src, alt, className = "", onError, ...props }) {
+  const [failed, setFailed] = useState(false);
+  const demo = /^\/demo\/(cabin|garden|house|palms|pool|retreat)\.jpg$/.exec(src || "");
+  const image = (
     <img
+      {...props}
+      className={className}
       src={src}
       alt={alt}
       onError={(e) => {
-        e.currentTarget.hidden = true;
+        setFailed(true);
+        onError?.(e);
       }}
-      {...props}
     />
+  );
+  return src && !failed ? (
+    demo ? (
+      <picture>
+        <source
+          media="(max-width: 700px)"
+          srcSet={`/demo/${demo[1]}-640.webp`}
+          type="image/webp"
+        />
+        <source srcSet={`/demo/${demo[1]}-1280.webp`} type="image/webp" />
+        {image}
+      </picture>
+    ) : image
   ) : (
-    <div className="photo-placeholder">
-      <ImageIcon size={30} />
+    <div
+      {...props}
+      className={`photo-placeholder${className ? ` ${className}` : ""}`}
+      role="img"
+      aria-label={alt ? `Imagen no disponible: ${alt}` : "Imagen no disponible"}
+    >
+      <ImageIcon size={30} aria-hidden="true" />
     </div>
   );
 }
-export function PropertyCard({ p, favorite = false, onFavorite, onHover }) {
+export function PropertyCard({
+  p,
+  favorite = false,
+  selected = false,
+  onFavorite,
+  onHover,
+}) {
+  const location = useLocation();
+  const href = detailHref(
+    p.id,
+    location.pathname === "/" ? location.search : "",
+  );
   return (
     <article
-      className="property-card"
+      className={`property-card${selected ? " is-selected" : ""}`}
+      data-property-id={p.id}
       onMouseEnter={() => onHover?.(p.id)}
       onFocus={() => onHover?.(p.id)}
     >
-      <Link className="card-image" to={`/espacios/${p.id}`}>
+      <Link className="card-image" to={href}>
         <Photo
           src={p.images[0]?.url}
           alt={p.images[0]?.alt || p.name}
@@ -86,9 +131,11 @@ export function PropertyCard({ p, favorite = false, onFavorite, onHover }) {
           {p.capacity} personas
         </span>
       </div>
-      <Link className="card-title" to={`/espacios/${p.id}`}>
-        {p.name}
-      </Link>
+      <h2>
+        <Link className="card-title" to={href}>
+          {p.name}
+        </Link>
+      </h2>
       <p className="location">
         <MapPin size={14} />
         {p.city}, {p.department}
@@ -103,7 +150,7 @@ export function PropertyCard({ p, favorite = false, onFavorite, onHover }) {
             ? p.available
               ? "Disponible"
               : "Otra fecha"
-            : `Min. ${p.minHours} h`}
+            : `Mín. ${p.minHours} h`}
         </span>
       </div>
     </article>
@@ -111,22 +158,32 @@ export function PropertyCard({ p, favorite = false, onFavorite, onHover }) {
 }
 export function Modal({ title, onClose, children }) {
   const ref = useRef(null);
+  const titleId = useId();
   useEffect(() => {
     const dialog = ref.current;
+    const previousFocus = document.activeElement;
     dialog.showModal();
-    return () => dialog.close();
+    return () => {
+      dialog.close();
+      if (previousFocus?.isConnected) previousFocus.focus?.();
+    };
   }, []);
   return (
     <dialog
       ref={ref}
-      onCancel={onClose}
+      aria-labelledby={titleId}
+      onCancel={(e) => {
+        e.preventDefault();
+        onClose();
+      }}
       onClick={(e) => {
         if (e.target === ref.current) onClose();
       }}
     >
       <div className="dialog-head">
-        <h2>{title}</h2>
+        <h2 id={titleId}>{title}</h2>
         <button
+          type="button"
           className="icon-button"
           aria-label="Cerrar"
           title="Cerrar"

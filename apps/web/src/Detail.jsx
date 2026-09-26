@@ -1,6 +1,6 @@
-import { lazy, Suspense, useState, useEffect, useRef } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { Link, useParams, useLocation } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
   MapPin,
@@ -12,28 +12,28 @@ import {
   ShieldCheck,
   Star,
 } from "lucide-react";
-import { money, localInterval } from "@pyapy/contracts";
 import { api } from "./api.js";
-import {
-  useSession,
-  Loading,
-  ErrorMessage,
-  Photo,
-  PropertyCard,
-} from "./ui.jsx";
+import BookingPanel from "./BookingPanel.jsx";
+import PropertyGallery from "./PropertyGallery.jsx";
+import "./detail.css";
+import { useSession, Loading, ErrorMessage, PropertyCard } from "./ui.jsx";
 const PropertyMap = lazy(() => import("./Map.jsx"));
 export default function Detail() {
   const { id } = useParams();
+  return <DetailPage key={id} id={id} />;
+}
+function DetailPage({ id }) {
   const { user } = useSession();
-  const nav = useNavigate();
-  const client = useQueryClient();
+  const location = useLocation();
+  const [showMap, setShowMap] = useState(false);
   const query = useQuery({
     queryKey: ["property", id],
-    queryFn: () => api(`/properties/${id}`),
+    queryFn: ({ signal }) => api(`/properties/${id}`, { signal }),
   });
   const availability = useQuery({
     queryKey: ["availability", id],
-    queryFn: () => api(`/properties/${id}/availability`),
+    queryFn: ({ signal }) => api(`/properties/${id}/availability`, { signal }),
+    enabled: Boolean(query.data),
   });
   const catalog = useQuery({
     queryKey: ["catalog"],
@@ -43,13 +43,6 @@ export default function Detail() {
     queryKey: ["similar", id],
     queryFn: () => api("/properties"),
   });
-  const [image, setImage] = useState(0);
-  const [error, setError] = useState(null);
-  const [quote, setQuote] = useState(null);
-  const [confirmed, setConfirmed] = useState(null);
-  const [pending, setPending] = useState(false);
-  const [intent, setIntent] = useState(null);
-  const [key, setKey] = useState(() => crypto.randomUUID());
   const p = query.data;
   const viewed = useRef(new Set());
   useEffect(() => {
@@ -61,63 +54,19 @@ export default function Detail() {
       }).catch(() => {});
     }
   }, [p?.id, p?.status]);
-  async function getQuote(e) {
-    e.preventDefault();
-    if (!user) return nav("/ingresar", { state: { from: `/espacios/${id}` } });
-    setError(null);
-    setPending(true);
-    try {
-      const f = new FormData(e.currentTarget);
-      const input = {
-        propertyId: id,
-        guests: Number(f.get("guests")),
-        ...localInterval(
-          f.get("date"),
-          f.get("start"),
-          f.get("end"),
-          f.get("endDate") || f.get("date"),
-        ),
-      };
-      const result = await api("/reservations/quote", {
-        method: "POST",
-        body: input,
-      });
-      setIntent(input);
-      setKey(crypto.randomUUID());
-      setQuote(result);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setPending(false);
-    }
-  }
-  async function reserve() {
-    setPending(true);
-    setError(null);
-    try {
-      const result = await api("/reservations", {
-        method: "POST",
-        body: intent,
-        key,
-      });
-      setConfirmed(result.reservation);
-      client.invalidateQueries({ queryKey: ["availability", id] });
-      client.invalidateQueries({ queryKey: ["reservations"] });
-    } catch (err) {
-      setError(err);
-      if (err.status === 409) {
-        setQuote(null);
-        client.invalidateQueries({ queryKey: ["availability", id] });
-      }
-    } finally {
-      setPending(false);
-    }
-  }
-  if (query.isPending) return <Loading />;
+  if (query.isPending)
+    return (
+      <main className="page detail-route-loading" aria-busy="true">
+        <Loading />
+      </main>
+    );
   if (query.error)
     return (
       <main className="page">
         <ErrorMessage error={query.error} />
+        <button className="secondary" onClick={() => query.refetch()}>
+          Reintentar espacio
+        </button>
         <Link to="/">Volver</Link>
       </main>
     );
@@ -143,7 +92,7 @@ export default function Detail() {
               </span>
             )}
             {p.isDemo && (
-              <span className="badge">Propiedad de demostracion</span>
+              <span className="badge">Propiedad de demostración</span>
             )}
           </p>
         </div>
@@ -154,27 +103,22 @@ export default function Detail() {
           </span>
         )}
       </div>
-      <div className="detail-gallery">
-        <Photo
-          src={p.images[image]?.url}
-          alt={p.images[image]?.alt || p.name}
-        />
-        {p.images.length > 1 && (
-          <div className="thumbnails">
-            {p.images.map((img, i) => (
-              <button
-                key={img.id}
-                aria-label={`Ver foto ${i + 1}`}
-                onClick={() => setImage(i)}
-                className={i === image ? "active" : ""}
-              >
-                <img src={img.url} alt="" />
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      <PropertyGallery property={p} />
+      <nav className="detail-shortcuts" aria-label="En esta ficha">
+        <a href="#sobre-el-espacio">El espacio</a>
+        <a href="#ubicacion">Ubicación</a>
+        <a href="#reservar">
+          Elegir fecha <ArrowRight size={16} />
+        </a>
+      </nav>
       <div className="detail-columns">
+        <BookingPanel
+          key={`${id}:${user?.id || "guest"}:${location.search}`}
+          property={p}
+          user={user}
+          search={location.search}
+          availability={availability}
+        />
         <div className="detail-info">
           <div className="facts">
             <span>
@@ -190,7 +134,7 @@ export default function Detail() {
               {p.openHour}:00 a {p.closeHour}:00
             </span>
           </div>
-          <section>
+          <section id="sobre-el-espacio">
             <h2>Un espacio para desconectar.</h2>
             <p className="description">{p.description}</p>
           </section>
@@ -205,29 +149,46 @@ export default function Detail() {
                 </span>
               ))}
             </div>
+            {!p.amenities.length && (
+              <p className="muted">
+                El anfitrión todavía no detalló los servicios.
+              </p>
+            )}
           </section>
           <section>
             <h2>Antes de ir</h2>
-            <p className="description">
-              {p.rules || "Sin reglas adicionales publicadas."}
-            </p>
             <p>
-              Cancelacion hasta {p.cancellationHours} horas antes. Se cobra por
+              Cancelación hasta {p.cancellationHours} horas antes. Se cobra por
               hora iniciada.
             </p>
             <p>
-              Estadia de {p.minHours} a {p.maxHours} horas. Los horarios se
+              Estadía de {p.minHours} a {p.maxHours} horas. Los horarios se
               muestran en Paraguay.
             </p>
+            <details className="property-rules">
+              <summary>Reglas del espacio</summary>
+              <p className="description">
+                {p.rules || "Sin reglas adicionales publicadas."}
+              </p>
+            </details>
           </section>
-          <section>
-            <h2>Por aca empieza la escapada</h2>
+          <section id="ubicacion">
+            <h2>Por acá empieza la escapada</h2>
             <p>
-              {p.zone}, {p.city}. Ubicacion aproximada.
+              {p.zone}, {p.city}. Ubicación aproximada.
             </p>
-            <Suspense fallback={<Loading />}>
-              <PropertyMap items={[p]} />
-            </Suspense>
+            <button
+              className="secondary detail-map-trigger"
+              aria-expanded={showMap}
+              onClick={() => setShowMap((visible) => !visible)}
+            >
+              {showMap ? "Ocultar mapa" : "Ver mapa aproximado"}
+            </button>
+            {showMap && (
+              <Suspense fallback={<Loading />}>
+                <PropertyMap items={[p]} />
+              </Suspense>
+            )}
           </section>
           <section>
             <h2>Opiniones de quienes estuvieron</h2>
@@ -242,7 +203,7 @@ export default function Detail() {
                 </article>
               ))
             ) : (
-              <p className="muted">Este espacio todavia no tiene opiniones.</p>
+              <p className="muted">Este espacio todavía no tiene opiniones.</p>
             )}
             {p.socials.length > 0 && (
               <div className="socials">
@@ -261,133 +222,10 @@ export default function Detail() {
             )}
           </section>
         </div>
-        <aside className="booking-panel">
-          <div className="booking-price">
-            <strong>Gs. {money(p.pricePerHour)}</strong>
-            <span>/ hora</span>
-          </div>
-          {confirmed ? (
-            <div className="booking-success" role="status">
-              <Check size={34} />
-              <h2>Tu escapada esta confirmada.</h2>
-              <p>Localizador</p>
-              <strong className="locator">{confirmed.locator}</strong>
-              <p>Gs. {money(confirmed.totalAmount)}</p>
-              <Link className="primary" to="/reservas">
-                Ver mi reserva
-                <ArrowRight size={17} />
-              </Link>
-            </div>
-          ) : (
-            <>
-              <form
-                onSubmit={getQuote}
-                onChange={() => {
-                  setQuote(null);
-                  setError(null);
-                }}
-              >
-                <label>
-                  Fecha de entrada
-                  <input
-                    type="date"
-                    name="date"
-                    required
-                    min={new Date().toLocaleDateString("en-CA")}
-                  />
-                </label>
-                <label>
-                  Fecha de salida
-                  <input
-                    type="date"
-                    name="endDate"
-                    min={new Date().toLocaleDateString("en-CA")}
-                  />
-                </label>
-                <div className="form-row">
-                  <label>
-                    Desde
-                    <input
-                      type="time"
-                      name="start"
-                      defaultValue="09:00"
-                      required
-                    />
-                  </label>
-                  <label>
-                    Hasta
-                    <input
-                      type="time"
-                      name="end"
-                      defaultValue="17:00"
-                      required
-                    />
-                  </label>
-                </div>
-                <label>
-                  Personas
-                  <input
-                    type="number"
-                    name="guests"
-                    defaultValue="2"
-                    min="1"
-                    max={p.capacity}
-                    required
-                  />
-                </label>
-                <button className="primary" disabled={pending}>
-                  {pending ? "Consultando..." : "Consultar disponibilidad"}
-                  <ArrowRight size={18} />
-                </button>
-              </form>
-              <ErrorMessage error={error} />
-              {quote && (
-                <div className="quote">
-                  <div>
-                    <span>{quote.hours} horas</span>
-                    <strong>Gs. {money(quote.totalAmount)}</strong>
-                  </div>
-                  <p>Cancelacion hasta {quote.cancellationHours} h antes.</p>
-                  <button
-                    className="primary"
-                    onClick={reserve}
-                    disabled={pending}
-                  >
-                    {pending ? "Reservando..." : "Confirmar reserva"}
-                    <Check size={18} />
-                  </button>
-                </div>
-              )}
-              <p className="muted booking-note">
-                Sin comision por reserva. El pago se acuerda con el propietario.
-              </p>
-            </>
-          )}
-          <details className="occupied-dates">
-            <summary>Fechas ocupadas</summary>
-            <ErrorMessage error={availability.error} />
-            {availability.isPending ? (
-              <Loading />
-            ) : availability.data?.intervals.length ? (
-              availability.data.intervals.map((r, i) => (
-                <p key={i}>
-                  {new Date(r.starts_at).toLocaleString("es-PY", {
-                    timeZone: "America/Asuncion",
-                  })}{" "}
-                  -{" "}
-                  {new Date(r.ends_at).toLocaleString("es-PY", {
-                    timeZone: "America/Asuncion",
-                  })}
-                </p>
-              ))
-            ) : (
-              <p>Sin ocupaciones registradas.</p>
-            )}
-          </details>
-        </aside>
       </div>
       <section className="similar">
-        <h2>Segui explorando</h2>
+        <h2>Seguí explorando</h2>
+        <ErrorMessage error={similar.error} />
         <div className="property-grid">
           {similar.data?.items
             .filter((x) => x.id !== id)

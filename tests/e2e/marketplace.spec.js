@@ -141,7 +141,7 @@ test("cliente crea cuenta, guarda favorito, reserva y cancela con backend real",
     await expect(page.locator(".quote")).toContainText("80.000");
     await page.getByRole("button", { name: "Confirmar reserva" }).click();
     await expect(
-      page.getByRole("heading", { name: "Tu escapada esta confirmada." }),
+      page.getByRole("heading", { name: "Tu escapada está confirmada." }),
     ).toBeVisible();
     await page.getByRole("link", { name: "Ver mi reserva" }).click();
     await expect(page.locator(".reservation-row")).toContainText(p.name);
@@ -152,6 +152,15 @@ test("cliente crea cuenta, guarda favorito, reserva y cancela con backend real",
       .getByRole("button", { name: "Cancelar reserva", exact: true })
       .click();
     await expect(page.locator(".reservation-row")).toContainText("Cancelada");
+    await expect(
+      page.getByRole("button", { name: "Cerrar sesión", exact: true }),
+    ).toBeVisible();
+    await page
+      .getByRole("button", { name: "Cerrar sesión", exact: true })
+      .click();
+    await expect(
+      page.getByRole("link", { name: "Ingresar", exact: true }),
+    ).toBeVisible();
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth + 1,

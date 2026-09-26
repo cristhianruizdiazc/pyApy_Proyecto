@@ -31,6 +31,7 @@
     "db:local": "node scripts/local-db.mjs",
     "db:migrate": "node apps/api/src/migrate.mjs",
     "db:seed": "node apps/api/src/seed.mjs",
+    "containers:verify": "node scripts/verify-container-config.mjs",
     "build": "npm run build -w @pyapy/web",
     "lint": "eslint apps packages scripts tests",
     "test": "node scripts/test.mjs",
@@ -38,12 +39,14 @@
     "check": "npm run lint && npm test && npm run build"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
     "@eslint/js": "10.0.1",
     "@playwright/test": "1.63.0",
     "eslint": "10.10.0",
     "eslint-plugin-react-hooks": "7.1.1",
     "eslint-plugin-react-refresh": "0.5.7",
     "globals": "17.12.0",
+    "lighthouse": "13.5.0",
     "prettier": "3.9.7",
     "supertest": "7.2.2"
   }

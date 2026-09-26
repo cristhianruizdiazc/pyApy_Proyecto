@@ -6,7 +6,8 @@ import {
   useMap,
 } from "react-leaflet";
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { detailHref } from "./booking-selection.js";
 import { money } from "@pyapy/contracts";
 import "leaflet/dist/leaflet.css";
 function Bounds({ items }) {
@@ -21,6 +22,7 @@ function Bounds({ items }) {
   return null;
 }
 export default function PropertyMap({ items, selected, onSelect }) {
+  const location = useLocation();
   return (
     <MapContainer
       className="property-map"
@@ -51,7 +53,7 @@ export default function PropertyMap({ items, selected, onSelect }) {
             <p>
               {p.city} · Gs. {money(p.pricePerHour)}/h
             </p>
-            <Link to={`/espacios/${p.id}`}>Ver espacio</Link>
+            <Link to={detailHref(p.id, location.search)}>Ver espacio</Link>
           </Popup>
         </CircleMarker>
       ))}

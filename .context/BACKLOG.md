@@ -1,6 +1,14 @@
 # Backlog y cobertura de fases
 
-Actualizado: 2026-09-17. El usuario autorizo continuidad sin preguntas. Estados parciales no equivalen a cierre de fase ni a produccion 1.0.
+Actualizado: 2026-09-24. Tres fases de integración visual expresamente autorizadas y entregadas; auditoría Axe automatizada cerrada sin violaciones. Estados parciales no equivalen al cierre de todas las fases ni a producción 1.0.
+
+## Integración de la primera versión
+
+1. **Entregado:** portada/buscador/tarjetas, identidad artesanal sutil y navegación sobre API actual; ver [informe UI 01](phases/integration-ui-01.md).
+2. **Entregado:** detalle/galería, continuidad de selección y reserva, cotizaciones obsoletas corregidas y recuperación del intento tras respuesta perdida/ilegible. Ver [UI 02](phases/integration-ui-02.md).
+3. **Entregado:** cuenta, favoritos, reservas y paneles con información progresiva, filtros de registros cargados, pestañas/URL y calendario/agenda. Ver [UI 03](phases/integration-ui-03.md).
+4. **Parcialmente entregado:** auditoría Axe de 60 estados y corrección de encabezados; pendiente revisión cultural de SVG, activos finales, WCAG completa, zoom/lector y Lighthouse.
+5. **Siguiente trabajo:** navegación asistida, contraste/zoom/lector, Lighthouse y cobertura de mutaciones administrativas pendientes; paginación de servidor requiere diseño de contratos aparte.
 
 ## Trazabilidad del prompt
 
@@ -11,22 +19,22 @@ Actualizado: 2026-09-17. El usuario autorizo continuidad sin preguntas. Estados 
 | 2 Datos | Dos migraciones, constraints, roles y restore | Revision de indices/carga y retencion |
 | 3 Auth | Registro/login/refresh/logout, roles e IDOR | Recuperacion/verificacion de cuenta, MFA admin |
 | 4 API | REST versionada, Zod, transacciones, logs | OpenAPI, telemetria y separacion modular al crecer |
-| 5 Index | Fotos, carrusel, matching, mapa, responsive | WCAG completa, Lighthouse y mas viewports |
+| 5 Index | Integración UI 01, carruseles, búsqueda progresiva/URL, mapa, motivos artesanales; cinco anchos verificados; Axe sin violaciones en 60 estados | WCAG completa, Lighthouse y activos culturales/fotográficos finales |
 | 6 Propiedades | Alta/edicion/despublicacion, fotos, privados | Variantes de imagen, cambios de reglas/notificaciones y ciclo de archivado |
 | 7 Matching | Exactos, alternativas, pesos, SearchIntent | Eliminar limite 500 y ampliar criterios del prompt |
-| 8 Reservas | Tres tipos, exclusion, idempotencia, cancelacion | Mas carga, zonas horarias y pruebas de interrupcion |
-| 9 Propietario | Calendario, inventario, ocupaciones, metricas | Conversion/origen detallados y paginacion completa |
-| 10 Admin | Permisos, moderacion, planes/sponsors/audit | Filtros/exportes y cobertura E2E de cada mutacion |
+| 8 Reservas | Tres tipos, exclusión, idempotencia, cancelación; UI 02 prueba commit con respuesta perdida, replay, conflicto y cambio de precio | Más carga, sesiones expiradas, coordinación entre pestañas/dispositivos y almacenamiento bloqueado |
+| 9 Propietario | UI 03: calendario/agenda, inventario filtrado, ocupaciones, métricas progresivas y E2E de edición/media/contacto/bloqueo/cancelación | Conversión/origen detallados y paginación completa |
+| 10 Admin | UI 03: permisos, moderación, planes/sponsors/audit; filtros locales, tablas accesibles y E2E de moderación/rechazo de pesos inválidos | Filtros server-side/exportes y cobertura E2E de cada mutación |
 | 11 Monetizacion | Planes configurables, solicitud/aprobacion manual | Validacion comercial, beneficios y vencimientos efectivos |
 | 12 React Native | API real, auth, catalogo/mapa/favoritos/reservas | CRUD propietario, administracion/resenas y dispositivos |
 | 13 Offline | Cache, cola, idempotencia, retry/conflictos | Perdida real de red, cierre forzado, multiples usuarios y cifrado |
 | 14 Integraciones | Outbox/retry y notificacion interna | Email/push/WhatsApp/MCP con proveedores autorizados |
 | 15 Analytics | Eventos basicos y demanda guardada | Funnels, busquedas reales agregadas y proteccion antifraude |
 | 16 Seguridad | Controles y pruebas adversariales iniciales | Auditoria completa, secretos/TLS y contenedores |
-| 17 Pruebas | 23 pruebas y 6 E2E aprobadas | Carga, native, accesibilidad, recuperacion operacional |
-| 18 Rendimiento | Lazy routes/mapa, imagen optimizada, bundle medido | Lighthouse, perfiles, EXPLAIN ANALYZE y SLO reales |
+| 17 Pruebas | 23 pruebas; suite final de 41 E2E aprobadas, una repetición responsive omitida; Axe 60/60 sin violaciones | Carga, native, accesibilidad integral, recuperación operacional y todas las mutaciones admin |
+| 18 Rendimiento | Lazy routes/mapa, imagen optimizada, bundle medido; Lighthouse ejecutado: 0.67/0.69 mobile y 0.93/0.94 desktop | Optimizar LCP móvil (~8.2 s), estudiar CLS detalle desktop (0.121), perfiles, EXPLAIN ANALYZE y SLO reales |
 | 19 Docker | Dockerfiles, Compose validado | Motor y build/up/smoke/volumenes reales |
-| 20 CI/CD | GitHub Actions definido | Repositorio remoto, ejecucion y estrategia deploy/rollback |
+| 20 CI/CD | Workflow con gates separados de calidad/contenedores y E2E | Primera ejecucion remota; staging, deploy y rollback aprobados |
 | 21 Documentacion | README, API, DB, seguridad y operacion | Actualizar al cerrar cada brecha |
 | 22 Auditoria final | Registro de riesgos con estados/evidencia | No realizada como auditoria final 1.0 |
 | 23 RC | Version 0.1.0 local | Clean install, paridad, Docker y todos los gates |
@@ -34,6 +42,12 @@ Actualizado: 2026-09-17. El usuario autorizo continuidad sin preguntas. Estados 
 | 25 Produccion | No iniciada ni propuesta | Criterios finales del prompt satisfechos |
 
 ## Prioridad siguiente
+
+Fase 19 cerrada para configuracion: Dockerfiles production/test, Compose con perfil test y verificacion estatica aprobada. El gate de runtime sigue pendiente en un host Docker; no se declara certificado hasta ejecutar build/up/smoke/volumenes. Ver [Fase 19](phases/phase-19-docker.md).
+
+Fase 20 queda configurada localmente: Actions instala con lockfile, audita dependencias, valida lint/pruebas/builds/contenedores y despues ejecuta E2E con una base efimera independiente. No incluye deploy, porque staging y rollback no estan definidos. Ver [Fase 20](phases/phase-20-cicd.md).
+
+Fase 18 cerrada para el entorno local: WebP responsivo, hero bajo demanda, skeleton de ficha y mapa diferido. Lighthouse final: 0.95/0.90 mobile, 0.93/0.97 desktop; CLS de ficha 0.003. EXPLAIN demo no amerita indice nuevo. Quedan SLO/carga/CDN/cache/produccion para fases de preproduccion y auditoria; ver [rendimiento UX 01](phases/performance-ux-01.md).
 
 1. Pruebas nativas reales y resolver paridad funcional; minimizar o cifrar cache privada.
 2. Ejecutar contenedores en entorno con Docker, validar permisos/health checks/volumenes e instalacion limpia.
@@ -44,6 +58,6 @@ Actualizado: 2026-09-17. El usuario autorizo continuidad sin preguntas. Estados 
 
 ## Otros requisitos conservados
 
-Canvas/HTML editable (seccion 39): no existia implementacion equivalente heredada; alcance funcional no resuelto, no se introduce un editor de HTML inseguro ni se declara satisfecho por formularios. MCP parcial tampoco existia. OSM no ofrece mapas offline aqui. SEO/SSR, condiciones legales, privacidad, soporte operativo y politicas comerciales necesitan trabajo de lanzamiento.
+Canvas/HTML editable (sección 39): inicialmente no había implementación heredada. La primera versión ahora disponible contiene croquis y editor SVG con acoplamientos/contextos inconsistentes; deben inspeccionarse y desacoplarse antes de definir integración o reserva por sectores. No se declara satisfecho este requisito por formularios. No se identificó MCP parcial reutilizable. OSM no ofrece mapas offline aquí. SEO/SSR, condiciones legales, privacidad, soporte operativo y políticas comerciales necesitan trabajo de lanzamiento.
 
 No instalar plugins de cuentas externas sin una necesidad y autorizacion especifica. Las extensiones del editor necesarias ya fueron instaladas.

@@ -21,10 +21,13 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
+      target: production
     environment:
       DATABASE_URL: postgresql://pyapy_bootstrap:${POSTGRES_PASSWORD}@db:5432/pyapy
-      NODE_ENV: development
-      DEMO_MODE: "false"
+      NODE_ENV: ${RUN_MODE:-development}
+      DEMO_MODE: ${DEMO_MODE:-false}
+      SEED_DEMO: ${SEED_DEMO:-false}
+      DEMO_ACCOUNTS_PATH: none
     command: [node, scripts/migrate-container.mjs]
     depends_on:
       db:
@@ -34,6 +37,7 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
+      target: production
     environment:
       DATABASE_URL: postgresql://pyapy_app:${APP_DB_PASSWORD}@db:5432/pyapy
       NODE_ENV: ${RUN_MODE:-development}
@@ -41,7 +45,7 @@ services:
       PORT: "4100"
       TRUST_PROXY: "1"
       WEB_ORIGIN: ${WEB_ORIGIN:-http://127.0.0.1:8080}
-      DEMO_MODE: "false"
+      DEMO_MODE: ${DEMO_MODE:-false}
       UPLOAD_DIR: /data/uploads
     volumes:
       - uploads:/data/uploads
@@ -87,6 +91,26 @@ services:
     read_only: true
     security_opt: [no-new-privileges:true]
     cap_drop: [ALL]
+  test:
+    profiles: [test]
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: test
+    environment:
+      DATABASE_URL: postgresql://pyapy_bootstrap:${POSTGRES_PASSWORD}@db:5432/pyapy
+      NODE_ENV: test
+      DEMO_MODE: "false"
+      PYAPY_CONTAINER_TEST: "true"
+      TEST_UPLOAD_DIR: /tmp/test-uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    restart: "no"
 volumes:
   postgres_data:
   uploads:

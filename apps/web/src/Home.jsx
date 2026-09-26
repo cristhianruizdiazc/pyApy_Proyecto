@@ -5,36 +5,26 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
-  Search,
-  SlidersHorizontal,
   Map,
   Grid2X2,
   MapPin,
-  CalendarDays,
-  Users,
   Sun,
-  TreePine,
-  Waves,
-  House,
-  Flame,
   Check,
+  Pause,
+  Play,
 } from "lucide-react";
-import { kinds, localInterval } from "@pyapy/contracts";
 import { api } from "./api.js";
 import Sponsors from "./Sponsors.jsx";
+import SearchForm from "./SearchForm.jsx";
 import {
   useSession,
   PropertyCard,
   Loading,
   ErrorMessage,
   Empty,
+  Photo,
 } from "./ui.jsx";
 const PropertyMap = lazy(() => import("./Map.jsx"));
-const tomorrow = () => {
-  const d = new Date();
-  d.setDate(d.getDate() + 1);
-  return d.toLocaleDateString("en-CA");
-};
 function Rail({ items, favorites, onFavorite }) {
   const ref = useRef(null);
   useEffect(() => {
@@ -75,7 +65,17 @@ function Rail({ items, favorites, onFavorite }) {
       </div>
       <div
         className="property-rail"
+        role="region"
+        aria-label="Espacios para tu próximo plan"
+        tabIndex={0}
         ref={ref}
+        onKeyDown={(event) => {
+          if (event.target !== event.currentTarget) return;
+          if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+            event.preventDefault();
+            scroll(event.key === "ArrowLeft" ? -1 : 1);
+          }
+        }}
         onScroll={() => {
           const el = ref.current,
             segment = el.scrollWidth / 3;
@@ -113,13 +113,16 @@ export default function Home() {
   const { user } = useSession();
   const nav = useNavigate();
   const client = useQueryClient();
-  const [filters, setFilters] = useState(false);
   const [map, setMap] = useState(false);
   const [selected, setSelected] = useState(null);
   const [slide, setSlide] = useState(0);
+  const [playing, setPlaying] = useState(
+    () => !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
   const [notice, setNotice] = useState("");
   const [error, setError] = useState(null);
-  const formRef = useRef(null);
+  const resultsRef = useRef(null);
+  const searchRef = useRef(null);
   const catalog = useQuery({
     queryKey: ["catalog"],
     queryFn: () => api("/catalog"),
@@ -137,12 +140,24 @@ export default function Home() {
   const items = query.data?.items || [];
   const hasSearch = params.size > 0;
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const changed = () => {
+      if (preference.matches) setPlaying(false);
+    };
+    preference.addEventListener("change", changed);
+    return () => preference.removeEventListener("change", changed);
+  }, []);
+  useEffect(() => {
+    if (!playing) return;
     const interval = setInterval(() => {
-      if (!document.hidden) setSlide((s) => (s + 1) % 3);
+      if (
+        !document.hidden &&
+        !searchRef.current?.contains(document.activeElement)
+      )
+        setSlide((s) => (s + 1) % 3);
     }, 8000);
     return () => clearInterval(interval);
-  }, []);
+  }, [playing]);
   async function favorite(id) {
     if (!user) return nav("/ingresar");
     try {
@@ -154,33 +169,16 @@ export default function Home() {
       setError(err);
     }
   }
-  function submit(e) {
-    e.preventDefault();
+  function search(next) {
     setNotice("");
     setError(null);
-    const form = new FormData(e.currentTarget);
-    const next = new URLSearchParams();
-    for (const key of ["city", "guests", "budget", "kind"])
-      if (form.get(key)) next.set(key, form.get(key));
-    if (form.get("date")) {
-      const interval = localInterval(
-        form.get("date"),
-        form.get("start"),
-        form.get("end"),
-      );
-      next.set("startsAt", interval.startsAt);
-      next.set("endsAt", interval.endsAt);
-    }
-    const amenities = form.getAll("amenities");
-    if (amenities.length) next.set("amenities", amenities.join(","));
     setParams(next);
-    setTimeout(
-      () =>
-        document
-          .getElementById("results")
-          ?.scrollIntoView({ behavior: "smooth", block: "start" }),
-      100,
-    );
+    resultsRef.current?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
+      block: "start",
+    });
   }
   async function saveIntent() {
     if (!user) return nav("/ingresar");
@@ -189,50 +187,63 @@ export default function Home() {
         method: "POST",
         body: Object.fromEntries(params),
       });
-      setNotice("Guardamos tu interes en esta busqueda.");
+      setNotice("Guardamos tu interés en esta búsqueda.");
     } catch (err) {
       setError(err);
     }
   }
   const heroImages = ["pool", "house", "retreat"];
+  const heroAlt = [
+    "Piscina rodeada de naturaleza, imagen ilustrativa",
+    "Casa junto al agua, imagen ilustrativa",
+    "Espacio de descanso al aire libre, imagen ilustrativa",
+  ];
+  const heroImage = heroImages[slide];
   return (
-    <main>
+    <main className="marketplace-home">
       <section className="hero" aria-label="Escapadas en Paraguay">
-        {heroImages.map((name, i) => (
-          <img
-            key={name}
-            className={slide === i ? "hero-image visible" : "hero-image"}
-            src={`/demo/${name}.jpg`}
-            alt={
-              i === slide ? "Espacio recreativo con piscina y naturaleza" : ""
-            }
-            aria-hidden={i !== slide}
-            fetchPriority={i === 0 ? "high" : "auto"}
+        <picture>
+          <source
+            media="(max-width: 700px)"
+            srcSet={`/demo/${heroImage}-640.webp`}
+            type="image/webp"
           />
-        ))}
+          <source
+            srcSet={`/demo/${heroImage}-1280.webp`}
+            type="image/webp"
+          />
+          <img
+            key={heroImage}
+            className="hero-image visible"
+            src={`/demo/${heroImage}.jpg`}
+            alt={heroAlt[slide]}
+            fetchPriority="high"
+            decoding="async"
+          />
+        </picture>
         <div className="hero-shade" />
         <div className="hero-content">
           <div className="hero-eyebrow">
             <Sun size={16} />
-            PARAGUAY, A TU AIRE
+            ESCAPADAS CON RAÍCES
           </div>
           <h1>
-            pyApy<span>.</span>
-          </h1>
-          <p>
-            Tu proxima escapada,
+            Un lugar.
             <br />
-            mas cerca de lo que pensas.
-          </p>
-          <a href="#results" className="hero-link">
-            Encontra tu lugar
+            Tu gente.
+            <br />
+            <span>Un buen plan.</span>
+          </h1>
+          <p>Encontrá tu próxima escapada en Paraguay.</p>
+          <a href="#buscar" className="hero-link">
+            Encontrá tu lugar
             <ArrowUpRight size={19} />
           </a>
         </div>
         <div className="hero-bottom">
           <span>
             <MapPin size={14} />
-            Un respiro empieza por un lugar.
+            Paraguay, a tu aire.
           </span>
           <div className="slide-controls">
             {heroImages.map((_, i) => (
@@ -241,152 +252,60 @@ export default function Home() {
                 className={slide === i ? "active" : ""}
                 aria-label={`Ver imagen ${i + 1}`}
                 aria-pressed={slide === i}
-                onClick={() => setSlide(i)}
+                onClick={() => {
+                  setSlide(i);
+                  setPlaying(false);
+                }}
               />
             ))}
+            <button
+              className="slideshow-playback"
+              aria-label={playing ? "Pausar imágenes" : "Reproducir imágenes"}
+              onClick={() => setPlaying(!playing)}
+            >
+              {playing ? <Pause size={17} /> : <Play size={17} />}
+            </button>
           </div>
         </div>
         {catalog.data?.demo && (
-          <span className="demo-badge">Entorno de demostracion</span>
+          <span className="demo-badge">Entorno de demostración</span>
         )}
       </section>
-      <section className="search-section">
-        <form className="search-form" onSubmit={submit} ref={formRef}>
-          <div className="search-main">
-            <label>
-              <span>
-                <MapPin size={16} />
-                Donde
-              </span>
-              <select name="city" defaultValue={params.get("city") || ""}>
-                <option value="">Todo Paraguay</option>
-                {catalog.data?.cities.map((c) => (
-                  <option key={c.id}>{c.city}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              <span>
-                <CalendarDays size={16} />
-                Cuando
-              </span>
-              <input
-                name="date"
-                type="date"
-                min={tomorrow()}
-                aria-label="Fecha de la escapada"
-              />
-            </label>
-            <label>
-              <span>
-                <Users size={16} />
-                Con quienes
-              </span>
-              <input
-                name="guests"
-                type="number"
-                min="1"
-                max="1000"
-                defaultValue={params.get("guests") || ""}
-                placeholder="Cantidad de personas"
-                aria-label="Cantidad de personas"
-              />
-            </label>
-            <button className="primary search-button" type="submit">
-              <Search size={20} />
-              Buscar espacios
+      <div id="buscar" ref={searchRef}>
+        <SearchForm
+          key={params.toString()}
+          catalog={catalog.data}
+          params={params}
+          onSearch={search}
+        />
+        <div className="page-width">
+          <ErrorMessage error={catalog.error} />
+        </div>
+      </div>
+      <section
+        className="results-section page-width"
+        id="results"
+        ref={resultsRef}
+        aria-busy={query.isFetching}
+      >
+        <ErrorMessage error={error} />
+        {query.isError ? (
+          <div className="search-failure">
+            <ErrorMessage error={query.error} />
+            <p>
+              No pudimos consultar los espacios. Volvé a intentarlo para ver los
+              resultados.
+            </p>
+            <button className="secondary" onClick={() => query.refetch()}>
+              Reintentar búsqueda
             </button>
+            {hasSearch && (
+              <button className="text-button" onClick={() => setParams({})}>
+                Limpiar filtros
+              </button>
+            )}
           </div>
-          <div className="search-options">
-            <div className="category-tabs">
-              {[
-                { label: "Todos", icon: Sun, value: "" },
-                { label: "Quintas", icon: TreePine, value: "Quinta" },
-                { label: "Piscinas", icon: Waves, value: "Piscina" },
-                { label: "Casas", icon: House, value: "Casa" },
-                { label: "Quinchos", icon: Flame, value: "Quincho" },
-              ].map(({ label, icon: Icon, value }) => (
-                <button
-                  key={label}
-                  type="button"
-                  className={
-                    (params.get("kind") || "") === value ? "active" : ""
-                  }
-                  onClick={() => {
-                    const next = new URLSearchParams(params);
-                    if (value) next.set("kind", value);
-                    else next.delete("kind");
-                    next.delete("page");
-                    setParams(next);
-                  }}
-                >
-                  <Icon size={19} />
-                  {label}
-                </button>
-              ))}
-            </div>
-            <button
-              type="button"
-              className={`filter-button ${filters ? "active" : ""}`}
-              onClick={() => setFilters(!filters)}
-              aria-expanded={filters}
-            >
-              <SlidersHorizontal size={17} />
-              Filtros
-              {params.get("amenities") && <span className="filter-dot" />}
-            </button>
-          </div>
-          <div className={`advanced-filters ${filters ? "expanded" : ""}`}>
-            <label>
-              Desde
-              <input name="start" type="time" defaultValue="09:00" required />
-            </label>
-            <label>
-              Hasta
-              <input name="end" type="time" defaultValue="17:00" required />
-            </label>
-            <label>
-              Presupuesto total (Gs.)
-              <input
-                name="budget"
-                type="number"
-                min="1000"
-                step="1000"
-                defaultValue={params.get("budget") || ""}
-                placeholder="Sin limite"
-              />
-            </label>
-            <label>
-              Tipo
-              <select name="kind" defaultValue={params.get("kind") || ""}>
-                <option value="">Cualquiera</option>
-                {kinds.map((k) => (
-                  <option key={k}>{k}</option>
-                ))}
-              </select>
-            </label>
-            <fieldset className="amenity-filters">
-              <legend>Lo que no puede faltar</legend>
-              {catalog.data?.amenities.map((a) => (
-                <label key={a.code}>
-                  <input
-                    type="checkbox"
-                    name="amenities"
-                    value={a.code}
-                    defaultChecked={(params.get("amenities") || "")
-                      .split(",")
-                      .includes(a.code)}
-                  />
-                  {a.label}
-                </label>
-              ))}
-            </fieldset>
-          </div>
-        </form>
-      </section>
-      <section className="results-section page-width" id="results">
-        <ErrorMessage error={query.error || catalog.error || error} />
-        {query.isPending ? (
+        ) : query.isPending ? (
           <Loading />
         ) : !hasSearch && !map && items.length > 0 ? (
           <Rail items={items} favorites={saved} onFavorite={favorite} />
@@ -394,7 +313,7 @@ export default function Home() {
           <>
             <div className="section-heading">
               <div>
-                <span className="eyebrow">ENCONTRA TU PROXIMO PLAN</span>
+                <span className="eyebrow">ENCONTRÁ TU PRÓXIMO PLAN</span>
                 <h2>
                   {query.data?.total || 0} espacios
                   {params.get("startsAt") ? " disponibles" : ""}
@@ -406,7 +325,7 @@ export default function Home() {
                     className="text-button"
                     onClick={() => {
                       setParams({});
-                      formRef.current?.reset();
+                      setNotice("");
                     }}
                   >
                     Limpiar filtros
@@ -418,6 +337,7 @@ export default function Home() {
                   onChange={(e) => {
                     const next = new URLSearchParams(params);
                     next.set("sort", e.target.value);
+                    next.delete("page");
                     setParams(next);
                   }}
                 >
@@ -427,14 +347,20 @@ export default function Home() {
                 </select>
               </div>
             </div>
+            {query.data?.searchLimited && (
+              <p className="muted">
+                Mostramos una selección de espacios. Afiná los filtros para
+                encontrar tu plan.
+              </p>
+            )}
             {items.length === 0 && (
               <Empty title="Probemos otro plan.">
                 <p>
-                  Estas opciones pueden funcionar con otra zona, presupuesto o
-                  fecha.
+                  No hay coincidencias exactas. Probá otra zona, presupuesto o
+                  fecha, o guardá tu búsqueda.
                 </p>
                 <button className="secondary" onClick={saveIntent}>
-                  Guardar mi interes
+                  Guardar mi interés
                   <Check size={16} />
                 </button>
                 {notice && <p role="status">{notice}</p>}
@@ -449,6 +375,7 @@ export default function Home() {
                     favorite={saved.has(p.id)}
                     onFavorite={favorite}
                     onHover={setSelected}
+                    selected={map && selected === p.id}
                   />
                 ))}
               </div>
@@ -457,7 +384,17 @@ export default function Home() {
                   <PropertyMap
                     items={items}
                     selected={selected}
-                    onSelect={setSelected}
+                    onSelect={(id) => {
+                      setSelected(id);
+                      resultsRef.current
+                        ?.querySelector(
+                          `[data-property-id="${CSS.escape(id)}"]`,
+                        )
+                        ?.scrollIntoView({
+                          block: "nearest",
+                          behavior: "instant",
+                        });
+                    }}
                   />
                 </Suspense>
               )}
@@ -495,9 +432,13 @@ export default function Home() {
             )}
           </>
         )}
-        {query.data?.alternatives.length > 0 && (
+        {!query.isError && query.data?.alternatives.length > 0 && (
           <div className="alternatives">
             <h3>Otras opciones para tu escapada</h3>
+            <p className="muted">
+              Pueden variar la zona, el presupuesto o los servicios que
+              elegiste.
+            </p>
             <div className="property-grid">
               {query.data.alternatives.map((p) => (
                 <PropertyCard
@@ -510,18 +451,31 @@ export default function Home() {
             </div>
           </div>
         )}
-        {query.data?.otherDates.length > 0 && (
+        {!query.isError && query.data?.otherDates.length > 0 && (
           <div className="alternatives">
             <h3>Para disfrutar en otra fecha</h3>
+            <p className="muted">
+              Estos espacios están ocupados en tu horario. Consultá una nueva
+              fecha.
+            </p>
             <div className="property-grid">
               {query.data.otherDates.map((p) => (
-                <PropertyCard key={p.id} p={p} onFavorite={favorite} />
+                <PropertyCard
+                  key={p.id}
+                  p={p}
+                  favorite={saved.has(p.id)}
+                  onFavorite={favorite}
+                />
               ))}
             </div>
           </div>
         )}
         <div className="map-toggle-row">
-          <button className="map-toggle" onClick={() => setMap(!map)}>
+          <button
+            className="map-toggle"
+            aria-pressed={map}
+            onClick={() => setMap(!map)}
+          >
             {map ? <Grid2X2 size={17} /> : <Map size={17} />}{" "}
             {map ? "Ver espacios" : "Explorar el mapa"}
           </button>
@@ -532,8 +486,8 @@ export default function Home() {
         <div className="page-width">
           <div className="section-heading">
             <div>
-              <span className="eyebrow">EL PLAN TAMBIEN ES EL CAMINO</span>
-              <h2>Un poco mas alla.</h2>
+              <span className="eyebrow">EL PLAN TAMBIÉN ES EL CAMINO</span>
+              <h2>Un poco más allá.</h2>
             </div>
             <span className="muted">Lugares para volver.</span>
           </div>
@@ -541,14 +495,14 @@ export default function Home() {
             {[
               ["San Bernardino", "El lago siempre es un buen plan.", "house"],
               ["Aregua", "Una pausa entre verde y calma.", "garden"],
-              ["Altos", "El aire cambia, vos tambien.", "retreat"],
+              ["Altos", "El aire cambia, vos también.", "retreat"],
             ].map(([city, copy, img]) => (
               <Link
                 key={city}
                 to={`/?city=${encodeURIComponent(city)}`}
                 className="location-tile"
               >
-                <img
+                <Photo
                   src={`/demo/${img}.jpg`}
                   alt={`Imagen ilustrativa para ${city}`}
                   loading="lazy"

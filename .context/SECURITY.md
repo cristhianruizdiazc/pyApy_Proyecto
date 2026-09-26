@@ -1,6 +1,6 @@
 # Seguridad implementada y pendiente
 
-Actualizado: 2026-09-17. Es una revision local, no certificacion de seguridad para produccion.
+Actualizado: 2026-09-19. Es una revision local, no certificacion de seguridad para produccion.
 
 ## Controles implementados
 
@@ -15,6 +15,11 @@ Actualizado: 2026-09-17. Es una revision local, no certificacion de seguridad pa
 - API con rol PostgreSQL no privilegiado; PHP limitado a vista agregada.
 - Sesion nativa en SecureStore; cache privada por usuario, limpieza al cerrar sesion y cola sin confirmacion offline.
 - .env, credenciales demo, dumps, uploads y logs excluidos de Git.
+- CI usa permisos GitHub de solo lectura, `npm ci` y `npm audit --audit-level=moderate`; la base de cada job es efimera y su clave no pertenece a ningun entorno real. No hay despliegue automatico ni secretos de produccion en workflows. Ver [ADR-010](decisions/ADR-010-ci-pipeline.md).
+- UI 02: aislamiento de cotización y guards contra respuestas obsoletas/doble clic. Reintentos manuales con mismo cuerpo/UUID después de resultado ambiguo; precio/estado siguen decidiéndose en servidor.
+- UI 03: consultas privadas identificadas por usuario, datos de llegada solicitados bajo demanda y respuestas tardías descartadas tras cierre/cambio de vista. Error de datos privados no presenta formulario vacío para sobrescribirlos. Cliente sin rol admin sigue obteniendo HTTP 403; moderación y pesos son validados en servidor.
+
+La recuperación web utiliza sessionStorage por usuario/propiedad: conserva UUID, propiedad, intervalo y personas, no tokens ni datos de llegada. Es información de selección accesible al JavaScript del origen, no cifrada. Persiste hasta respuesta concluyente o fin de sesión de pestaña; se conserva ante logout para reconciliar con el mismo usuario. Definir política de retención y validar dispositivos compartidos, sesión expirada y múltiples pestañas antes de lanzamiento. Si el almacenamiento está bloqueado, el reintento solo se conserva en memoria mientras el panel siga abierto.
 
 ## Evidencia
 

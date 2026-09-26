@@ -1,8 +1,8 @@
 import { randomBytes } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { pool, transaction } from "./db.mjs";
-import { config, root } from "./config.mjs";
+import { config } from "./config.mjs";
 import { hashPassword } from "./auth.mjs";
 if (!config.demo || config.production)
   throw new Error(
@@ -145,14 +145,23 @@ try {
           );
       }
     });
-    await mkdir(resolve(root, ".local"), { recursive: true });
-    await writeFile(
-      resolve(root, ".local/demo-accounts.json"),
-      JSON.stringify(credentials, null, 2),
-      { mode: 0o600, flag: "wx" },
-    );
+    const accountsPath =
+      process.env.DEMO_ACCOUNTS_PATH === "none"
+        ? null
+        : resolve(
+            process.env.DEMO_ACCOUNTS_PATH || ".local/demo-accounts.json",
+          );
+    if (accountsPath) {
+      await mkdir(dirname(accountsPath), { recursive: true });
+      await writeFile(accountsPath, JSON.stringify(credentials, null, 2), {
+        mode: 0o600,
+        flag: "wx",
+      });
+    }
     console.log(
-      "6 propiedades ficticias creadas. Credenciales aleatorias en .local/demo-accounts.json (fuera de Git).",
+      accountsPath
+        ? "6 propiedades ficticias creadas. Credenciales aleatorias fuera de Git."
+        : "6 propiedades ficticias creadas sin persistir credenciales.",
     );
   }
 } finally {

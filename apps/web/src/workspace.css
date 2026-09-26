@@ -1,0 +1,610 @@
+/* Account and operational surfaces share the artesanal palette, with quiet work areas. */
+.workspace-page {
+  max-width: 1280px;
+}
+.workspace-page h1 {
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  margin-bottom: 14px;
+}
+.workspace-page .dashboard-heading {
+  margin-bottom: 24px;
+}
+.workspace-page .dashboard-heading h1 {
+  font-size: 34px;
+}
+.workspace-page .dashboard-heading .primary {
+  border-radius: 7px;
+  min-height: 46px;
+}
+.workspace-page .dashboard-heading p {
+  margin-bottom: 8px;
+}
+.account-nav {
+  display: flex;
+  gap: 26px;
+  border-bottom: 1px solid var(--line);
+  margin: 24px 0 32px;
+}
+.account-nav a {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  font-size: 14px;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+}
+.account-nav a.active {
+  color: var(--green);
+  border-bottom-color: var(--green);
+  font-weight: 650;
+}
+.account-welcome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  background: var(--linen);
+  border-radius: 12px 12px 36px 12px;
+  padding: 28px;
+  margin-bottom: 20px;
+}
+.account-welcome h2 {
+  font-size: 25px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.account-welcome p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+.account-welcome .secondary {
+  flex-shrink: 0;
+  background: white;
+}
+.account-profile {
+  margin: 20px 0 36px;
+  font-size: 14px;
+}
+.account-profile summary,
+.activity-detail summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 12px 0;
+  color: var(--green);
+}
+.account-profile p {
+  overflow-wrap: anywhere;
+  margin: 6px 0;
+  color: var(--muted);
+}
+.workspace-tabs {
+  gap: 22px;
+  padding: 4px 3px 0;
+  scrollbar-width: thin;
+}
+.workspace-tabs button {
+  min-height: 48px;
+  font-size: 14px;
+}
+.workspace-panel {
+  min-width: 0;
+}
+.workspace-error {
+  padding: 10px 0 24px;
+}
+.record-toolbar {
+  display: flex;
+  gap: 16px;
+  align-items: end;
+  margin: 0 0 24px;
+}
+.record-toolbar > label {
+  min-width: 0;
+  flex: 0 1 220px;
+  font-size: 12px;
+}
+.record-toolbar .record-search {
+  flex: 1;
+  max-width: 520px;
+}
+.record-search > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.record-toolbar input,
+.record-toolbar select {
+  border-radius: 7px;
+  background: white;
+}
+.record-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 0;
+}
+.record-footer p {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0;
+}
+.record-footer .secondary {
+  flex-shrink: 0;
+}
+.view-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 24px;
+}
+.view-switch button {
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 10px 16px;
+  min-height: 44px;
+  border-radius: 24px;
+  font-size: 13px;
+}
+.view-switch button[aria-pressed="true"] {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+.workspace-page .metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  border: 0;
+  padding: 0;
+  margin: 22px 0;
+}
+.workspace-page .metrics-strip > div {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 22px;
+  background: white;
+}
+.workspace-page .metrics-strip span {
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+.workspace-page .metrics-strip strong {
+  font-size: 26px;
+}
+.activity-detail {
+  margin: -5px 0 26px;
+}
+.activity-detail p {
+  font-size: 14px;
+  color: var(--muted);
+}
+.activity-detail svg {
+  vertical-align: middle;
+}
+.overview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  margin-bottom: 36px;
+}
+.workspace-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 24px;
+  background: var(--linen);
+}
+.workspace-card h2 {
+  font-size: 20px;
+}
+.workspace-card p {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 0;
+}
+.overview-amount {
+  font-size: 25px;
+  color: var(--green);
+  overflow-wrap: anywhere;
+}
+.workspace-page .reservations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.workspace-page .reservation-row {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+  padding: 22px;
+  gap: 22px;
+  align-items: start;
+}
+.workspace-page .reservation-date {
+  min-width: 60px;
+  padding-top: 4px;
+}
+.workspace-page .reservation-main h2 {
+  font-size: 18px;
+}
+.workspace-page .reservation-main p {
+  font-size: 13px;
+  line-height: 1.7;
+}
+.reservation-details {
+  margin-top: 10px;
+  font-size: 13px;
+}
+.reservation-details summary {
+  cursor: pointer;
+  color: var(--green);
+  padding: 10px 0;
+  min-height: 44px;
+}
+.reservation-details dl {
+  display: grid;
+  gap: 12px;
+  margin: 12px 0;
+}
+.reservation-details dt {
+  color: var(--muted);
+  font-size: 12px;
+}
+.reservation-details dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+.workspace-page .reservation-status {
+  flex-shrink: 0;
+  min-width: 130px;
+  font-size: 15px;
+}
+.workspace-page .reservation-status small {
+  font-size: 12px;
+}
+.workspace-page .row-actions {
+  flex-wrap: wrap;
+  align-items: center;
+}
+.compact {
+  padding: 9px 12px;
+  min-height: 44px;
+  font-size: 13px;
+}
+.workspace-page .notification {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 22px;
+  margin-bottom: 12px;
+  background: white;
+}
+.workspace-page .notification p {
+  overflow-wrap: anywhere;
+}
+.workspace-page .owner-property-row {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) auto auto;
+  border: 1px solid var(--line);
+  padding: 18px;
+  border-radius: 12px;
+  gap: 20px;
+  background: white;
+  margin-bottom: 14px;
+}
+.workspace-page .owner-property-row > img,
+.workspace-page .owner-property-row > .photo-placeholder {
+  width: 110px;
+  height: 95px;
+  min-height: 0;
+  border-radius: 8px;
+}
+.workspace-page .owner-property-row h2 {
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+.workspace-page .owner-property-row > strong {
+  margin: 0;
+}
+.workspace-page .badge {
+  font-size: 11px;
+}
+.workspace-page .data-table {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: white;
+}
+.workspace-page .data-table table {
+  font-size: 14px;
+  min-width: 580px;
+}
+.workspace-page .data-table[aria-label="Demanda registrada"] table {
+  min-width: 0;
+}
+.workspace-page th,
+.workspace-page td {
+  padding: 16px;
+}
+.workspace-page th {
+  color: var(--green);
+  background: var(--linen);
+}
+.cell-secondary {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 5px;
+}
+.audit-details {
+  font-size: 13px;
+}
+.audit-details summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 12px 0;
+  color: var(--green);
+}
+.audit-details code {
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+.form-section {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 0 0 22px;
+  min-width: 0;
+}
+.form-section legend {
+  color: var(--green);
+  font-size: 15px;
+  font-weight: 650;
+  padding: 0 8px;
+}
+.form-section > label,
+.form-section > .form-row {
+  margin-bottom: 18px;
+}
+.form-section input,
+.form-section select,
+.form-section textarea {
+  min-width: 0;
+}
+.social-links {
+  padding-left: 20px;
+  color: var(--green);
+}
+.workspace-page .calendar-toolbar {
+  flex-wrap: wrap;
+}
+.workspace-page .calendar-toolbar h2 {
+  min-width: 150px;
+}
+.workspace-page .calendar-grid {
+  border-radius: 10px;
+  overflow: hidden;
+}
+.workspace-page .weekday {
+  font-size: 12px;
+}
+.workspace-page .day {
+  height: 118px;
+}
+.workspace-page .day.selected {
+  background: var(--linen);
+  box-shadow: inset 0 0 0 2px var(--green);
+}
+.workspace-page .calendar-event {
+  font-size: 11px;
+}
+.calendar-event-count {
+  display: none;
+}
+.day-agenda {
+  margin-top: 30px;
+  padding: 24px;
+  background: var(--linen);
+  border-radius: 12px;
+}
+.day-agenda .section-heading {
+  align-items: center;
+  margin-bottom: 16px;
+}
+.day-agenda h3 {
+  margin: 6px 0 0;
+}
+.day-agenda .reservation-row {
+  flex-wrap: wrap;
+}
+.day-agenda .muted {
+  margin-bottom: 0;
+}
+.workspace-page .plan {
+  background: white;
+  border-radius: 10px 10px 26px 10px;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+@media (max-width: 1000px) {
+  .workspace-page .reservation-row {
+    flex-wrap: wrap;
+  }
+  .workspace-page .reservation-main {
+    flex-basis: calc(100% - 100px);
+  }
+  .workspace-page .reservation-status {
+    align-items: start;
+    padding: 0;
+    margin-left: 82px;
+    flex: 1;
+  }
+  .workspace-page .owner-property-row {
+    grid-template-columns: 95px minmax(0, 1fr) auto;
+  }
+  .workspace-page .owner-property-row > img,
+  .workspace-page .owner-property-row > .photo-placeholder {
+    width: 95px;
+  }
+  .workspace-page .owner-property-row > strong {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .workspace-page .owner-property-row .row-actions {
+    grid-column: 3;
+    grid-row: 1 / 3;
+  }
+}
+@media (max-width: 600px) {
+  .workspace-page .dashboard-heading {
+    flex-wrap: wrap;
+    align-items: start;
+  }
+  .workspace-page .dashboard-heading h1 {
+    font-size: 30px;
+  }
+  .workspace-page .dashboard-heading > .primary {
+    max-width: none;
+    font-size: 14px;
+  }
+  .account-nav {
+    gap: 22px;
+  }
+  .account-nav a {
+    font-size: 13px;
+  }
+  .account-welcome {
+    flex-direction: column;
+    align-items: start;
+    padding: 22px;
+  }
+  .account-welcome h2 {
+    font-size: 23px;
+  }
+  .record-toolbar {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .record-toolbar .record-search {
+    flex-basis: 100%;
+    max-width: none;
+  }
+  .record-toolbar > label {
+    flex: 1 1 100%;
+  }
+  .record-toolbar input,
+  .record-toolbar select {
+    font-size: 16px;
+  }
+  .record-footer {
+    flex-wrap: wrap;
+  }
+  .workspace-page .metrics-strip {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  .workspace-page .metrics-strip > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 16px;
+  }
+  .workspace-page .metrics-strip span {
+    margin: 0;
+  }
+  .workspace-page .metrics-strip strong {
+    font-size: 21px;
+    text-align: right;
+  }
+  .overview-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .workspace-page .reservation-row {
+    gap: 14px;
+    padding: 18px;
+  }
+  .workspace-page .reservation-main {
+    flex-basis: calc(100% - 74px);
+  }
+  .workspace-page .reservation-status {
+    margin-left: 0;
+    font-size: 14px;
+  }
+  .workspace-page .reservation-date {
+    min-width: 50px;
+    font-size: 13px;
+  }
+  .workspace-page .owner-property-row {
+    grid-template-columns: 70px minmax(0, 1fr);
+    gap: 14px;
+    padding: 15px;
+  }
+  .workspace-page .owner-property-row > img,
+  .workspace-page .owner-property-row > .photo-placeholder {
+    width: 70px;
+    height: 80px;
+  }
+  .workspace-page .owner-property-row .row-actions {
+    grid-column: 2;
+    grid-row: 3;
+    margin: 0;
+  }
+  .workspace-page .calendar-toolbar select {
+    width: 100%;
+  }
+  .workspace-page .weekday {
+    padding: 10px 2px;
+  }
+  .workspace-page .day {
+    height: 68px;
+    padding: 7px;
+  }
+  .workspace-page .day > strong {
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+  .workspace-page .day .calendar-event,
+  .workspace-page .day > small {
+    display: none;
+  }
+  .calendar-event-count {
+    display: inline-grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--green);
+    color: white;
+    font-size: 11px;
+  }
+  .day-agenda {
+    padding: 18px;
+  }
+  .day-agenda .section-heading {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  .day-agenda .reservation-date {
+    display: none;
+  }
+  .day-agenda .reservation-main {
+    flex-basis: 100%;
+  }
+  .form-section {
+    padding: 16px;
+  }
+  .form-section .form-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

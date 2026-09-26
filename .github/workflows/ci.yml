@@ -1,18 +1,34 @@
-name: pyApy checks
-on: [push, pull_request]
+name: pyApy CI
+
+run-name: CI ${{ github.event_name }} - ${{ github.ref_name }}
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
 permissions:
   contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   verify:
+    name: Quality, unit and build gates
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     services:
       postgres:
         image: postgres:16.15-alpine
         env:
           POSTGRES_DB: pyapy_ci
           POSTGRES_USER: pyapy_ci
+          # Deliberately ephemeral test-only credential; never reused outside this runner.
           POSTGRES_PASSWORD: ci_ephemeral_only
-        ports: ["5432:5432"]
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd "pg_isready -U pyapy_ci -d pyapy_ci"
           --health-interval 5s --health-timeout 5s --health-retries 10
@@ -27,26 +43,75 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - run: npm ci
-      - run: npm run lint
-      - run: npm test
-      - run: npm run build
-      - run: npm audit --audit-level=moderate
-      - run: npx expo install --check
-        working-directory: apps/mobile
-      - run: npx expo export --platform android --platform ios
-        working-directory: apps/mobile
-      - run: npm run db:migrate
-      - run: npm run db:seed
-      - run: npx playwright install --with-deps chromium
-      - run: node scripts/dev.mjs > .local/dev.log 2>&1 &
-      - run: node scripts/wait-ready.mjs
-      - run: npm run test:e2e
-      - run: node scripts/prepare-compose.mjs
-      - run: docker compose --env-file .local/compose.env config --quiet
-      - run: docker compose --env-file .local/compose.env build
-      - uses: actions/upload-artifact@v4
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Audit dependency advisories
+        run: npm audit --audit-level=moderate
+      - name: Lint
+        run: npm run lint
+      - name: Unit and API integration tests
+        run: npm test
+      - name: Build web
+        run: npm run build
+      - name: Check mobile dependency compatibility
+        run: npm run mobile:check
+      - name: Export mobile bundles
+        run: npm run mobile:export
+      - name: Prepare isolated Compose variables
+        run: node scripts/prepare-compose.mjs
+      - name: Validate hardened container configuration
+        run: npm run containers:verify
+      - name: Build runtime container images
+        run: docker compose --env-file .local/compose.env build
+
+  e2e:
+    name: Browser integration gates
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    services:
+      postgres:
+        image: postgres:16.15-alpine
+        env:
+          POSTGRES_DB: pyapy_ci
+          POSTGRES_USER: pyapy_ci
+          POSTGRES_PASSWORD: ci_ephemeral_only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U pyapy_ci -d pyapy_ci"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://pyapy_ci:ci_ephemeral_only@127.0.0.1:5432/pyapy_ci
+      NODE_ENV: development
+      DEMO_MODE: "true"
+      WEB_ORIGIN: http://127.0.0.1:5173
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Apply migrations and seed CI demo data
+        run: |
+          npm run db:migrate
+          npm run db:seed
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+      - name: Start API and web
+        run: node scripts/dev.mjs > .local/dev.log 2>&1 &
+      - name: Wait for services
+        run: node scripts/wait-ready.mjs
+      - name: Run end-to-end tests
+        run: npm run test:e2e
+      - name: Upload failure diagnostics
         if: failure()
+        uses: actions/upload-artifact@v4
         with:
           name: verification-failures
-          path: test-results/
+          if-no-files-found: ignore
+          path: |
+            .local/dev.log
+            test-results/

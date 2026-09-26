@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none" stroke="#a87554" stroke-width=".8">
+  <defs>
+    <g id="thread">
+      <path d="M120 120 105 31Q120 8 135 31Z M120 120 109 49Q120 32 131 49Z M120 120 113 68Q120 55 127 68Z"/>
+      <path d="M120 120V22M107 41h26M110 55h20M113 71h14M115 85h10"/>
+    </g>
+  </defs>
+  <circle cx="120" cy="120" r="99"/>
+  <circle cx="120" cy="120" r="94"/>
+  <circle cx="120" cy="120" r="73"/>
+  <circle cx="120" cy="120" r="50"/>
+  <use href="#thread"/><use href="#thread" transform="rotate(30 120 120)"/>
+  <use href="#thread" transform="rotate(60 120 120)"/><use href="#thread" transform="rotate(90 120 120)"/>
+  <use href="#thread" transform="rotate(120 120 120)"/><use href="#thread" transform="rotate(150 120 120)"/>
+  <use href="#thread" transform="rotate(180 120 120)"/><use href="#thread" transform="rotate(210 120 120)"/>
+  <use href="#thread" transform="rotate(240 120 120)"/><use href="#thread" transform="rotate(270 120 120)"/>
+  <use href="#thread" transform="rotate(300 120 120)"/><use href="#thread" transform="rotate(330 120 120)"/>
+  <circle cx="120" cy="120" r="11" fill="#f5f0e6"/>
+  <circle cx="120" cy="120" r="6"/>
+</svg>

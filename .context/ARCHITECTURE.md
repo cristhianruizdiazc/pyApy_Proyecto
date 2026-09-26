@@ -1,10 +1,16 @@
 # Arquitectura implementada
 
-Actualizado: 2026-09-17. Decisiones base: [ADR-001](decisions/ADR-001-foundation.md), [ADR-002](decisions/ADR-002-security-bookings-offline.md).
+Actualizado: 2026-09-19. Decisiones base: [ADR-001](decisions/ADR-001-foundation.md), [ADR-002](decisions/ADR-002-security-bookings-offline.md), [ADR-003](decisions/ADR-003-legacy-ui-integration.md).
 
 ## Componentes
 
 Web React 19/Vite consume `/api/v1` mediante cliente compartido y TanStack Query. Rutas de paneles y mapas se cargan bajo demanda. Leaflet usa OpenStreetMap con atribucion y coordenadas publicas aproximadas.
+
+Integración UI 01: `SearchForm.jsx` mantiene el borrador de búsqueda, reconstruido desde URL, y utiliza los esquemas/fechas compartidos. `Home.jsx` mantiene consultas, favoritos y coordinación mapa/lista. `marketplace.css` se carga después del CSS base para identidad y experiencia pública; SVG locales en `public/brand`. El legado Firebase/Firestore es referencia de UX, no parte del runtime de la aplicación vigente. Ver informe de [integración](phases/integration-ui-01.md).
+
+UI 02: `Detail.jsx` compone ficha, `PropertyGallery.jsx` y `BookingPanel.jsx`, con CSS diferido propio. `booking-selection.js` traslada fecha/horario/personas desde catálogo/mapa y autenticación. Consultas de precio cancelables/revisionadas; intentos de escritura con UUID estable y recuperación manual mediante sessionStorage por usuario/propiedad. No es cola offline ni garantía de precio reservado. Decisión y límites: [ADR-004](decisions/ADR-004-booking-ui-state.md).
+
+UI 03: `Workspace.jsx` comparte pestañas accesibles, estados de consulta y listas filtradas sobre datos cargados; `Reservations.jsx` comparte filas/orden/filtros entre cliente y propietario. `workspace.css` acompaña las rutas diferidas. Owner/Admin sincronizan sección con URL, sus consultas privadas incluyen usuario y se habilitan según sección. La llegada privada de cuenta se solicita bajo demanda con cancelación/revisión de respuesta. No se agregan endpoints ni paginación server-side. [ADR-005](decisions/ADR-005-workspace-ui.md).
 
 React Native/Expo 57 consume la misma API por bearer. Sesion en SecureStore; catalogo, registros propios y cola en AsyncStorage por usuario. NetInfo activa reintentos; una operacion offline no confirma disponibilidad ni precio. El servidor decide al sincronizar.
 

@@ -2,6 +2,12 @@
 
 Version local 0.1.0, 2026-09-17. Este documento diferencia procedimientos locales probados de preparacion de produccion.
 
+## Entornos Compose
+
+`node scripts/prepare-compose.mjs` crea solo `.local/compose.env` de desarrollo y no lo sobrescribe. Para validar sin motor: `npm run containers:verify`; en Windows usa el Compose verificado de `.local/tools` si no se indica `COMPOSE_BIN`. Desarrollo puede sembrar datos unicamente con `DEMO_MODE=true` y `SEED_DEMO=true`.
+
+El perfil `test` se ejecuta con `docker compose --env-file .local/compose.env --profile test run --rm test`; no publica PostgreSQL, crea bases temporales y usa uploads efimeros. Para staging/produccion, partir de `docker/compose.production.env.example` fuera del repo, gestionar secretos, usar HTTPS y desactivar demo/seed. Ver [Fase 19](phases/phase-19-docker.md).
+
 ## Configuracion
 
 `DATABASE_URL`: identidad runtime limitada. `DATABASE_ADMIN_URL`: migraciones/backup locales; nunca disponible para navegadores ni app nativa. `REPORT_DATABASE_URL`: reporte agregado. `NODE_ENV`, `HOST`, `PORT`, `WEB_ORIGIN`, `DEMO_MODE`, `UPLOAD_DIR` y `TRUST_PROXY`: validados por config.mjs.
@@ -13,6 +19,14 @@ La API rechaza demo en produccion y un origen de produccion sin HTTPS. No hay va
 `npm run setup`, luego `npm run dev`. GET /api/health verifica PostgreSQL. Logs del arranque en segundo plano: .local/dev.out.log y .local/dev.err.log. PIDs/puertos en .local/dev.json. PostgreSQL: .local/postgres.log.
 
 No hay servicio Windows ni inicio automatico al reiniciar el equipo. No detener procesos ajenos ni borrar .local para arreglar un problema. Los puertos pueden cambiar si estan ocupados.
+
+## E2E con procesos aislados
+
+Desde raíz: `node scripts/verify-web-integration.mjs`. Requiere instalación local preparada, PostgreSQL en marcha, datos/cuentas demo y Chromium de Playwright. Crea procesos propios API/Vite en puertos libres, espera respuesta, ejecuta Playwright y termina únicamente sus procesos. No modifica `.local/dev.json`; la web habitual conserva su URL.
+
+Comparte la base local de demo, por lo que las pruebas dejan cuentas/eventos/reservas auditables. No es aislamiento de datos ni runner de producción. Los fixtures nuevos cancelan sus ocupaciones y despublican sus propiedades. Para un subconjunto: `node scripts/verify-web-integration.mjs tests/e2e/detail-reservation.spec.js --grep "respuesta"`.
+
+`npm run test:e2e` sigue disponible contra la instancia indicada por `WEB_URL` o `.local/dev.json`. Repetir autenticaciones contra un proceso compartido puede alcanzar HTTP 429: respetar la ventana (30 intentos/15 minutos), no quitar el rate limiting. El runner temporal permite una ejecución reproducible sin consumir el contador de la API usada manualmente.
 
 ## Backup local probado
 
@@ -33,7 +47,7 @@ Ese procedimiento todavia no se ejecuto con contenedores ni una infraestructura 
 
 ## Despliegue y rollback pendiente
 
-CI definido hace install/lint/test/build/audit/export/E2E y build Docker; no despliega. No hay repositorio remoto ni credenciales configurados. Antes de liberar, fijar imagenes verificadas y migraciones compatibles, ejecutar staging y guardar un backup consistente. Rollback de aplicacion solo es seguro si el esquema sigue siendo compatible; una migracion destructiva necesita plan propio, no revertir SQL ciegamente.
+CI configurado hace install/lint/test/build/audit/export/E2E y build Docker; no despliega. El remoto GitHub existe, pero la primera ejecucion del workflow aun no esta confirmada y no hay credenciales ni proveedor de despliegue configurados. Antes de liberar, fijar imagenes verificadas y migraciones compatibles, ejecutar staging y guardar un backup consistente. Rollback de aplicacion solo es seguro si el esquema sigue siendo compatible; una migracion destructiva necesita plan propio, no revertir SQL ciegamente. Ver [Fase 20](phases/phase-20-cicd.md).
 
 TLS termina en infraestructura aun no configurada. TRUST_PROXY=1 solo es correcto con un proxy confiable y API no expuesta directamente. Rate limiting en memoria requiere almacen compartido al escalar.
 

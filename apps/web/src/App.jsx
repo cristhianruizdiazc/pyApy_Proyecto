@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useId, useRef, useState } from "react";
 import {
   Link,
   NavLink,
@@ -59,22 +59,22 @@ function Auth() {
         <img src="/demo/pool.jpg" alt="Piscina al aire libre" />
         <div>
           <span className="eyebrow">UN RATITO PARA VOS</span>
-          <h1>
+          <p className="auth-visual-title">
             Nos vemos
             <br />
             afuera.
-          </h1>
+          </p>
         </div>
       </div>
       <section className="auth-form">
         <Link to="/" className="brand">
           pyApy<span>↗</span>
         </Link>
-        <h2>
+        <h1>
           {register
             ? "Tu proxima escapada empieza aca."
             : "Que bueno verte de nuevo."}
-        </h2>
+        </h1>
         <div className="segmented">
           <button
             className={!register ? "active" : ""}
@@ -134,26 +134,65 @@ function Auth() {
 }
 function Header({ user }) {
   const [open, setOpen] = useState(false);
+  const [logoutPending, setLogoutPending] = useState(false);
+  const [logoutError, setLogoutError] = useState(null);
+  const menuButtonRef = useRef(null);
+  const menuId = useId();
   const location = useLocation();
   const client = useQueryClient();
   const nav = useNavigate();
-  useEffect(() => setOpen(false), [location.pathname]);
+  useEffect(() => setOpen(false), [location.pathname, location.search]);
+  useEffect(() => {
+    if (!open) return;
+    function handleKeyDown(event) {
+      if (event.key !== "Escape" || event.defaultPrevented) return;
+      event.preventDefault();
+      setOpen(false);
+      menuButtonRef.current?.focus();
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [open]);
   async function logout() {
-    await api("/auth/logout", { method: "POST", body: {} });
-    setCsrf(null);
-    client.clear();
-    nav("/");
+    if (logoutPending) return;
+    setLogoutPending(true);
+    setLogoutError(null);
+    try {
+      await api("/auth/logout", { method: "POST", body: {} });
+      setCsrf(null);
+      client.clear();
+      setOpen(false);
+      nav("/");
+    } catch (err) {
+      setLogoutError(
+        err instanceof Error
+          ? err
+          : new Error("No pudimos cerrar sesión. Intentá de nuevo."),
+      );
+    } finally {
+      setLogoutPending(false);
+    }
   }
   return (
     <header className="site-header">
       <Link className="brand" to="/">
         pyApy<span>↗</span>
       </Link>
-      <nav aria-label="Navegacion principal" className={open ? "open" : ""}>
+      <nav
+        id={menuId}
+        aria-label="Navegación principal"
+        className={open ? "open" : ""}
+      >
         <NavLink to="/" end>
           <Compass size={16} />
           Explorar
         </NavLink>
+        <Link
+          className="mobile-host-link"
+          to={user ? "/propietario" : "/ingresar"}
+        >
+          Publicar mi espacio <ArrowUpRight size={16} />
+        </Link>
         {user && (
           <>
             <NavLink to="/favoritos">
@@ -186,13 +225,21 @@ function Header({ user }) {
         </Link>
         {user ? (
           <>
-            <Link className="avatar" to="/cuenta" title={user.name}>
+            <Link
+              className="avatar"
+              to="/cuenta"
+              title={user.name}
+              aria-label={`Mi cuenta: ${user.name}`}
+            >
               {user.name.slice(0, 1).toUpperCase()}
             </Link>
             <button
+              type="button"
               className="icon-button logout"
-              title="Cerrar sesion"
-              aria-label="Cerrar sesion"
+              title={logoutPending ? "Cerrando sesión…" : "Cerrar sesión"}
+              aria-label={logoutPending ? "Cerrando sesión…" : "Cerrar sesión"}
+              aria-busy={logoutPending}
+              disabled={logoutPending}
               onClick={logout}
             >
               <LogOut size={18} />
@@ -204,14 +251,26 @@ function Header({ user }) {
           </Link>
         )}
         <button
+          ref={menuButtonRef}
+          type="button"
           className="icon-button mobile-menu"
-          aria-label={open ? "Cerrar menu" : "Abrir menu"}
-          onClick={() => setOpen(!open)}
+          aria-label={open ? "Cerrar menú" : "Abrir menú"}
+          aria-expanded={open}
+          aria-controls={menuId}
+          onClick={() => setOpen((value) => !value)}
         >
           {open ? <X /> : <Menu />}
         </button>
       </div>
+      <ErrorMessage error={logoutError} />
     </header>
+  );
+}
+function DetailRouteLoading() {
+  return (
+    <main className="page detail-route-loading" aria-busy="true">
+      <Loading />
+    </main>
   );
 }
 export default function App() {
@@ -236,7 +295,15 @@ export default function App() {
       {location.pathname !== "/ingresar" && <Header user={user} />}
       <div id="main">
         <ErrorMessage error={session.error} />
-        <Suspense fallback={<Loading />}>
+        <Suspense
+          fallback={
+            location.pathname.startsWith("/espacios/") ? (
+              <DetailRouteLoading />
+            ) : (
+              <Loading />
+            )
+          }
+        >
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/ingresar" element={<Auth />} />
@@ -258,12 +325,12 @@ export default function App() {
           </Routes>
         </Suspense>
       </div>
-      <footer>
+      <footer className="site-footer">
         <Link className="brand" to="/">
           pyApy<span>↗</span>
         </Link>
         <p>Un lugar. Tu gente. Un buen plan.</p>
-        <span>Hecho para descubrir Paraguay.</span>
+        <span>Inspirados en los hilos del encaje ju y el ñandutí.</span>
       </footer>
     </SessionContext.Provider>
   );

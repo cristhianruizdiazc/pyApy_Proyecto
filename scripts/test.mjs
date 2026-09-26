@@ -7,7 +7,10 @@ if (config.production)
   throw new Error("No ejecutar pruebas de desarrollo contra produccion.");
 const adminUrl = process.env.DATABASE_ADMIN_URL || config.DATABASE_URL;
 const url = new URL(adminUrl);
-if (!["127.0.0.1", "localhost"].includes(url.hostname))
+if (
+  !["127.0.0.1", "localhost"].includes(url.hostname) &&
+  !(process.env.PYAPY_CONTAINER_TEST === "true" && url.hostname === "db")
+)
   throw new Error("El runner automatico requiere PostgreSQL local aislado.");
 const database = `pyapy_test_${randomBytes(6).toString("hex")}`;
 const admin = new pg.Client({ connectionString: adminUrl });
@@ -36,7 +39,7 @@ try {
     DATABASE_ADMIN_URL: url.toString(),
     NODE_ENV: "test",
     DEMO_MODE: "false",
-    UPLOAD_DIR: ".local/test-uploads",
+    UPLOAD_DIR: process.env.TEST_UPLOAD_DIR || ".local/test-uploads",
   };
   await run(["apps/api/src/migrate.mjs"], env);
   const files = (await readdir("tests"))
