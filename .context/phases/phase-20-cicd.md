@@ -22,6 +22,9 @@ No se implemento un deploy: no hay proveedor, entorno staging, secretos administ
 - En el cierre del 2026-09-26, `npm run mobile:check` detecto como error la incompatibilidad de `expo` 57.0.23 con la version esperada `~57.0.25`. Se actualizo la dependencia y el lockfile; la comprobacion paso y el export Android/iOS completo.
 - `npm ci` reinstalo 766 paquetes exclusivamente desde el lockfile actualizado y `npm audit --audit-level=moderate` informo cero vulnerabilidades.
 - La primera ejecucion de `npm run check` del cierre fallo porque PostgreSQL local estaba detenido (`ECONNREFUSED 127.0.0.1:55432`). Tras iniciar el cluster aislado con `npm run db:local`, lint, 23 pruebas y build web pasaron. No se atribuye ese fallo de entorno al codigo.
+- La primera corrida remota (`36255276776`, commit `c021c83`) aprobo por completo `verify`, incluido el build Docker real en Linux. E2E obtuvo 41 aprobadas, una omitida y dos fallos del mismo escenario: la simulacion solo abortaba JPG y las fuentes WebP nuevas seguian cargando. Se amplio la regresion para interceptar JPG/JPEG/WebP en ambos viewports.
+- La regresion focalizada corregida paso localmente en desktop y mobile (2/2) sobre una instancia aislada de API, Vite y PostgreSQL.
+- Las advertencias del runner sobre runtimes Node 20 de las acciones se corrigieron con `actions/checkout@v5`, `actions/setup-node@v5` y `actions/upload-artifact@v6`, versiones Node 24 compatibles con el runner hospedado.
 - GitHub Actions no puede ejecutarse desde este entorno sin enviar cambios al remoto, accion que no se realiza en esta fase. La E2E remota queda pendiente de la primera corrida.
 
 ## Pendientes

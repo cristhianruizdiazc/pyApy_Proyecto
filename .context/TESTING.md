@@ -7,6 +7,10 @@
 - `npm audit --audit-level=moderate`: cero vulnerabilidades. `npm run containers:verify`: configuracion dev/test/prod, secretos externos y hardening declarados aprobados.
 - `npm run mobile:check` detecto que Expo 57.0.23 no cumplia la version compatible `~57.0.25`; se actualizo `apps/mobile/package.json` y `package-lock.json`. La repeticion paso y `npm run mobile:export` genero bundles Android/iOS.
 - `npm ci` posterior reinstalo 766 paquetes desde el lockfile y termino con cero vulnerabilidades. La ejecucion remota se documentara al concluir.
+- Primera corrida GitHub Actions `36255276776` sobre `c021c83`: `verify` aprobado, incluido build real de imagenes Docker en Linux. E2E: 41 aprobadas, una omitida y dos fallos (desktop/mobile) en la misma prueba de imagen rota.
+- Causa del fallo remoto: la prueba abortaba `*.jpg`, pero el navegador elegia las variantes WebP responsivas. La aplicacion funcionaba; el escenario ya no simulaba el fallo completo. Se cambio la intercepcion para JPG/JPEG/WebP y se prepara una segunda corrida.
+- `node scripts/verify-web-integration.mjs tests/e2e/marketplace-integration.spec.js --grep "imagen fallida"`: 2/2 aprobadas, desktop y mobile, despues de la correccion.
+- El runner advirtio que `checkout@v4`, `setup-node@v4` y `upload-artifact@v4` usaban runtime Node 20. Se actualizaron a las versiones compatibles con Node 24 (`v5`, `v5`, `v6`).
 
 ## Fase 20 CI/CD - 2026-09-25
 

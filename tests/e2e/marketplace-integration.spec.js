@@ -80,7 +80,9 @@ test("fallo de búsqueda ofrece reintentar y no se presenta como catálogo vací
 test("imagen fallida conserva tarjeta accesible y enlace de detalle", async ({
   page,
 }) => {
-  await page.route("**/demo/*.jpg", (route) => route.abort());
+  await page.route(/\/demo\/[^/?]+\.(?:jpe?g|webp)(?:\?.*)?$/, (route) =>
+    route.abort(),
+  );
   await page.goto("/?city=Aregua");
   const card = page.locator(".property-card").first();
   await expect(

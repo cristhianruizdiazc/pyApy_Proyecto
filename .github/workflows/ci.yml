@@ -38,8 +38,8 @@ jobs:
       DEMO_MODE: "true"
       WEB_ORIGIN: http://127.0.0.1:5173
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: npm
@@ -87,8 +87,8 @@ jobs:
       DEMO_MODE: "true"
       WEB_ORIGIN: http://127.0.0.1:5173
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: npm
@@ -108,7 +108,7 @@ jobs:
         run: npm run test:e2e
       - name: Upload failure diagnostics
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: verification-failures
           if-no-files-found: ignore
