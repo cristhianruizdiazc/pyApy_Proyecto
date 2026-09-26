@@ -1,5 +1,11 @@
 # Evidencias de verificacion
 
+## Fase 21 Documentacion - 2026-09-26
+
+- Enlaces locales revisados en README, guias `docs/` y 10 documentos de contexto: 13 documentos, cero enlaces rotos.
+- Prettier aprobo README, ambas guias y los documentos Markdown modificados; `git diff --check` no encontro whitespace invalido.
+- `npm run check`: lint aprobado, 23/23 pruebas aprobadas y build Vite exitoso. No se ejecutaron runtime Docker, dispositivos nativos, carga, staging ni despliegue.
+
 ## Cierre Fase 20 CI/CD - 2026-09-26
 
 - Primera ejecucion local de `npm run check`: fallo antes de las pruebas por PostgreSQL local detenido (`ECONNREFUSED 127.0.0.1:55432`). Se inicio el cluster aislado con `npm run db:local` y se repitio el gate.
@@ -113,21 +119,21 @@ Fecha: 2026-09-17. Windows/PowerShell, C:\pyApy_Proyecto. Las pruebas no constit
 
 ## Ejecutado
 
-| Comprobacion | Resultado |
-| --- | --- |
-| npm run setup repetido | Migraciones vigentes, permisos reaplicados, fixtures sin duplicar |
-| npm run lint | Exit 0, sin advertencias |
-| npm test | 23 aprobadas, cero fallos, base temporal real PostgreSQL |
-| npm run build | Exit 0, Vite 8.3; entrada JS 246.03 kB / gzip 77.08 kB |
-| npm run test:e2e | Seis aprobadas: escritorio 1440x1000 y mobile 390x844 |
-| npm audit --audit-level=moderate | Cero vulnerabilidades reportadas |
-| expo install --check | Dependencias compatibles tras ajustar AsyncStorage |
-| expo-doctor | 21 de 21 comprobaciones aprobadas |
-| expo export Android/iOS | Bundles generados; no equivale a instalar una app nativa |
-| scripts/verify-permissions.mjs | API no superusuario; auditoria/migraciones protegidas; reporte sin acceso a usuarios |
-| npm run report | PHP 8.5/PDO consulto correctamente vista agregada |
-| npm run db:verify-restore | Backup restaurado, conteos y constraint GiST conservados |
-| Compose config --quiet | Configuracion valida; no hay motor para ejecutar contenedores |
+| Comprobacion                     | Resultado                                                                            |
+| -------------------------------- | ------------------------------------------------------------------------------------ |
+| npm run setup repetido           | Migraciones vigentes, permisos reaplicados, fixtures sin duplicar                    |
+| npm run lint                     | Exit 0, sin advertencias                                                             |
+| npm test                         | 23 aprobadas, cero fallos, base temporal real PostgreSQL                             |
+| npm run build                    | Exit 0, Vite 8.3; entrada JS 246.03 kB / gzip 77.08 kB                               |
+| npm run test:e2e                 | Seis aprobadas: escritorio 1440x1000 y mobile 390x844                                |
+| npm audit --audit-level=moderate | Cero vulnerabilidades reportadas                                                     |
+| expo install --check             | Dependencias compatibles tras ajustar AsyncStorage                                   |
+| expo-doctor                      | 21 de 21 comprobaciones aprobadas                                                    |
+| expo export Android/iOS          | Bundles generados; no equivale a instalar una app nativa                             |
+| scripts/verify-permissions.mjs   | API no superusuario; auditoria/migraciones protegidas; reporte sin acceso a usuarios |
+| npm run report                   | PHP 8.5/PDO consulto correctamente vista agregada                                    |
+| npm run db:verify-restore        | Backup restaurado, conteos y constraint GiST conservados                             |
+| Compose config --quiet           | Configuracion valida; no hay motor para ejecutar contenedores                        |
 
 Las medidas de bundle son de compilacion, no Lighthouse ni latencia de usuarios.
 

@@ -1,5 +1,7 @@
 # API REST implementada
 
+Actualizado: 2026-09-26. Esta es la referencia de contratos vigente para web y mobile; no hay especificacion OpenAPI generada todavia.
+
 Base: `/api/v1`. Salud: `GET /api/health`. Configuracion en apps/api/src/config.mjs. Contratos exactos en packages/contracts/index.mjs y validadores junto a cada ruta; no hay OpenAPI generado todavia.
 
 ## Sesion y errores
@@ -12,20 +14,20 @@ Errores JSON con code y message; validacion 422, sesion 401, permiso 403, recurs
 
 ## Rutas
 
-| Ambito | Rutas principales |
-| --- | --- |
-| Publico | GET /catalog, /properties, /properties/:id, /properties/:id/availability, /sponsors, /media/:id |
-| Eventos | POST /events con tipos y referencias validados |
-| Cliente | GET /favorites; PUT/DELETE /favorites/:id; POST /search-intents |
-| Reservas | POST /reservations/quote y /reservations; GET /reservations; POST /reservations/:id/cancel |
-| Llegada | GET /reservations/:id/arrival, solo reserva confirmada propia, propietario o admin |
-| Resenas | POST /reviews con reservationId, rating y comment; exige estadia completada |
-| Notificaciones | GET /notifications; POST /notifications/:id/read |
-| Propietario | POST /owner-profile; GET /owner/properties y /owner/reservations; POST /owner/occupancies |
-| Propiedades | POST /properties; PUT /properties/:id; POST /properties/:id/images; DELETE /properties/:id/images/:imageId |
-| Gestion privada | GET/PUT /owner/properties/:id/private; PUT /owner/properties/:id/socials |
-| Negocio propietario | GET /owner/metrics, /owner/subscription; POST /owner/subscription |
-| Administrador | /admin/overview, users, properties, reviews, plans, subscriptions, sponsors, weights y audit |
+| Ambito              | Rutas principales                                                                                          |
+| ------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Publico             | GET /catalog, /properties, /properties/:id, /properties/:id/availability, /sponsors, /media/:id            |
+| Eventos             | POST /events con tipos y referencias validados                                                             |
+| Cliente             | GET /favorites; PUT/DELETE /favorites/:id; POST /search-intents                                            |
+| Reservas            | POST /reservations/quote y /reservations; GET /reservations; POST /reservations/:id/cancel                 |
+| Llegada             | GET /reservations/:id/arrival, solo reserva confirmada propia, propietario o admin                         |
+| Resenas             | POST /reviews con reservationId, rating y comment; exige estadia completada                                |
+| Notificaciones      | GET /notifications; POST /notifications/:id/read                                                           |
+| Propietario         | POST /owner-profile; GET /owner/properties y /owner/reservations; POST /owner/occupancies                  |
+| Propiedades         | POST /properties; PUT /properties/:id; POST /properties/:id/images; DELETE /properties/:id/images/:imageId |
+| Gestion privada     | GET/PUT /owner/properties/:id/private; PUT /owner/properties/:id/socials                                   |
+| Negocio propietario | GET /owner/metrics, /owner/subscription; POST /owner/subscription                                          |
+| Administrador       | /admin/overview, users, properties, reviews, plans, subscriptions, sponsors, weights y audit               |
 
 Las operaciones de administrador tienen requireRole server-side; no se exponen PIN ni elevacion de rol por cliente. Despublicar se realiza con estado draft, no borrando historicos de reserva.
 
@@ -33,14 +35,14 @@ Las operaciones de administrador tienen requireRole server-side; no se exponen P
 
 POST /reservations requiere Idempotency-Key UUID y cuerpo:
 
-~~~json
+```json
 {
   "propertyId": "UUID",
   "startsAt": "2030-01-01T09:00:00-03:00",
   "endsAt": "2030-01-01T13:00:00-03:00",
   "guests": 5
 }
-~~~
+```
 
 Ejemplo de forma, no una propiedad ni cotizacion reales. POST /owner/occupancies agrega kind owner/block y note. Nunca enviar totalAmount, actorRole o estado: el contrato los rechaza. Cotizar no bloquea inventario; confirmar revalida dentro de transaccion.
 

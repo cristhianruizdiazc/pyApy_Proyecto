@@ -1,16 +1,16 @@
 # PostgreSQL de pyApy
 
-Actualizado: 2026-09-17. Esquema inicial creado desde cero; no se migro ninguna base previa.
+Actualizado: 2026-09-26. Esquema inicial creado desde cero; no se migro ninguna base previa.
 
 ## Instancia y roles
 
 Cluster exclusivo: `.local/postgres`, 127.0.0.1:55432, base `pyapy`. Credenciales generadas en `.env`, fuera de Git.
 
-| Identidad | Uso |
-| --- | --- |
-| pyapy_local | Administracion local, migraciones y pruebas de restore |
-| pyapy_app | API; sin superusuario, creacion de roles ni bases |
-| pyapy_reporter | Solo SELECT sobre administrative_property_report |
+| Identidad      | Uso                                                    |
+| -------------- | ------------------------------------------------------ |
+| pyapy_local    | Administracion local, migraciones y pruebas de restore |
+| pyapy_app      | API; sin superusuario, creacion de roles ni bases      |
+| pyapy_reporter | Solo SELECT sobre administrative_property_report       |
 
 `database/permissions.sql` revoca acceso de la API a schema_migrations y UPDATE/DELETE de auditoria. La preparacion reaplica permisos tras migrar. En contenedores, pyapy_bootstrap reemplaza al administrador local.
 
@@ -19,7 +19,7 @@ Cluster exclusivo: `.local/postgres`, 127.0.0.1:55432, base `pyapy`. Credenciale
 - `001_initial.sql`: extension btree_gist, entidades, constraints, indices, catalogos y configuracion inicial.
 - `002_reporting.sql`: vista administrativa agregada para PHP.
 
-El migrador registra checksum, usa bloqueo asesor y transaccion. Alterar una migracion ya aplicada produce error; agregar una migracion nueva. No hay rollback destructivo automatico.
+El migrador registra checksum, usa bloqueo asesor y transaccion. Alterar una migracion ya aplicada produce error; agregar una migracion nueva. No hay rollback destructivo automatico. Las migraciones se aplicaron tambien en PostgreSQL efimero de la CI final; no se realizaron cambios de esquema en Fases 20 o 21.
 
 ## Modelo
 

@@ -1,6 +1,6 @@
 # Arquitectura implementada
 
-Actualizado: 2026-09-19. Decisiones base: [ADR-001](decisions/ADR-001-foundation.md), [ADR-002](decisions/ADR-002-security-bookings-offline.md), [ADR-003](decisions/ADR-003-legacy-ui-integration.md).
+Actualizado: 2026-09-26. Decisiones base: [ADR-001](decisions/ADR-001-foundation.md), [ADR-002](decisions/ADR-002-security-bookings-offline.md), [ADR-003](decisions/ADR-003-legacy-ui-integration.md).
 
 ## Componentes
 
@@ -30,7 +30,7 @@ Uploads limitados, decodificados por Sharp, sin metadatos, convertidos a WebP y 
 
 Desarrollo: cluster exclusivo en .local y procesos locales; nunca reutiliza datos ajenos. Pruebas: base temporal con migraciones reales. Compose: PostgreSQL, migrador, API, web nginx no privilegiado y reporte opcional. Dockerfiles/configuracion existen y las imagenes construyen en CI Linux; falta ejecutar el stack completo, health checks y volumenes con motor Docker.
 
-Produccion requiere TLS, dominio, secretos administrados, monitoreo, backups externos, rollback y pruebas de staging. No hay proveedor elegido ni despliegue realizado.
+CI construye las imagenes y ejecuta gates sobre PostgreSQL efimero; la corrida final aprobada es `36256453136`. Produccion requiere TLS, dominio, secretos administrados, monitoreo, backups externos, rollback y pruebas de staging. No hay proveedor elegido ni despliegue realizado.
 
 ## Limites conocidos
 

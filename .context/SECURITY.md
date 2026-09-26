@@ -1,6 +1,6 @@
 # Seguridad implementada y pendiente
 
-Actualizado: 2026-09-19. Es una revision local, no certificacion de seguridad para produccion.
+Actualizado: 2026-09-26. Es una revision local, no certificacion de seguridad para produccion.
 
 ## Controles implementados
 
@@ -25,7 +25,7 @@ La recuperación web utiliza sessionStorage por usuario/propiedad: conserva UUID
 
 23 pruebas incluyen abuso de rol/precio, CSRF, origen, bearer malformado, IDOR, inyeccion SQL de busqueda, contenido de imagen falso, PII, cancelacion, revocacion, concurrencia e idempotencia. Ver tests/api.test.mjs y TESTING.md. Verificacion independiente de permisos con scripts/verify-permissions.mjs.
 
-npm audit reporto cero vulnerabilidades. Override xcode/uuid 11.1.1 elimina dependencia vulnerable; generacion de UUID y export Expo verificadas. Eso no demuestra ausencia de vulnerabilidades desconocidas.
+npm audit reporto cero vulnerabilidades. Override xcode/uuid 11.1.1 elimina dependencia vulnerable; generacion de UUID y export Expo verificadas. La CI final aprobo 23 pruebas unitarias/API y 43 E2E, sin exponer secretos de entorno. Eso no demuestra ausencia de vulnerabilidades desconocidas.
 
 PHP 8.5.10 instalado localmente y usado por reporte. XAMPP/PHP 7.2 del equipo no se modifico ni se usa en pyApy.
 

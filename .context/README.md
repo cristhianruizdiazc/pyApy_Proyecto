@@ -1,10 +1,10 @@
 # Contexto de pyApy
 
-Estado actualizado: 2026-09-26. Version funcional 0.1.0 con Fase 20 cerrada mediante CI remoto; no produccion.
+Estado actualizado: 2026-09-26. Version funcional 0.1.0 con Fase 21 documental cerrada; no produccion.
 
 ## Lectura para continuar
 
-Ultima fase cerrada: [Fase 20 CI/CD](phases/phase-20-cicd.md) y [ADR-010](decisions/ADR-010-ci-pipeline.md). La corrida remota final aprobo; staging, deploy y rollback siguen pendientes.
+Ultima fase cerrada: [Fase 21 Documentacion](phases/phase-21-documentation.md). La instalacion, desarrollo, operacion y recuperacion se consolidaron en el README raiz y `docs/`; staging, deploy y rollback siguen pendientes.
 
 La entrega mas reciente es [Rendimiento UX 01](phases/performance-ux-01.md), con su [ADR-008](decisions/ADR-008-demo-image-delivery.md). Mantiene la version local 0.1.0 y no declara produccion.
 
