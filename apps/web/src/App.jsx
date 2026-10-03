@@ -68,7 +68,11 @@ function Auth() {
       </div>
       <section className="auth-form">
         <Link to="/" className="brand">
-          pyApy<span>↗</span>
+          <img
+            className="chosen-logo"
+            src="/brand/logoElegido.png"
+            alt="pyApy"
+          />
         </Link>
         <h1>
           {register
@@ -176,7 +180,7 @@ function Header({ user }) {
   return (
     <header className="site-header">
       <Link className="brand" to="/">
-        pyApy<span>↗</span>
+        <img className="chosen-logo" src="/brand/logoElegido.png" alt="pyApy" />
       </Link>
       <nav
         id={menuId}
@@ -327,7 +331,11 @@ export default function App() {
       </div>
       <footer className="site-footer">
         <Link className="brand" to="/">
-          pyApy<span>↗</span>
+          <img
+            className="chosen-logo"
+            src="/brand/logoElegido.png"
+            alt="pyApy"
+          />
         </Link>
         <p>Un lugar. Tu gente. Un buen plan.</p>
         <span>Inspirados en los hilos del encaje ju y el ñandutí.</span>

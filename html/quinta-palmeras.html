@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="styles.css" />
     <link rel="icon" href="assets/icons/House.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="filters.css" />
+    <script src="selection.js" defer></script>
   </head>
   <body class="">
     <a class="skip" href="#contenido">Saltar al contenido</a>
@@ -170,22 +171,36 @@
               </p>
             </section>
           </div>
-          <aside class="booking-box" aria-label="Tarifa ilustrativa">
+          <aside
+            data-capacity="30"
+            data-price="75000"
+            class="booking-box"
+            aria-label="Tarifa ilustrativa"
+          >
             <h2>Gs. 75.000 <small>/ hora</small></h2>
             <p class="muted">Minimo 4 horas</p>
             <label
-              >Fecha<input type="date" aria-label="Fecha de visita"
+              >Fecha<input type="date" name="date" aria-label="Fecha de visita"
             /></label>
             <div class="form-grid">
-              <label>Desde<input type="time" value="09:00" /></label
-              ><label>Hasta<input type="time" value="13:00" /></label>
+              <label
+                >Desde<input type="time" name="start" value="09:00" /></label
+              ><label
+                >Hasta<input type="time" name="end" value="13:00"
+              /></label>
             </div>
             <label
-              >Personas<select>
-                <option>2 personas</option>
-                <option>4 personas</option>
-                <option>30 personas</option>
-              </select></label
+              >Personas<input
+                name="guests"
+                type="number"
+                min="1"
+                max="30"
+                step="1"
+                value="2"
+                required
+              /><small
+                >Hasta 30 personas. Indicá la cantidad exacta.</small
+              ></label
             ><a class="button primary" href="reserva-quinta-palmeras.html"
               ><img
                 class="icon"
@@ -194,7 +209,9 @@
                 width="24"
                 height="24"
               />Ver ejemplo de reserva</a
-            ><small>Vista de demostracion. No bloquea fechas.</small>
+            >
+            <p class="selection-error" role="alert" hidden></p>
+            <small>Vista de demostracion. No bloquea fechas.</small>
           </aside>
         </div>
         <section class="section">

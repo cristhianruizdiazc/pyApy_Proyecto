@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="styles.css" />
     <link rel="icon" href="assets/icons/House.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="filters.css" />
+    <script src="selection.js" defer></script>
   </head>
   <body class="catalog-scope">
     <a class="skip" href="#contenido">Saltar al contenido</a>
@@ -99,6 +100,7 @@
               />Cuando</span
             ><input
               type="date"
+              name="date"
               aria-label="Fecha deseada de demostracion" /></label
           ><label
             ><span class="label-title"
@@ -111,10 +113,12 @@
               />Con quienes</span
             ><select name="guests">
               <option value="all">Cantidad de personas</option>
-              <option value="6">Hasta 6 personas</option>
-              <option value="10">10 personas</option>
-              <option value="20">20 personas</option>
-              <option value="30">30 personas</option>
+              <option value="2">En pareja</option>
+              <option value="4">Más de 3 personas</option>
+              <option value="6">Más de 5 personas</option>
+              <option value="11">Más de 10 personas</option>
+              <option value="21">Más de 20 personas</option>
+              <option value="31">Más de 30 personas</option>
             </select></label
           ><a class="button primary" href="#espacios"
             ><img

@@ -33,9 +33,13 @@ try {
       await page.locator("h1").waitFor();
       assert.equal(await page.locator("h1").count(), 1, `${file}: un solo h1`);
       assert.equal(
-        await page.locator("script").count(),
+        await page
+          .locator(
+            'script:not([src="selection.js"]):not([src="html/selection.js"])',
+          )
+          .count(),
         0,
-        `${file}: no necesita JavaScript`,
+        `${file}: solo selección local`,
       );
       const invalidImages = await page.evaluate(async () => {
         const images = [...document.images];
@@ -56,7 +60,7 @@ try {
       assert.equal(overflow, false, `${file}: no desborda a ${width}px`);
       if (width === 1440) {
         const links = await page
-          .locator("a[href],link[href],img[src]")
+          .locator("a[href],link[href],img[src],script[src]")
           .evaluateAll((elements) =>
             elements.map((element) => element.href || element.src),
           );
@@ -122,8 +126,8 @@ try {
     await page.locator('select[name="budget"]').selectOption("all");
     await page.locator('select[name="guests"]').selectOption("6");
     assert.equal(await page.locator(".property-card:visible").count(), 6);
-    await page.locator('select[name="guests"]').selectOption("30");
-    assert.equal(await page.locator(".property-card:visible").count(), 2);
+    await page.locator('select[name="guests"]').selectOption("31");
+    assert.equal(await page.locator(".property-card:visible").count(), 1);
     await page
       .locator(".property-card:visible .favorite input")
       .first()
@@ -142,10 +146,64 @@ try {
       await page.locator('.mobile-menu a[href="indice.html"]').click();
       assert.match(await page.title(), /Indice/);
     }
+    await page.goto(pathToFileURL(resolve(root, "index.html")).href);
+    for (const [guests, count] of [
+      ["2", 6],
+      ["4", 6],
+      ["6", 6],
+      ["11", 4],
+      ["21", 3],
+      ["31", 1],
+    ]) {
+      await page.locator('select[name="guests"]').selectOption(guests);
+      assert.equal(
+        await page.locator(".property-card:not([hidden])").count(),
+        count,
+        `Capacidad mínima ${guests}`,
+      );
+    }
+    await page.locator('select[name="guests"]').selectOption("21");
+    await page.locator('[name="date"]').fill("2030-01-12");
+    await page.locator('[name="turn"]').selectOption("morning");
+    await page
+      .locator(".property-card:not([hidden]) .property-photo")
+      .first()
+      .click();
+    assert.equal(await page.locator('[name="guests"]').inputValue(), "21");
+    assert.equal(
+      await page.locator('[name="date"]').inputValue(),
+      "2030-01-12",
+    );
+    assert.equal(await page.locator('[name="end"]').inputValue(), "13:00");
+    await page.locator('[name="guests"]').fill("23");
+    await page.locator('.booking-box a[href*="reserva-"]').click();
+    assert.equal(await page.locator('[name="guests"]').inputValue(), "23");
+    assert.match(
+      await page.locator(".guest-summary").innerText(),
+      /23 personas/,
+    );
+    await page.locator('[name="guests"]').fill("24");
+    assert.match(
+      await page.locator(".guest-summary").innerText(),
+      /24 personas/,
+    );
+    await page.locator('[name="guests"]').fill("26");
+    assert.ok(await page.locator(".selection-error").isVisible());
+    await page.locator('[name="guests"]').fill("2.5");
+    assert.ok(await page.locator(".selection-error").isVisible());
+    await page.locator('[name="guests"]').fill("24");
+    await page.locator('[name="end"]').fill("15:00");
+    assert.match(
+      await page.locator(".price-line.total").innerText(),
+      /390.000/,
+    );
+    await page.locator(".booking-box a").click();
+    assert.equal(await page.locator('[name="guests"]').inputValue(), "24");
+    assert.equal(await page.locator('[name="end"]').inputValue(), "15:00");
     assert.deepEqual(runtimeErrors, []);
     await context.close();
     console.log(
-      `PASS: ${pages.length} pantallas file:// sin conexion, fotos, enlaces, filtros CSS y ancho ${width}px.`,
+      `PASS: ${pages.length} pantallas file:// sin conexion, fotos, enlaces, filtros y selección de personas y ancho ${width}px.`,
     );
   }
   for (const file of visited)

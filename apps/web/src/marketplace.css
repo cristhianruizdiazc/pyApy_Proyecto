@@ -608,3 +608,37 @@
     height: 44px;
   }
 }
+
+.brand .chosen-logo {
+  width: 65px;
+  height: 64px;
+  object-fit: contain;
+}
+.search-main label > span {
+  font-size: 15px;
+  font-weight: 700;
+}
+.search-main input,
+.search-main select {
+  font-size: 16px;
+  font-weight: 600;
+}
+.guest-search-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding-inline: 20px;
+}
+.guest-search-field > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+}
+@media (max-width: 700px) {
+  .guest-search-field {
+    padding-inline: 0;
+  }
+}

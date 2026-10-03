@@ -12,21 +12,49 @@
     <link rel="stylesheet" href="html/styles.css" />
     <link rel="icon" href="html/assets/icons/House.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="html/filters.css" />
+    <link rel="stylesheet" href="html/home.css" />
+    <script src="html/selection.js" defer></script>
   </head>
-  <body class="catalog-scope">
+  <body class="catalog-scope reference-home">
     <a class="skip" href="#contenido">Saltar al contenido</a>
     <header class="site-header">
       <div class="header-inner">
-        <a class="brand" href="index.html">pyApy<span>&#8599;</span></a>
+        <a class="brand chosen-brand" href="index.html"
+          ><img
+            src="html/assets/logoElegido.png"
+            alt="pyApy"
+            width="66"
+            height="60"
+          /><span>Quintas · Casas · Bungalows</span></a
+        >
         <nav class="header-nav" aria-label="Navegacion principal">
-          <a href="html/explorar.html">Explorar</a
-          ><a href="html/ubicaciones.html">Ubicaciones</a
-          ><a href="html/propietario.html">Mi espacio</a
+          <a href="index.html" aria-current="page">Inicio</a
+          ><a href="html/explorar.html">Explorar</a
+          ><a href="html/ayuda.html">Cómo funciona</a
+          ><a href="html/propietario.html">Soy Anfitrión</a
           ><a href="html/indice.html">Indice</a>
         </nav>
         <div class="header-end">
-          <span class="demo">Demo HTML</span
-          ><a class="button" href="html/ingresar.html">Ingresar</a>
+          <span class="country"
+            ><img
+              class="icon"
+              src="html/assets/icons/MapPin.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Paraguay</span
+          ><a
+            class="header-favorite"
+            href="html/favoritos.html"
+            aria-label="Favoritos"
+            ><img
+              class="icon"
+              src="html/assets/icons/Heart.svg"
+              alt=""
+              width="24"
+              height="24" /></a
+          ><a class="button" href="html/ingresar.html">Ingresar</a
+          ><a class="button primary" href="html/registro.html">Registrarse</a>
           <details class="mobile-menu">
             <summary title="Abrir menu" aria-label="Menu">
               <img
@@ -52,7 +80,7 @@
     <main id="contenido">
       <section class="hero" aria-label="pyApy">
         <img
-          src="html/assets/pool.jpg"
+          src="html/assets/escapada-atardecer.png"
           alt="Piscina al aire libre rodeada de jardines, imagen ilustrativa"
           width="1600"
           height="900"
@@ -66,18 +94,20 @@
               alt=""
               width="24"
               height="24"
-            />Paraguay, a tu aire</span
+            />Descubrí Paraguay</span
           >
-          <h1>pyApy<span>.</span></h1>
-          <p>Tu proxima escapada,<br />mas cerca de lo que pensas.</p>
-          <a class="hero-action" href="#espacios"
-            >Encontra tu lugar<img
-              class="icon"
-              src="html/assets/icons/ArrowUpRight.svg"
-              alt=""
-              width="24"
-              height="24" /></a
-          ><span class="hero-bottom">Un respiro empieza por un lugar.</span>
+          <h1>
+            Tu próxima escapada,<br /><em>más cerca</em><br />de lo que pensás.
+          </h1>
+          <p>
+            Quintas, casas y bungalows en los mejores destinos<br
+              class="desktop-break"
+            />
+            del Paraguay. Naturaleza, descanso y experiencias<br
+              class="desktop-break"
+            />
+            únicas, todo en un solo lugar.
+          </p>
         </div>
       </section>
       <div class="container">
@@ -94,7 +124,7 @@
                 alt=""
                 width="24"
                 height="24"
-              />Donde</span
+              />Zona / Ciudad</span
             ><select name="city">
               <option value="all">Todo Paraguay</option>
               <option value="san-bernardino">San Bernardino</option>
@@ -112,10 +142,26 @@
                 alt=""
                 width="24"
                 height="24"
-              />Cuando</span
+              />Fecha de salida</span
             ><input
               type="date"
+              name="date"
               aria-label="Fecha deseada de demostracion" /></label
+          ><label
+            ><span class="label-title"
+              ><img
+                class="icon"
+                src="html/assets/icons/CalendarRange.svg"
+                alt=""
+                width="24"
+                height="24"
+              />Horario / Turno</span
+            ><select name="turn">
+              <option value="day">Día completo (09–17 h)</option>
+              <option value="morning">Mañana (09–13 h)</option>
+              <option value="afternoon">Tarde (13–17 h)</option>
+              <option value="full">Día completo (24 horas)</option>
+            </select></label
           ><label
             ><span class="label-title"
               ><img
@@ -124,13 +170,29 @@
                 alt=""
                 width="24"
                 height="24"
-              />Con quienes</span
+              />Personas</span
             ><select name="guests">
               <option value="all">Cantidad de personas</option>
-              <option value="6">Hasta 6 personas</option>
-              <option value="10">10 personas</option>
-              <option value="20">20 personas</option>
-              <option value="30">30 personas</option>
+              <option value="2">En pareja</option>
+              <option value="4">Más de 3 personas</option>
+              <option value="6">Más de 5 personas</option>
+              <option value="11">Más de 10 personas</option>
+              <option value="21">Más de 20 personas</option>
+              <option value="31">Más de 30 personas</option>
+            </select></label
+          ><label
+            ><span class="label-title"
+              ><img
+                class="icon"
+                src="html/assets/icons/SlidersHorizontal.svg"
+                alt=""
+                width="24"
+                height="24"
+              />Presupuesto máx.</span
+            ><select name="budget">
+              <option value="all">Cualquier precio</option>
+              <option value="50000">Hasta Gs. 50.000 / hora</option>
+              <option value="65000">Hasta Gs. 65.000 / hora</option>
             </select></label
           ><a class="button primary" href="#espacios"
             ><img
@@ -139,9 +201,69 @@
               alt=""
               width="24"
               height="24"
-            />Buscar espacios</a
+            />Buscar</a
           >
         </div>
+        <section class="benefits" aria-label="Tu próxima escapada">
+          <div>
+            <img
+              class="icon"
+              src="html/assets/icons/TreePine.svg"
+              alt=""
+              width="24"
+              height="24"
+            /><span
+              ><strong>Naturaleza</strong><small>Respirá aire puro</small></span
+            >
+          </div>
+          <div>
+            <img
+              class="icon"
+              src="html/assets/icons/Waves.svg"
+              alt=""
+              width="24"
+              height="24"
+            /><span
+              ><strong>Piscinas</strong><small>Disfrutá el verano</small></span
+            >
+          </div>
+          <div>
+            <img
+              class="icon"
+              src="html/assets/icons/CookingPot.svg"
+              alt=""
+              width="24"
+              height="24"
+            /><span
+              ><strong>Parrillas</strong
+              ><small>Compartí en familia</small></span
+            >
+          </div>
+          <div>
+            <img
+              class="icon"
+              src="html/assets/icons/ShieldCheck.svg"
+              alt=""
+              width="24"
+              height="24"
+            /><span
+              ><strong>Reservas seguras</strong
+              ><small>Tu tranquilidad primero</small></span
+            >
+          </div>
+          <div>
+            <img
+              class="icon"
+              src="html/assets/icons/MapPin.svg"
+              alt=""
+              width="24"
+              height="24"
+            /><span
+              ><strong>Apoyo local</strong
+              ><small>Anfitriones paraguayos</small></span
+            >
+          </div>
+        </section>
         <div class="categories" role="group" aria-label="Tipo de espacio">
           <label class="category"
             ><input type="radio" name="kind" value="all" checked /><img
@@ -184,32 +306,14 @@
               height="24"
             />Bungalows</label
           >
-          <details class="filter-menu">
-            <summary>
-              <img
-                class="icon"
-                src="html/assets/icons/SlidersHorizontal.svg"
-                alt=""
-                width="24"
-                height="24"
-              />Presupuesto
-            </summary>
-            <label
-              >Por hora<select name="budget">
-                <option value="all">Cualquier precio</option>
-                <option value="50000">Hasta Gs. 50.000</option>
-                <option value="65000">Hasta Gs. 65.000</option>
-              </select></label
-            >
-          </details>
         </div>
         <section class="section">
           <div class="section-head">
             <div>
-              <span class="eyebrow">Cerca de vos, lejos de la rutina</span>
-              <h2>Un lugar para cada plan.</h2>
+              <span class="eyebrow">Propiedades destacadas</span>
+              <h2>Las mejores quintas te esperan</h2>
             </div>
-            <a href="html/explorar.html">Explorar el catalogo</a>
+            <a href="html/explorar.html">Ver todas las propiedades</a>
           </div>
           <div class="property-grid" id="espacios">
             <article
@@ -494,56 +598,11 @@
           </div>
         </section>
       </div>
-      <section class="locations-band">
-        <div class="container">
-          <span class="eyebrow">El plan tambien es el camino</span>
-          <h2>Un poco mas alla.</h2>
-          <div class="location-grid">
-            <a class="location-tile" href="html/quinta-yvytu.html"
-              ><img
-                src="html/assets/pool.jpg"
-                loading="lazy"
-                width="700"
-                height="460"
-                alt="Espacio ilustrativo en San Bernardino"
-              />
-              <div class="location-caption">
-                <h3>San Bernardino</h3>
-                <p>Un lugar para compartir.</p>
-              </div></a
-            ><a class="location-tile" href="html/casa-del-lago.html"
-              ><img
-                src="html/assets/house.jpg"
-                loading="lazy"
-                width="700"
-                height="460"
-                alt="Espacio ilustrativo en Aregua"
-              />
-              <div class="location-caption">
-                <h3>Aregua</h3>
-                <p>Un lugar para compartir.</p>
-              </div></a
-            ><a class="location-tile" href="html/patio-de-altos.html"
-              ><img
-                src="html/assets/garden.jpg"
-                loading="lazy"
-                width="700"
-                height="460"
-                alt="Espacio ilustrativo en Altos"
-              />
-              <div class="location-caption">
-                <h3>Altos</h3>
-                <p>Un lugar para compartir.</p>
-              </div></a
-            >
-          </div>
-        </div>
-      </section>
     </main>
     <footer class="site-footer">
       <div class="container footer-inner">
         <a class="brand" href="index.html">pyApy<span>&#8599;</span></a
-        ><small>Un lugar. Tu gente. Un buen plan.</small>
+        ><small>♡ &nbsp; PYAPY — VIVÍ PARAGUAY, VIVÍ SUS QUINTAS</small>
         <nav aria-label="Pie de pagina">
           <a href="html/indice.html">Indice de pantallas</a
           ><a href="html/ubicaciones.html">Ubicaciones</a

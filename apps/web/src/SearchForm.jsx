@@ -20,6 +20,14 @@ import {
   ZONE,
 } from "@pyapy/contracts";
 
+const guestOptions = [
+  ["2", "En pareja"],
+  ["4", "Más de 3 personas"],
+  ["6", "Más de 5 personas"],
+  ["11", "Más de 10 personas"],
+  ["21", "Más de 20 personas"],
+  ["31", "Más de 30 personas"],
+];
 const categories = [
   { label: "Todos", icon: Sun, value: "" },
   { label: "Quintas", icon: TreePine, value: "Quinta" },
@@ -273,11 +281,27 @@ export default function SearchForm({ catalog, params, onSearch }) {
               onChange={(event) => update("date", event.target.value)}
             />
           </label>
-          <label>
+          <div className="guest-search-field">
             <span>
               <Users size={16} aria-hidden="true" />
-              Con quiénes
+              Personas
             </span>
+            <select
+              aria-label="Tamaño del grupo"
+              value={
+                guestOptions.some(([value]) => value === draft.guests)
+                  ? draft.guests
+                  : ""
+              }
+              onChange={(event) => update("guests", event.target.value)}
+            >
+              <option value="">Cantidad de personas</option>
+              {guestOptions.map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
             <input
               name="guests"
               type="number"
@@ -289,7 +313,7 @@ export default function SearchForm({ catalog, params, onSearch }) {
               aria-label="Cantidad de personas"
               onChange={(event) => update("guests", event.target.value)}
             />
-          </label>
+          </div>
           <button className="primary search-button" type="submit">
             <Search size={20} aria-hidden="true" />
             Buscar espacios

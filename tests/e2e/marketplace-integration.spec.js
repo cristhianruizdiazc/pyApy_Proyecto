@@ -1,6 +1,35 @@
 import { test, expect } from "@playwright/test";
 import { localInterval } from "../../packages/contracts/index.mjs";
 
+test("opciones de personas permiten elegir un plan y conservar una cantidad exacta", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const presets = page.getByLabel("Tamaño del grupo", {
+    exact: true,
+  });
+  await expect(presets.locator("option")).toHaveText([
+    "Cantidad de personas",
+    "En pareja",
+    "Más de 3 personas",
+    "Más de 5 personas",
+    "Más de 10 personas",
+    "Más de 20 personas",
+    "Más de 30 personas",
+  ]);
+  await presets.selectOption("21");
+  await expect(
+    page.getByLabel("Cantidad de personas", { exact: true }),
+  ).toHaveValue("21");
+  await page.getByLabel("Cantidad de personas", { exact: true }).fill("23");
+  await page.getByRole("button", { name: "Buscar espacios" }).click();
+  await expect(page).toHaveURL(/guests=23/);
+  await page.locator(".property-grid .card-title").first().click();
+  await expect(page.getByLabel("Personas", { exact: true })).toHaveValue("23");
+  await page.getByLabel("Personas", { exact: true }).fill("24");
+  await expect(page.getByLabel("Personas", { exact: true })).toHaveValue("24");
+});
+
 test("filtros conservan horario paraguayo, borrador y navegación de historial", async ({
   page,
 }) => {

@@ -8,9 +8,9 @@ Guia de desarrollo: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Operacion, stagi
 
 Abrir [index.html](index.html) directamente en el navegador. El [indice completo](html/indice.html) enlaza las 40 pantallas: catalogo, propiedades, ejemplos de reserva, cuenta de cliente, propietario y administracion.
 
-Esta vista esta hecha en HTML y CSS, sin React, JavaScript de aplicacion, npm, API ni base de datos para visualizarla. Fotos e iconos estan incluidos en `html/assets`. Conservar `index.html` junto a la carpeta `html` si se traslada a otro directorio.
+Esta vista está hecha en HTML y CSS con un script local para filtros y selección de personas. No requiere React, npm, API ni base de datos para visualizarla. Fotos e iconos están incluidos en `html/assets`. Conservar `index.html` junto a la carpeta `html` si se traslada a otro directorio.
 
-Los filtros de ciudad, tipo, capacidad y presupuesto funcionan con CSS. Los formularios y las reservas son demostrativos: no autentican usuarios, no guardan cambios ni confirman disponibilidad. El mapa OpenStreetMap opcional requiere Internet. La aplicacion conectada original se conserva por separado.
+Los filtros de ciudad, tipo, capacidad y presupuesto funcionan con `html/selection.js`, que conserva fecha, horario y cantidad de personas en los enlaces entre catálogo, ficha y resumen. Las reservas son demostrativas: no autentican usuarios ni confirman disponibilidad. El mapa OpenStreetMap opcional requiere Internet. La aplicación conectada original se conserva por separado.
 
 Ver [detalles de la vista HTML](html/README.md). Verificacion automatizada: `node scripts/verify-static.mjs` (solo para desarrollo, requiere las dependencias y Chromium de Playwright instalados).
 

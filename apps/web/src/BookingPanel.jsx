@@ -368,9 +368,14 @@ export default function BookingPanel({
                   onChange={(e) => change("guests", e.target.value)}
                   min="1"
                   max={p.capacity}
+                  step="1"
                   required
                 />
               </label>
+              <p className="field-hint">
+                Hasta {p.capacity} personas. Indicá la cantidad exacta para el
+                anfitrión.
+              </p>
               <p className="booking-time-note">
                 Hora de Paraguay. Si el fin es anterior o igual al inicio y no
                 elegís otra fecha de salida, termina al día siguiente.

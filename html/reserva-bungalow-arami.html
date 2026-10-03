@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="styles.css" />
     <link rel="icon" href="assets/icons/House.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="filters.css" />
+    <script src="selection.js" defer></script>
   </head>
   <body class="">
     <a class="skip" href="#contenido">Saltar al contenido</a>
@@ -66,9 +67,10 @@
           <p>Bungalow Arami</p>
         </div>
         <div class="notice" role="note">
-          Ejemplo de cotizacion para cuatro horas. No se creara una reserva.
+          Cotización ilustrativa según el horario elegido. No se creara una
+          reserva.
         </div>
-        <div class="detail-layout">
+        <div class="detail-layout" data-capacity="6" data-price="45000">
           <div>
             <img
               class="detail-photo"
@@ -82,15 +84,34 @@
               <p>Caacupe &middot; Bungalow &middot; hasta 6 personas</p>
               <div class="form-grid">
                 <label
-                  >Fecha<input type="date" value="2030-01-12" readonly /></label
-                ><label>Personas<input value="4 personas" readonly /></label
-                ><label>Entrada<input value="09:00" readonly /></label
-                ><label>Salida<input value="13:00" readonly /></label>
+                  >Fecha<input
+                    type="date"
+                    name="date"
+                    value="2030-01-12" /></label
+                ><label
+                  >Personas<input
+                    name="guests"
+                    type="number"
+                    min="1"
+                    max="6"
+                    step="1"
+                    value="2"
+                    required /></label
+                ><label
+                  >Entrada<input
+                    type="time"
+                    name="start"
+                    value="09:00" /></label
+                ><label
+                  >Salida<input type="time" name="end" value="13:00"
+                /></label>
               </div>
             </section>
           </div>
           <aside class="booking-box">
             <h2>Resumen del ejemplo</h2>
+            <p class="guest-summary"></p>
+            <p class="selection-error" role="alert" hidden></p>
             <div class="price-line">
               <span>Gs. 45.000 &times; 4 horas</span><span>Gs. 180.000</span>
             </div>
