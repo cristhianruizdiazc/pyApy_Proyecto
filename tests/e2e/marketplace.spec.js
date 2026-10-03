@@ -8,7 +8,7 @@ test("marketplace carga fotos, filtra, abre mapa y no desborda", async ({
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: "Un lugar para cada plan." }),
+    page.getByRole("heading", { name: "Las mejores quintas te esperan" }),
   ).toBeVisible();
   await page.evaluate(() => document.fonts.ready);
   await expect
@@ -42,7 +42,7 @@ test("marketplace carga fotos, filtra, abre mapa y no desborda", async ({
   await expect(page.locator(".leaflet-container")).toBeVisible();
   await expect(page.locator(".leaflet-interactive").first()).toBeVisible();
   await page.locator('select[name="city"]').selectOption({ label: "Aregua" });
-  await page.getByLabel("Cantidad de personas").fill("2");
+  await page.getByLabel("Tamaño del grupo").selectOption("2");
   await page.getByRole("button", { name: "Buscar espacios" }).click();
   await expect(page.getByRole("heading", { name: /1 espacios/ })).toBeVisible();
   await page.getByRole("link", { name: "Casa del Lago", exact: true }).click();

@@ -13,6 +13,11 @@ import {
   MapPin,
   Users,
   ArrowUpRight,
+  ChevronRight,
+  Waves,
+  Flame,
+  Wifi,
+  Star,
   Image as ImageIcon,
   X,
 } from "lucide-react";
@@ -47,7 +52,9 @@ export function Photo({ src, alt, ...props }) {
 }
 function PhotoImage({ src, alt, className = "", onError, ...props }) {
   const [failed, setFailed] = useState(false);
-  const demo = /^\/demo\/(cabin|garden|house|palms|pool|retreat)\.jpg$/.exec(src || "");
+  const demo = /^\/demo\/(cabin|garden|house|palms|pool|retreat)\.jpg$/.exec(
+    src || "",
+  );
   const image = (
     <img
       {...props}
@@ -71,7 +78,9 @@ function PhotoImage({ src, alt, className = "", onError, ...props }) {
         <source srcSet={`/demo/${demo[1]}-1280.webp`} type="image/webp" />
         {image}
       </picture>
-    ) : image
+    ) : (
+      image
+    )
   ) : (
     <div
       {...props}
@@ -89,6 +98,7 @@ export function PropertyCard({
   selected = false,
   onFavorite,
   onHover,
+  compact = false,
 }) {
   const location = useLocation();
   const href = detailHref(
@@ -108,7 +118,20 @@ export function PropertyCard({
           alt={p.images[0]?.alt || p.name}
           loading="lazy"
         />
-        {p.isDemo && <span className="image-tag">Demo</span>}
+        {compact ? (
+          <span className="card-city">
+            <MapPin size={11} />
+            {p.city}
+          </span>
+        ) : (
+          p.isDemo && <span className="image-tag">Demo</span>
+        )}
+        {compact && p.rating && (
+          <span className="card-rating">
+            <Star size={10} fill="currentColor" />
+            {p.rating} {p.reviewCount > 0 && <small>({p.reviewCount})</small>}
+          </span>
+        )}
         <span className="image-arrow">
           <ArrowUpRight size={20} />
         </span>
@@ -124,34 +147,64 @@ export function PropertyCard({
           <Heart size={19} fill={favorite ? "currentColor" : "none"} />
         </button>
       )}
-      <div className="card-meta">
-        <span>{p.kind}</span>
-        <span>
-          <Users size={14} />
-          {p.capacity} personas
-        </span>
-      </div>
+      {!compact && (
+        <div className="card-meta">
+          <span>{p.kind}</span>
+          <span>
+            <Users size={14} />
+            {p.capacity} personas
+          </span>
+        </div>
+      )}
       <h2>
         <Link className="card-title" to={href}>
           {p.name}
         </Link>
       </h2>
-      <p className="location">
-        <MapPin size={14} />
-        {p.city}, {p.department}
-      </p>
+      {compact ? (
+        <div className="card-features">
+          <span>
+            <Users size={11} />
+            {p.capacity} personas
+          </span>
+          {[
+            ["pool", Waves, "Piscina"],
+            ["wifi", Wifi, "WiFi"],
+            ["grill", Flame, "Parrilla"],
+          ]
+            .filter(([code]) => p.amenities?.includes(code))
+            .slice(0, 2)
+            .map(([code, Icon, label]) => (
+              <span key={code}>
+                <Icon size={11} />
+                {label}
+              </span>
+            ))}
+        </div>
+      ) : (
+        <p className="location">
+          <MapPin size={14} />
+          {p.city}, {p.department}
+        </p>
+      )}
       <div className="card-bottom">
         <span>
           <strong>Gs. {money(p.pricePerHour)}</strong>
           <small> / hora</small>
         </span>
-        <span className="match-label">
-          {p.availabilityChecked
-            ? p.available
-              ? "Disponible"
-              : "Otra fecha"
-            : `Mín. ${p.minHours} h`}
-        </span>
+        {compact ? (
+          <Link className="card-open" to={href} aria-label={`Ver ${p.name}`}>
+            <ChevronRight size={16} />
+          </Link>
+        ) : (
+          <span className="match-label">
+            {p.availabilityChecked
+              ? p.available
+                ? "Disponible"
+                : "Otra fecha"
+              : `Mín. ${p.minHours} h`}
+          </span>
+        )}
       </div>
     </article>
   );

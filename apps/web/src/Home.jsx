@@ -1,17 +1,17 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { lazy, Suspense, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
   ArrowRight,
-  ArrowUpRight,
   Map,
   Grid2X2,
-  MapPin,
-  Sun,
   Check,
-  Pause,
-  Play,
+  TreePine,
+  Waves,
+  CookingPot,
+  ShieldCheck,
+  Heart,
 } from "lucide-react";
 import { api } from "./api.js";
 import Sponsors from "./Sponsors.jsx";
@@ -22,46 +22,27 @@ import {
   Loading,
   ErrorMessage,
   Empty,
-  Photo,
 } from "./ui.jsx";
 const PropertyMap = lazy(() => import("./Map.jsx"));
-function Rail({ items, favorites, onFavorite }) {
+function Rail({ items, favorites, onFavorite, onExplore }) {
   const ref = useRef(null);
-  useEffect(() => {
-    if (ref.current) ref.current.scrollLeft = ref.current.scrollWidth / 3;
-  }, [items]);
   const scroll = (direction) =>
-    ref.current.scrollBy({
-      left: direction * 340,
+    ref.current?.scrollBy({
+      left: direction * ref.current.clientWidth,
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
         ? "instant"
         : "smooth",
     });
   return (
-    <>
+    <div className="featured-properties">
       <div className="section-heading">
         <div>
-          <span className="eyebrow">CERCA DE VOS, LEJOS DE LA RUTINA</span>
-          <h2>Un lugar para cada plan.</h2>
+          <span className="eyebrow">PROPIEDADES DESTACADAS</span>
+          <h2>Las mejores quintas te esperan</h2>
         </div>
-        <div className="rail-buttons">
-          <button
-            className="icon-button outlined"
-            aria-label="Espacios anteriores"
-            title="Espacios anteriores"
-            onClick={() => scroll(-1)}
-          >
-            <ArrowLeft />
-          </button>
-          <button
-            className="icon-button outlined"
-            aria-label="Espacios siguientes"
-            title="Espacios siguientes"
-            onClick={() => scroll(1)}
-          >
-            <ArrowRight />
-          </button>
-        </div>
+        <button className="view-all" onClick={onExplore}>
+          Ver todas las propiedades <ArrowRight size={15} />
+        </button>
       </div>
       <div
         className="property-rail"
@@ -70,42 +51,69 @@ function Rail({ items, favorites, onFavorite }) {
         tabIndex={0}
         ref={ref}
         onKeyDown={(event) => {
-          if (event.target !== event.currentTarget) return;
-          if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+          if (
+            event.target === event.currentTarget &&
+            ["ArrowLeft", "ArrowRight"].includes(event.key)
+          ) {
             event.preventDefault();
             scroll(event.key === "ArrowLeft" ? -1 : 1);
           }
         }}
-        onScroll={() => {
-          const el = ref.current,
-            segment = el.scrollWidth / 3;
-          if (el.scrollLeft < segment / 2) el.scrollLeft += segment;
-          else if (el.scrollLeft > segment * 1.5) el.scrollLeft -= segment;
-        }}
       >
-        {[0, 1, 2].flatMap((copy) =>
-          items.map((p) => (
-            <div
-              key={`${copy}-${p.id}`}
-              className="rail-item"
-              aria-hidden={copy !== 1 ? true : undefined}
-              ref={(el) => {
-                if (el && copy !== 1)
-                  el.querySelectorAll("a,button").forEach(
-                    (n) => (n.tabIndex = -1),
-                  );
-              }}
-            >
-              <PropertyCard
-                p={p}
-                favorite={favorites.has(p.id)}
-                onFavorite={onFavorite}
-              />
-            </div>
-          )),
-        )}
+        {items.map((p) => (
+          <div className="rail-item" key={p.id}>
+            <PropertyCard
+              p={p}
+              compact
+              favorite={favorites.has(p.id)}
+              onFavorite={onFavorite}
+            />
+          </div>
+        ))}
       </div>
-    </>
+      <div className="rail-buttons">
+        <button
+          className="icon-button outlined"
+          aria-label="Espacios anteriores"
+          onClick={() => scroll(-1)}
+        >
+          <ArrowLeft size={16} />
+        </button>
+        <button
+          className="icon-button outlined"
+          aria-label="Espacios siguientes"
+          onClick={() => scroll(1)}
+        >
+          <ArrowRight size={16} />
+        </button>
+      </div>
+    </div>
+  );
+}
+function Benefits() {
+  const features = [
+    [TreePine, "Naturaleza", "Respirá aire puro"],
+    [Waves, "Piscinas", "Disfrutá el verano"],
+    [CookingPot, "Parrillas", "Compartí en familia"],
+    [ShieldCheck, "Reservas seguras", "Tu tranquilidad primero"],
+    [Heart, "Apoyo local", "Anfitriones paraguayos"],
+  ];
+  return (
+    <section
+      className="home-benefits page-width"
+      id="como-funciona"
+      aria-label="Cómo funciona pyApy"
+    >
+      {features.map(([Icon, title, copy]) => (
+        <div key={title}>
+          <Icon size={34} strokeWidth={1.35} />
+          <div>
+            <strong>{title}</strong>
+            <span>{copy}</span>
+          </div>
+        </div>
+      ))}
+    </section>
   );
 }
 export default function Home() {
@@ -115,10 +123,6 @@ export default function Home() {
   const client = useQueryClient();
   const [map, setMap] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [slide, setSlide] = useState(0);
-  const [playing, setPlaying] = useState(
-    () => !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
   const [notice, setNotice] = useState("");
   const [error, setError] = useState(null);
   const resultsRef = useRef(null);
@@ -138,26 +142,18 @@ export default function Home() {
   });
   const saved = new Set(favorites.data?.items.map((p) => p.id) || []);
   const items = query.data?.items || [];
-  const hasSearch = params.size > 0;
-  useEffect(() => {
-    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const changed = () => {
-      if (preference.matches) setPlaying(false);
+  const featuredImageOrder = ["pool", "house", "cabin", "palms"];
+  const featuredItems = [...items].sort((a, b) => {
+    const rank = (property) => {
+      if (!property.isDemo) return featuredImageOrder.length;
+      const index = featuredImageOrder.findIndex(
+        (name) => property.images[0]?.url === `/demo/${name}.jpg`,
+      );
+      return index < 0 ? featuredImageOrder.length : index;
     };
-    preference.addEventListener("change", changed);
-    return () => preference.removeEventListener("change", changed);
-  }, []);
-  useEffect(() => {
-    if (!playing) return;
-    const interval = setInterval(() => {
-      if (
-        !document.hidden &&
-        !searchRef.current?.contains(document.activeElement)
-      )
-        setSlide((s) => (s + 1) % 3);
-    }, 8000);
-    return () => clearInterval(interval);
-  }, [playing]);
+    return rank(a) - rank(b);
+  });
+  const hasSearch = params.size > 0;
   async function favorite(id) {
     if (!user) return nav("/ingresar");
     try {
@@ -192,84 +188,35 @@ export default function Home() {
       setError(err);
     }
   }
-  const heroImages = ["pool", "house", "retreat"];
-  const heroAlt = [
-    "Piscina rodeada de naturaleza, imagen ilustrativa",
-    "Casa junto al agua, imagen ilustrativa",
-    "Espacio de descanso al aire libre, imagen ilustrativa",
-  ];
-  const heroImage = heroImages[slide];
   return (
-    <main className="marketplace-home">
+    <main className="marketplace-home reference-home">
       <section className="hero" aria-label="Escapadas en Paraguay">
-        <picture>
-          <source
-            media="(max-width: 700px)"
-            srcSet={`/demo/${heroImage}-640.webp`}
-            type="image/webp"
-          />
-          <source
-            srcSet={`/demo/${heroImage}-1280.webp`}
-            type="image/webp"
-          />
-          <img
-            key={heroImage}
-            className="hero-image visible"
-            src={`/demo/${heroImage}.jpg`}
-            alt={heroAlt[slide]}
-            fetchPriority="high"
-            decoding="async"
-          />
-        </picture>
+        <img
+          className="hero-image visible"
+          src="/brand/escapada-atardecer.png"
+          alt="Piscina y quincho frente al lago al atardecer, imagen ilustrativa"
+          fetchPriority="high"
+          decoding="async"
+        />
         <div className="hero-shade" />
         <div className="hero-content">
           <div className="hero-eyebrow">
-            <Sun size={16} />
-            ESCAPADAS CON RAÍCES
+            <Waves size={18} strokeWidth={1.4} /> DESCUBRÍ PARAGUAY
           </div>
           <h1>
-            Un lugar.
+            Tu próxima escapada,
             <br />
-            Tu gente.
+            <em>más cerca</em>
             <br />
-            <span>Un buen plan.</span>
+            de lo que pensás.
           </h1>
-          <p>Encontrá tu próxima escapada en Paraguay.</p>
-          <a href="#buscar" className="hero-link">
-            Encontrá tu lugar
-            <ArrowUpRight size={19} />
-          </a>
+          <p>
+            Quintas, casas y bungalows en los mejores destinos
+            <br className="desktop-break" /> del Paraguay. Naturaleza, descanso
+            y experiencias
+            <br className="desktop-break" /> únicas, todo en un solo lugar.
+          </p>
         </div>
-        <div className="hero-bottom">
-          <span>
-            <MapPin size={14} />
-            Paraguay, a tu aire.
-          </span>
-          <div className="slide-controls">
-            {heroImages.map((_, i) => (
-              <button
-                key={i}
-                className={slide === i ? "active" : ""}
-                aria-label={`Ver imagen ${i + 1}`}
-                aria-pressed={slide === i}
-                onClick={() => {
-                  setSlide(i);
-                  setPlaying(false);
-                }}
-              />
-            ))}
-            <button
-              className="slideshow-playback"
-              aria-label={playing ? "Pausar imágenes" : "Reproducir imágenes"}
-              onClick={() => setPlaying(!playing)}
-            >
-              {playing ? <Pause size={17} /> : <Play size={17} />}
-            </button>
-          </div>
-        </div>
-        {catalog.data?.demo && (
-          <span className="demo-badge">Entorno de demostración</span>
-        )}
       </section>
       <div id="buscar" ref={searchRef}>
         <SearchForm
@@ -282,6 +229,7 @@ export default function Home() {
           <ErrorMessage error={catalog.error} />
         </div>
       </div>
+      <Benefits />
       <section
         className="results-section page-width"
         id="results"
@@ -308,7 +256,12 @@ export default function Home() {
         ) : query.isPending ? (
           <Loading />
         ) : !hasSearch && !map && items.length > 0 ? (
-          <Rail items={items} favorites={saved} onFavorite={favorite} />
+          <Rail
+            items={featuredItems}
+            favorites={saved}
+            onFavorite={favorite}
+            onExplore={() => search(new URLSearchParams({ sort: "match" }))}
+          />
         ) : (
           <>
             <div className="section-heading">
@@ -372,6 +325,7 @@ export default function Home() {
                   <PropertyCard
                     key={p.id}
                     p={p}
+                    compact
                     favorite={saved.has(p.id)}
                     onFavorite={favorite}
                     onHover={setSelected}
@@ -482,44 +436,6 @@ export default function Home() {
         </div>
       </section>
       <Sponsors />
-      <section className="locations-band">
-        <div className="page-width">
-          <div className="section-heading">
-            <div>
-              <span className="eyebrow">EL PLAN TAMBIÉN ES EL CAMINO</span>
-              <h2>Un poco más allá.</h2>
-            </div>
-            <span className="muted">Lugares para volver.</span>
-          </div>
-          <div className="locations-grid">
-            {[
-              ["San Bernardino", "El lago siempre es un buen plan.", "house"],
-              ["Aregua", "Una pausa entre verde y calma.", "garden"],
-              ["Altos", "El aire cambia, vos también.", "retreat"],
-            ].map(([city, copy, img]) => (
-              <Link
-                key={city}
-                to={`/?city=${encodeURIComponent(city)}`}
-                className="location-tile"
-              >
-                <Photo
-                  src={`/demo/${img}.jpg`}
-                  alt={`Imagen ilustrativa para ${city}`}
-                  loading="lazy"
-                />
-                <div>
-                  <span>
-                    <MapPin size={14} />
-                    {city}
-                  </span>
-                  <p>{copy}</p>
-                </div>
-                <ArrowUpRight size={24} />
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
     </main>
   );
 }

@@ -21,6 +21,7 @@ test("opciones de personas permiten elegir un plan y conservar una cantidad exac
   await expect(
     page.getByLabel("Cantidad de personas", { exact: true }),
   ).toHaveValue("21");
+  await page.getByRole("button", { name: "Más filtros", exact: true }).click();
   await page.getByLabel("Cantidad de personas", { exact: true }).fill("23");
   await page.getByRole("button", { name: "Buscar espacios" }).click();
   await expect(page).toHaveURL(/guests=23/);
@@ -75,7 +76,7 @@ test("filtros conservan horario paraguayo, borrador y navegación de historial",
   await expect(page.getByLabel("Fecha de la escapada")).toHaveValue("");
   await expect(page.locator('select[name="city"]')).toHaveValue("");
   await expect(
-    page.getByRole("heading", { name: "Un lugar para cada plan." }),
+    page.getByRole("heading", { name: "Las mejores quintas te esperan" }),
   ).toBeVisible();
 });
 
@@ -124,7 +125,7 @@ test("imagen fallida conserva tarjeta accesible y enlace de detalle", async ({
     await card
       .locator(".card-image")
       .evaluate((el) => el.getBoundingClientRect().height),
-  ).toBeGreaterThan(150);
+  ).toBeGreaterThan(90);
 });
 
 test("identidad responsive, menú con teclado y movimiento reducido", async ({
@@ -139,10 +140,10 @@ test("identidad responsive, menú con teclado y movimiento reducido", async ({
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await expect(
-    page.getByRole("button", { name: "Reproducir imágenes" }),
+    page.getByRole("heading", { name: /Tu próxima escapada/ }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "Un lugar para cada plan." }),
+    page.getByRole("heading", { name: "Las mejores quintas te esperan" }),
   ).toBeVisible();
   await expect
     .poll(() =>

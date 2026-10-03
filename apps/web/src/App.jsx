@@ -16,6 +16,7 @@ import {
   LayoutDashboard,
   ShieldCheck,
   LogOut,
+  MapPin,
   Menu,
   X,
 } from "lucide-react";
@@ -27,12 +28,14 @@ const Account = lazy(() => import("./Account.jsx"));
 const Owner = lazy(() => import("./Owner.jsx"));
 const Admin = lazy(() => import("./Admin.jsx"));
 function Auth() {
-  const [register, setRegister] = useState(false);
+  const location = useLocation();
+  const [register, setRegister] = useState(
+    () => new URLSearchParams(location.search).get("mode") === "registro",
+  );
   const [error, setError] = useState(null);
   const [pending, setPending] = useState(false);
   const client = useQueryClient();
   const nav = useNavigate();
-  const location = useLocation();
   async function submit(e) {
     e.preventDefault();
     setError(null);
@@ -143,6 +146,7 @@ function Header({ user }) {
   const menuButtonRef = useRef(null);
   const menuId = useId();
   const location = useLocation();
+  const isHome = location.pathname === "/";
   const client = useQueryClient();
   const nav = useNavigate();
   useEffect(() => setOpen(false), [location.pathname, location.search]);
@@ -181,23 +185,42 @@ function Header({ user }) {
     <header className="site-header">
       <Link className="brand" to="/">
         <img className="chosen-logo" src="/brand/logoElegido.png" alt="pyApy" />
+        {isHome && (
+          <span className="brand-tagline">Quintas · Casas · Bungalows</span>
+        )}
       </Link>
       <nav
         id={menuId}
         aria-label="Navegación principal"
         className={open ? "open" : ""}
       >
-        <NavLink to="/" end>
-          <Compass size={16} />
-          Explorar
-        </NavLink>
+        {isHome ? (
+          <>
+            <NavLink to="/" end>
+              Inicio
+            </NavLink>
+            <Link to="/?sort=match#results">Explorar</Link>
+            <a href="/#como-funciona">Cómo funciona</a>
+            <Link
+              className="nav-host-link"
+              to={user ? "/propietario" : "/ingresar"}
+            >
+              Soy Anfitrión
+            </Link>
+          </>
+        ) : (
+          <NavLink to="/" end>
+            <Compass size={16} />
+            Explorar
+          </NavLink>
+        )}
         <Link
           className="mobile-host-link"
           to={user ? "/propietario" : "/ingresar"}
         >
           Publicar mi espacio <ArrowUpRight size={16} />
         </Link>
-        {user && (
+        {!isHome && user && (
           <>
             <NavLink to="/favoritos">
               <Heart size={16} />
@@ -209,13 +232,13 @@ function Header({ user }) {
             </NavLink>
           </>
         )}
-        {user?.role === "owner" && (
+        {!isHome && user?.role === "owner" && (
           <NavLink to="/propietario">
             <LayoutDashboard size={16} />
             Mi espacio
           </NavLink>
         )}
-        {user?.role === "admin" && (
+        {!isHome && user?.role === "admin" && (
           <NavLink to="/admin">
             <ShieldCheck size={16} />
             Administracion
@@ -223,6 +246,20 @@ function Header({ user }) {
         )}
       </nav>
       <div className="header-actions">
+        {isHome && (
+          <>
+            <span className="header-country">
+              <MapPin size={16} /> Paraguay
+            </span>
+            <Link
+              className="icon-button header-favorite"
+              to={user ? "/favoritos" : "/ingresar"}
+              aria-label="Mis favoritos"
+            >
+              <Heart size={19} />
+            </Link>
+          </>
+        )}
         <Link className="host-link" to={user ? "/propietario" : "/ingresar"}>
           Publicar mi espacio
           <ArrowUpRight size={16} />
@@ -250,9 +287,16 @@ function Header({ user }) {
             </button>
           </>
         ) : (
-          <Link className="login-link" to="/ingresar">
-            Ingresar
-          </Link>
+          <>
+            <Link className="login-link" to="/ingresar">
+              Ingresar
+            </Link>
+            {isHome && (
+              <Link className="register-link" to="/ingresar?mode=registro">
+                Registrarse
+              </Link>
+            )}
+          </>
         )}
         <button
           ref={menuButtonRef}
@@ -289,57 +333,93 @@ export default function App() {
   const user = session.data?.user;
   const location = useLocation();
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
+    const target =
+      location.hash && document.getElementById(location.hash.slice(1));
+    if (target) target.scrollIntoView();
+    else window.scrollTo(0, 0);
+  }, [location.pathname, location.hash]);
   return (
     <SessionContext.Provider value={{ user, session }}>
-      <a className="skip-link" href="#main">
-        Ir al contenido
-      </a>
-      {location.pathname !== "/ingresar" && <Header user={user} />}
-      <div id="main">
-        <ErrorMessage error={session.error} />
-        <Suspense
-          fallback={
-            location.pathname.startsWith("/espacios/") ? (
-              <DetailRouteLoading />
-            ) : (
-              <Loading />
-            )
-          }
-        >
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/ingresar" element={<Auth />} />
-            <Route path="/espacios/:id" element={<Detail />} />
-            <Route path="/reservas" element={<Account view="reservas" />} />
-            <Route path="/favoritos" element={<Account view="favoritos" />} />
-            <Route path="/cuenta" element={<Account view="cuenta" />} />
-            <Route path="/propietario" element={<Owner />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route
-              path="*"
-              element={
-                <main className="page">
-                  <h1>Esta pagina no existe.</h1>
-                  <Link to="/">Volver a explorar</Link>
-                </main>
-              }
-            />
-          </Routes>
-        </Suspense>
+      <div className={location.pathname === "/" ? "reference-site" : ""}>
+        <a className="skip-link" href="#main">
+          Ir al contenido
+        </a>
+        {location.pathname !== "/ingresar" && <Header user={user} />}
+        <div id="main">
+          <ErrorMessage error={session.error} />
+          <Suspense
+            fallback={
+              location.pathname.startsWith("/espacios/") ? (
+                <DetailRouteLoading />
+              ) : (
+                <Loading />
+              )
+            }
+          >
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/ingresar" element={<Auth />} />
+              <Route path="/espacios/:id" element={<Detail />} />
+              <Route path="/reservas" element={<Account view="reservas" />} />
+              <Route path="/favoritos" element={<Account view="favoritos" />} />
+              <Route path="/cuenta" element={<Account view="cuenta" />} />
+              <Route path="/propietario" element={<Owner />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route
+                path="*"
+                element={
+                  <main className="page">
+                    <h1>Esta pagina no existe.</h1>
+                    <Link to="/">Volver a explorar</Link>
+                  </main>
+                }
+              />
+            </Routes>
+          </Suspense>
+        </div>
+        <footer className="site-footer">
+          {location.pathname === "/" ? (
+            <>
+              <p className="home-footer-copy">
+                <Heart size={12} /> PYAPY — VIVÍ PARAGUAY, VIVÍ SUS QUINTAS
+              </p>
+              <svg
+                className="footer-waves"
+                viewBox="0 0 1440 100"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M0 12C80-10 96 80 200 68S350 63 430 100H0Z"
+                  fill="#d2decc"
+                />
+                <path d="M0 57C150 45 192 94 355 100H0Z" fill="#afc7ab" />
+                <path
+                  d="M1160 100C1280 17 1310 96 1440 24V100Z"
+                  fill="#d2decc"
+                />
+              </svg>
+              <img
+                className="footer-flower"
+                src="/brand/nanduti-flower.svg"
+                alt=""
+              />
+            </>
+          ) : (
+            <>
+              <Link className="brand" to="/">
+                <img
+                  className="chosen-logo"
+                  src="/brand/logoElegido.png"
+                  alt="pyApy"
+                />
+              </Link>
+              <p>Un lugar. Tu gente. Un buen plan.</p>
+              <span>Inspirados en los hilos del encaje ju y el ñandutí.</span>
+            </>
+          )}
+        </footer>
       </div>
-      <footer className="site-footer">
-        <Link className="brand" to="/">
-          <img
-            className="chosen-logo"
-            src="/brand/logoElegido.png"
-            alt="pyApy"
-          />
-        </Link>
-        <p>Un lugar. Tu gente. Un buen plan.</p>
-        <span>Inspirados en los hilos del encaje ju y el ñandutí.</span>
-      </footer>
     </SessionContext.Provider>
   );
 }

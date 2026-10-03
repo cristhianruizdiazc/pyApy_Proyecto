@@ -28,6 +28,36 @@ const guestOptions = [
   ["21", "Más de 20 personas"],
   ["31", "Más de 30 personas"],
 ];
+const shifts = [
+  {
+    value: "full",
+    label: "Día completo (24 horas)",
+    start: "09:00",
+    end: "09:00",
+    hours: 24,
+  },
+  {
+    value: "day",
+    label: "Día (09:00–17:00)",
+    start: "09:00",
+    end: "17:00",
+    hours: 8,
+  },
+  {
+    value: "morning",
+    label: "Mañana (09:00–13:00)",
+    start: "09:00",
+    end: "13:00",
+    hours: 4,
+  },
+  {
+    value: "afternoon",
+    label: "Tarde (13:00–17:00)",
+    start: "13:00",
+    end: "17:00",
+    hours: 4,
+  },
+];
 const categories = [
   { label: "Todos", icon: Sun, value: "" },
   { label: "Quintas", icon: TreePine, value: "Quinta" },
@@ -78,7 +108,7 @@ function initialDraft(params) {
     ],
     date: "",
     start: "09:00",
-    end: "17:00",
+    end: "09:00",
     endDate: "",
     dateError: "",
   };
@@ -146,10 +176,6 @@ export default function SearchForm({ catalog, params, onSearch }) {
       .filter((code) => !amenities.some((amenity) => amenity.code === code))
       .map((code) => ({ code, label: code })),
   ];
-  const activeCount =
-    [draft.city, draft.date, draft.guests, draft.budget, draft.kind].filter(
-      Boolean,
-    ).length + draft.amenities.length;
   const crossesMidnight = period.start && period.end.date !== period.start.date;
   const schedule = period.interval
     ? `Desde ${period.start.time} – Hasta ${period.end.time}${
@@ -160,6 +186,33 @@ export default function SearchForm({ catalog, params, onSearch }) {
           : ""
       }`
     : `Desde ${draft.start} – Hasta ${draft.end}`;
+
+  const selectedShift =
+    shifts.find(
+      (shift) =>
+        shift.start === draft.start &&
+        shift.end === draft.end &&
+        period.interval &&
+        (Date.parse(period.interval.endsAt) -
+          Date.parse(period.interval.startsAt)) /
+          3600000 ===
+          shift.hours,
+    )?.value || "custom";
+  function updateShift(value) {
+    const shift = shifts.find((shift) => shift.value === value);
+    if (!shift) {
+      setExpanded(true);
+      return;
+    }
+    setDraft((current) => ({
+      ...current,
+      start: shift.start,
+      end: shift.end,
+      endDate: "",
+      dateError: "",
+    }));
+    setError("");
+  }
 
   function update(field, value) {
     setDraft((current) => ({
@@ -248,7 +301,7 @@ export default function SearchForm({ catalog, params, onSearch }) {
           <label>
             <span>
               <MapPin size={16} aria-hidden="true" />
-              Dónde
+              Zona / Ciudad
             </span>
             <select
               name="city"
@@ -270,7 +323,7 @@ export default function SearchForm({ catalog, params, onSearch }) {
           <label>
             <span>
               <CalendarDays size={16} aria-hidden="true" />
-              Cuándo
+              Fecha de salida
             </span>
             <input
               name="date"
@@ -281,6 +334,42 @@ export default function SearchForm({ catalog, params, onSearch }) {
               onChange={(event) => update("date", event.target.value)}
             />
           </label>
+          <div className="search-shift">
+            <label>
+              <span>
+                <Clock3 size={17} aria-hidden="true" />
+                Horario / Turno
+              </span>
+              <select
+                name="shift"
+                aria-label="Horario / Turno"
+                value={selectedShift}
+                onChange={(event) => updateShift(event.target.value)}
+              >
+                {shifts.map((shift) => (
+                  <option key={shift.value} value={shift.value}>
+                    {shift.label}
+                  </option>
+                ))}
+                <option value="custom">
+                  {selectedShift === "custom"
+                    ? "Personalizado: " + draft.start + "–" + draft.end
+                    : "Personalizar horario"}
+                </option>
+              </select>
+            </label>
+            <button
+              type="button"
+              className={"filter-button" + (expanded ? " active" : "")}
+              aria-label={expanded ? "Menos filtros" : "Más filtros"}
+              title="Personalizar búsqueda"
+              aria-expanded={expanded}
+              aria-controls={panelId}
+              onClick={() => setExpanded((current) => !current)}
+            >
+              <SlidersHorizontal size={14} />
+            </button>
+          </div>
           <div className="guest-search-field">
             <span>
               <Users size={16} aria-hidden="true" />
@@ -288,20 +377,93 @@ export default function SearchForm({ catalog, params, onSearch }) {
             </span>
             <select
               aria-label="Tamaño del grupo"
-              value={
-                guestOptions.some(([value]) => value === draft.guests)
-                  ? draft.guests
-                  : ""
-              }
+              value={draft.guests}
               onChange={(event) => update("guests", event.target.value)}
             >
               <option value="">Cantidad de personas</option>
+              {draft.guests &&
+                !guestOptions.some(([value]) => value === draft.guests) && (
+                  <option value={draft.guests}>{draft.guests} personas</option>
+                )}
               {guestOptions.map(([value, label]) => (
                 <option key={value} value={value}>
                   {label}
                 </option>
               ))}
             </select>
+          </div>
+          <label>
+            <span>
+              <SlidersHorizontal size={17} aria-hidden="true" />
+              Presupuesto máx.
+            </span>
+            <select
+              aria-label="Presupuesto máximo total"
+              value={
+                ["", "300000", "500000", "1000000"].includes(draft.budget)
+                  ? draft.budget
+                  : "custom"
+              }
+              onChange={(event) => {
+                if (event.target.value === "custom") setExpanded(true);
+                else update("budget", event.target.value);
+              }}
+            >
+              <option value="">Cualquier precio</option>
+              <option value="300000">Hasta Gs. 300.000</option>
+              <option value="500000">Hasta Gs. 500.000</option>
+              <option value="1000000">Hasta Gs. 1.000.000</option>
+              <option value="custom">
+                {draft.budget &&
+                !["300000", "500000", "1000000"].includes(draft.budget)
+                  ? "Gs. " + Number(draft.budget).toLocaleString("es-PY")
+                  : "Otro presupuesto"}
+              </option>
+            </select>
+          </label>
+          <button className="primary search-button" type="submit">
+            <Search size={20} aria-hidden="true" />
+            <span aria-hidden="true">Buscar</span>
+            <span className="sr-only">Buscar espacios</span>
+          </button>
+        </div>
+        {message && (
+          <p className="search-error" id={errorId} role="alert">
+            {message}
+          </p>
+        )}
+        <div
+          id={panelId}
+          className={`advanced-filters${expanded ? " expanded" : ""}`}
+          hidden={!expanded}
+        >
+          <p className="search-schedule">
+            <Clock3 size={15} /> Horario de búsqueda:{" "}
+            <strong>{schedule}</strong>
+          </p>
+          <div className="search-options">
+            <div className="category-tabs" role="group" aria-label="Categorías">
+              {categories.map(({ label, icon: Icon, value }) => (
+                <button
+                  key={label}
+                  type="button"
+                  className={draft.kind === value ? "active" : ""}
+                  aria-pressed={draft.kind === value}
+                  onClick={() => {
+                    const nextDraft = { ...draft, kind: value };
+                    setDraft(nextDraft);
+                    search(nextDraft);
+                  }}
+                >
+                  <Icon size={19} aria-hidden="true" />
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <label>
+            Cantidad exacta de personas{" "}
             <input
               name="guests"
               type="number"
@@ -313,70 +475,7 @@ export default function SearchForm({ catalog, params, onSearch }) {
               aria-label="Cantidad de personas"
               onChange={(event) => update("guests", event.target.value)}
             />
-          </div>
-          <button className="primary search-button" type="submit">
-            <Search size={20} aria-hidden="true" />
-            Buscar espacios
-          </button>
-        </div>
-        <div className="search-options">
-          <div className="category-tabs" role="group" aria-label="Categorías">
-            {categories.map(({ label, icon: Icon, value }) => (
-              <button
-                key={label}
-                type="button"
-                className={draft.kind === value ? "active" : ""}
-                aria-pressed={draft.kind === value}
-                onClick={() => {
-                  const nextDraft = { ...draft, kind: value };
-                  setDraft(nextDraft);
-                  search(nextDraft);
-                }}
-              >
-                <Icon size={19} aria-hidden="true" />
-                {label}
-              </button>
-            ))}
-          </div>
-          <button
-            type="button"
-            className={`filter-button${expanded ? " active" : ""}`}
-            aria-expanded={expanded}
-            aria-controls={panelId}
-            onClick={() => setExpanded((current) => !current)}
-          >
-            <SlidersHorizontal size={17} aria-hidden="true" />
-            {expanded ? "Menos filtros" : "Más filtros"}
-            {activeCount > 0 && (
-              <small
-                className="filter-count"
-                aria-label={`${activeCount} filtros activos`}
-              >
-                {activeCount}
-              </small>
-            )}
-          </button>
-        </div>
-        <button
-          type="button"
-          className="search-schedule"
-          aria-expanded={expanded}
-          aria-controls={panelId}
-          onClick={() => setExpanded((current) => !current)}
-        >
-          <Clock3 size={15} aria-hidden="true" />
-          Horario de búsqueda: <strong>{schedule}</strong>
-        </button>
-        {message && (
-          <p className="search-error" id={errorId} role="alert">
-            {message}
-          </p>
-        )}
-        <div
-          id={panelId}
-          className={`advanced-filters${expanded ? " expanded" : ""}`}
-          hidden={!expanded}
-        >
+          </label>
           <label>
             Desde
             <input
