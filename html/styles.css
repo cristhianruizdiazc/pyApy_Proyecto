@@ -136,6 +136,13 @@ small {
   font-size: 24px;
   font-weight: 400;
 }
+.brand .chosen-logo {
+  display: block;
+  width: 65px;
+  height: 64px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
 .header-nav {
   display: flex;
   gap: 26px;
