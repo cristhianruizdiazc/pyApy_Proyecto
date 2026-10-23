@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "overrides": {
+    "ip-address": "10.7.4",
+    "shell-quote": "1.12.0",
     "xcode": {
       "uuid": "11.1.1"
     }
@@ -36,6 +38,8 @@
     "lint": "eslint apps packages scripts tests",
     "test": "node scripts/test.mjs",
     "test:e2e": "playwright test",
+    "staging:smoke": "node scripts/staging-smoke.mjs",
+    "staging:monitor": "node scripts/staging-monitor.mjs",
     "check": "npm run lint && npm test && npm run build"
   },
   "devDependencies": {

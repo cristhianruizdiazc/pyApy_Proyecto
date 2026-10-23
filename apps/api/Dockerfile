@@ -5,7 +5,7 @@ COPY apps/api/package.json apps/api/package.json
 COPY apps/web/package.json apps/web/package.json
 COPY apps/mobile/package.json apps/mobile/package.json
 COPY packages/contracts/package.json packages/contracts/package.json
-RUN npm ci --omit=dev --workspace=@pyapy/api --workspace=@pyapy/contracts && npm cache clean --force
+RUN npm ci --fetch-retries=5 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000 --omit=dev --workspace=@pyapy/api --workspace=@pyapy/contracts && npm cache clean --force
 COPY --chown=node:node apps/api/src apps/api/src
 COPY --chown=node:node packages/contracts packages/contracts
 COPY --chown=node:node database database
@@ -22,7 +22,7 @@ COPY apps/api/package.json apps/api/package.json
 COPY apps/web/package.json apps/web/package.json
 COPY apps/mobile/package.json apps/mobile/package.json
 COPY packages/contracts/package.json packages/contracts/package.json
-RUN npm ci && npm cache clean --force
+RUN npm ci --fetch-retries=5 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000 --fetch-timeout=600000 --maxsockets=1 && npm cache clean --force
 COPY --chown=node:node apps/api/src apps/api/src
 COPY --chown=node:node packages/contracts packages/contracts
 COPY --chown=node:node database database

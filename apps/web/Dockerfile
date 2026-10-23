@@ -5,7 +5,7 @@ COPY apps/api/package.json apps/api/package.json
 COPY apps/web/package.json apps/web/package.json
 COPY apps/mobile/package.json apps/mobile/package.json
 COPY packages/contracts/package.json packages/contracts/package.json
-RUN npm ci --workspace=@pyapy/web --workspace=@pyapy/contracts
+RUN npm ci --fetch-retries=5 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000 --workspace=@pyapy/web --workspace=@pyapy/contracts
 COPY packages/contracts packages/contracts
 COPY apps/web apps/web
 RUN npm run build --workspace=@pyapy/web

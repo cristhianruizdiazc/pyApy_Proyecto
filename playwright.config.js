@@ -12,6 +12,11 @@ export default defineConfig({
   reporter: "list",
   use: {
     baseURL: process.env.WEB_URL || local.url || "http://127.0.0.1:5173",
+    ignoreHTTPSErrors:
+      process.env.STAGING_ALLOW_LOCAL_TLS === "true" &&
+      /^https:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(
+        process.env.WEB_URL || "",
+      ),
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },

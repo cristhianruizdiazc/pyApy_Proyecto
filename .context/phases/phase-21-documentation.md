@@ -1,6 +1,6 @@
 # Fase 21: Documentacion
 
-Fecha de inicio y cierre: 2026-09-26. Estado: **CERRADA**.
+Fecha de inicio y cierre: 2026-09-26. Revalidada: 2026-09-27. Estado: **CERRADA**.
 
 ## Alcance
 
@@ -72,4 +72,4 @@ Fase 21 cerrada. Esperar autorizacion expresa para avanzar a la Fase 22.
 - Se actualizo el README raiz y los documentos de contexto para reflejar el cierre CI y los limites comprobados.
 - Se preservaron los documentos de fase y ADR existentes como evidencia historica.
 
-El resultado de la verificacion de enlaces, formato y gates se registrara antes del cierre.
+La revalidación del cierre confirmó el formato documental con `npx prettier --check`, el gate general con `npm run check` (lint, 23 pruebas y build) y `git diff --check`. No se modificaron contratos, esquema ni infraestructura durante esta revalidación.

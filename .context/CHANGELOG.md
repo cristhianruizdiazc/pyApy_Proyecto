@@ -1,5 +1,54 @@
 # Historial de trabajo
 
+## 2026-10-22 - Fase 24 preproduccion aislada
+
+- Desplegado `pyapy-staging` con API en modo produccion, TLS local, DB/uploads persistentes y servicios internos no publicados.
+- Aprobados smoke, E2E de sesion/cookie segura, 23/23 pruebas de concurrencia/seguridad y probe de monitoreo.
+- Generados backups de PostgreSQL y uploads; restore aislado confirmo dos migraciones y el constraint de exclusion.
+- Ensayado rollback real a las imagenes RC anteriores y retorno a candidatas, con health y smoke en ambos sentidos.
+- Documentada la brecha externa: sin host/dominio, CA publica, secretos gestionados, alertas remotas ni dispositivo nativo no se propone produccion.
+
+## 2026-10-22 - Revalidación y cierre de Fase 23
+
+- Actualizados parches de Vite, sharp, Expo y expo-crypto; fijados shell-quote e ip-address corregidos.
+- Aprobados instalación limpia, setup, lint, 23 pruebas, build web, 45 E2E, export Android/iOS, permisos, reporte PHP y restore aislado.
+- Iniciado Docker Desktop y comprobados build, runtime saludable, web/API, 23 pruebas en contenedor y persistencia de DB/uploads.
+- Dockerfiles endurecidos con reintentos y descarga serializada para tolerar resets del registro npm.
+- Registrados 16 advisories altos upstream de Expo/Metro sin parche compatible; no se aplicó un downgrade mayor destructivo.
+- Fase 23 cerrada como candidata técnica local, sin declarar staging ni producción.
+
+## 2026-09-27 - Candidata técnica Fase 23
+
+- Instalación limpia con `npm ci --ignore-scripts`, migraciones y fixtures ficticios verificados.
+- `npm run check`, mobile check, exportación Android/iOS y auditoría de dependencias aprobados.
+- E2E oficial aislada: 43 pruebas aprobadas y una repetición responsive omitida deliberadamente.
+- Docker runtime e instalación física nativa quedan pendientes por limitaciones del entorno; no se declara release de producción.
+
+## 2026-09-27 - Fase 22 Auditoria final
+
+- Creada la matriz formal antes/despues con los 21 riesgos clasificados y evidencia por estado.
+- Reejecutados `npm run check`, compatibilidad Expo, verificacion de contenedores, auditoria de dependencias y restauracion aislada de PostgreSQL.
+- Confirmadas las brechas de produccion: Docker runtime, staging, dispositivos nativos, recuperacion de cuenta, MFA, backup de archivos, carga e integraciones externas.
+- Fase 22 cerrada sin declarar pyApy 1.0 ni produccion lista.
+
+## 2026-09-27 - APK móvil de demostración offline
+
+- Incorporado un modo de demostración compilable mediante `EXPO_PUBLIC_OFFLINE_DEMO=true`: catálogo ilustrativo y tres fotografías locales incluidos en el APK, sin llamadas a API ni base de datos.
+- Definido el identificador Android `com.pyapy.mobile` y generado localmente `android/app/build/outputs/apk/debug/app-debug.apk` para instalación directa.
+- El artefacto está firmado con la clave de depuración de Android: sirve para una demostración en teléfono, pero no para publicar en Play Store ni como distribución de producción.
+
+## 2026-09-26 - Ajustes visuales y calendario movil
+
+- Aplicada Poppins a la interfaz movil con cinco pesos empaquetados y jerarquia tipografica ajustada.
+- Reemplazada la digitacion de fecha por el calendario nativo en busqueda y reserva, con fecha minima de hoy y formato visible en espanol.
+- Campos de texto y selector de fecha usan radio de 10 px; el hero mantiene su fotografia local y fija el mensaje anterior como superposicion inferior.
+- Agregadas dependencias Expo compatibles para fuentes y fecha, con lockfile y plugins nativos sincronizados.
+
+## 2026-09-26 - Hero móvil con imagen local
+
+- La portada de Expo ahora empaqueta la misma foto demo `pool.jpg` del hero web, en vez de solicitarla por HTTP a la API.
+- El hero conserva el encuadre `cover`, texto legible y una etiqueta accesible; la fotografía queda disponible aunque el emulador no tenga Internet.
+
 ## 2026-09-26 - Fase 21 Documentacion
 
 - Consolidada la guia de desarrollo en `docs/DEVELOPMENT.md` y la guia de operacion/entrega en `docs/OPERATIONS.md`.

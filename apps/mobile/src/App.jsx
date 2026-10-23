@@ -4,17 +4,25 @@ import {
   Alert,
   Image,
   Modal,
+  Platform,
   Pressable,
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
+  Text as NativeText,
   TextInput,
   View,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import Feather from "@expo/vector-icons/Feather";
+import { Poppins_400Regular } from "@expo-google-fonts/poppins/400Regular";
+import { Poppins_500Medium } from "@expo-google-fonts/poppins/500Medium";
+import { Poppins_600SemiBold } from "@expo-google-fonts/poppins/600SemiBold";
+import { Poppins_700Bold } from "@expo-google-fonts/poppins/700Bold";
+import { Poppins_800ExtraBold } from "@expo-google-fonts/poppins/800ExtraBold";
+import { useFonts } from "@expo-google-fonts/poppins/useFonts";
 import * as SecureStore from "expo-secure-store";
 import * as Crypto from "expo-crypto";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -24,9 +32,116 @@ import { createClient } from "@pyapy/contracts/client";
 import { localInterval, money } from "@pyapy/contracts";
 import { synchronize } from "@pyapy/contracts/offline";
 const BASE = process.env.EXPO_PUBLIC_API_URL || "http://10.0.2.2:4100/api/v1";
+const OFFLINE_DEMO = process.env.EXPO_PUBLIC_OFFLINE_DEMO === "true";
 const origin = new URL(BASE).origin;
+const heroImage = require("../../web/public/demo/pool.jpg");
+const demoImageSources = {
+  "/demo/pool.jpg": heroImage,
+  "/demo/house.jpg": require("../../web/public/demo/house.jpg"),
+  "/demo/retreat.jpg": require("../../web/public/demo/retreat.jpg"),
+};
+const offlineCatalog = {
+  amenities: [
+    { code: "pool", label: "Piscina" },
+    { code: "grill", label: "Parrilla" },
+    { code: "kitchen", label: "Cocina" },
+    { code: "parking", label: "Estacionamiento" },
+    { code: "wifi", label: "Wi-Fi" },
+  ],
+};
+const offlineProperties = [
+  {
+    id: "demo-pool",
+    name: "Quinta del Sol",
+    description:
+      "Espacio ilustrativo para una tarde de piscina, descanso y encuentros con tu gente.",
+    city: "Aregua",
+    department: "Central",
+    zone: "Alrededores del centro",
+    kind: "Quinta",
+    capacity: 18,
+    latitude: -25.312,
+    longitude: -57.384,
+    pricePerHour: 65000,
+    minHours: 4,
+    maxHours: 48,
+    cancellationHours: 24,
+    rules: "Respetar la capacidad maxima y cuidar los espacios comunes.",
+    isDemo: true,
+    amenities: ["pool", "grill", "parking", "wifi"],
+    images: [{ url: "/demo/pool.jpg" }],
+    reviews: [],
+  },
+  {
+    id: "demo-house",
+    name: "Casa del Lago",
+    description:
+      "Una casa ilustrativa junto al agua para desconectarse y compartir una escapada tranquila.",
+    city: "San Bernardino",
+    department: "Cordillera",
+    zone: "Costa del lago",
+    kind: "Casa",
+    capacity: 10,
+    latitude: -25.308,
+    longitude: -57.3,
+    pricePerHour: 80000,
+    minHours: 4,
+    maxHours: 48,
+    cancellationHours: 24,
+    rules:
+      "Consultar antes de organizar eventos y respetar el horario acordado.",
+    isDemo: true,
+    amenities: ["pool", "kitchen", "wifi"],
+    images: [{ url: "/demo/house.jpg" }],
+    reviews: [],
+  },
+  {
+    id: "demo-retreat",
+    name: "Refugio de Pirayu",
+    description:
+      "Un refugio ilustrativo al aire libre, pensado para descansar entre naturaleza paraguaya.",
+    city: "Pirayu",
+    department: "Paraguari",
+    zone: "Alrededores del centro",
+    kind: "Casa",
+    capacity: 10,
+    latitude: -25.485,
+    longitude: -57.236,
+    pricePerHour: 55000,
+    minHours: 4,
+    maxHours: 48,
+    cancellationHours: 24,
+    rules: "Respetar la capacidad maxima y cuidar los espacios comunes.",
+    isDemo: true,
+    amenities: ["pool", "grill", "kitchen"],
+    images: [{ url: "/demo/retreat.jpg" }],
+    reviews: [],
+  },
+];
+const fontForWeight = {
+  500: "Poppins_500Medium",
+  600: "Poppins_600SemiBold",
+  700: "Poppins_700Bold",
+  800: "Poppins_800ExtraBold",
+};
+function Text({ style, ...props }) {
+  const weight = String(StyleSheet.flatten(style)?.fontWeight || "400");
+  return (
+    <NativeText
+      {...props}
+      style={[
+        { fontFamily: fontForWeight[weight] || "Poppins_400Regular" },
+        style,
+      ]}
+    />
+  );
+}
 const imageUrl = (p) =>
   p.images?.[0]?.url ? `${origin}${p.images[0].url}` : null;
+const imageSource = (p) => {
+  const path = p.images?.[0]?.url;
+  return demoImageSources[path] || (imageUrl(p) ? { uri: imageUrl(p) } : null);
+};
 const cacheKey = (id) => `pyapy.private.${id}`;
 const emptyState = () => ({ bookings: [], favorites: [], queue: [] });
 function Button({ title, icon, onPress, disabled, secondary = false }) {
@@ -66,7 +181,69 @@ function Field({ label, value, onChangeText, ...props }) {
     </View>
   );
 }
+const localDate = (value) => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value || "")) return new Date();
+  const [year, month, day] = value.split("-").map(Number);
+  const parsed = new Date(year, month - 1, day, 12);
+  return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
+};
+const dateValue = (value) => {
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+const visibleDate = (value) =>
+  new Intl.DateTimeFormat("es-PY", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }).format(localDate(value));
+function DateField({ label, value, onChange, placeholder = "Elegir fecha" }) {
+  const [open, setOpen] = useState(false);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return (
+    <View style={s.field}>
+      <Text style={s.label}>{label}</Text>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${label}. ${value ? visibleDate(value) : placeholder}`}
+        accessibilityHint="Abre el calendario"
+        onPress={() => setOpen(true)}
+        style={s.dateInput}
+      >
+        <Text style={[s.dateText, !value && s.datePlaceholder]}>
+          {value ? visibleDate(value) : placeholder}
+        </Text>
+        <Feather name="calendar" size={19} color="#194b3b" />
+      </Pressable>
+      {open && (
+        <>
+          <DateTimePicker
+            value={localDate(value)}
+            mode="date"
+            display={Platform.OS === "ios" ? "inline" : "calendar"}
+            minimumDate={today}
+            locale="es-PY"
+            onChange={(event, selectedDate) => {
+              if (Platform.OS === "android") setOpen(false);
+              if (event.type === "set" && selectedDate)
+                onChange(dateValue(selectedDate));
+            }}
+          />
+          {Platform.OS === "ios" && (
+            <Pressable style={s.dateDone} onPress={() => setOpen(false)}>
+              <Text style={s.dateDoneText}>Listo</Text>
+            </Pressable>
+          )}
+        </>
+      )}
+    </View>
+  );
+}
 function Property({ p, onSelect, onFavorite, favorite }) {
+  const source = imageSource(p);
   return (
     <View style={s.property}>
       <Pressable
@@ -74,8 +251,8 @@ function Property({ p, onSelect, onFavorite, favorite }) {
         accessibilityRole="button"
         accessibilityLabel={`Ver ${p.name}`}
       >
-        {imageUrl(p) ? (
-          <Image source={{ uri: imageUrl(p) }} style={s.photo} />
+        {source ? (
+          <Image source={source} style={s.photo} />
         ) : (
           <View style={[s.photo, s.placeholder]}>
             <Feather name="image" size={30} color="#73806a" />
@@ -257,8 +434,14 @@ function AppContent() {
           setCatalog(c.catalog);
         }
         const net = await NetInfo.fetch();
-        setOnline(Boolean(net.isConnected));
-        if (net.isConnected) {
+        setOnline(!OFFLINE_DEMO && Boolean(net.isConnected));
+        if (OFFLINE_DEMO) {
+          setItems(offlineProperties);
+          setCatalog(offlineCatalog);
+          setMessage(
+            "Modo demostracion: espacios y fotos incluidos en la app.",
+          );
+        } else if (net.isConnected) {
           await loadCatalog();
           if (storedToken) {
             const session = await api("/auth/session");
@@ -277,7 +460,7 @@ function AppContent() {
     }
     init();
     const unsubscribe = NetInfo.addEventListener((state) =>
-      setOnline(Boolean(state.isConnected)),
+      setOnline(!OFFLINE_DEMO && Boolean(state.isConnected)),
     );
     return () => {
       alive = false;
@@ -337,7 +520,11 @@ function AppContent() {
   async function search() {
     await action(async () => {
       if (!online) {
-        setMessage("Sin conexion: los resultados son del catalogo guardado.");
+        setMessage(
+          OFFLINE_DEMO
+            ? "Modo demostracion: los espacios son ilustrativos."
+            : "Sin conexion: los resultados son del catalogo guardado.",
+        );
         return;
       }
       const q = new URLSearchParams({ guests });
@@ -473,7 +660,9 @@ function AppContent() {
             pyApy<Text style={{ color: "#bc513e" }}>.</Text>
           </Text>
         </Pressable>
-        <Text style={s.connection}>{online ? "En linea" : "Sin conexion"}</Text>
+        <Text style={s.connection}>
+          {OFFLINE_DEMO ? "Modo demo" : online ? "En linea" : "Sin conexion"}
+        </Text>
         <Pressable
           accessibilityLabel="Mi cuenta"
           onPress={() => (user ? chooseTab("account") : setAuthOpen(true))}
@@ -520,9 +709,9 @@ function AppContent() {
                 secondary
                 onPress={() => setSelected(null)}
               />
-              {imageUrl(selected) && (
+              {imageSource(selected) && (
                 <Image
-                  source={{ uri: imageUrl(selected) }}
+                  source={imageSource(selected)}
                   style={[s.photo, { marginTop: 20 }]}
                 />
               )}
@@ -552,14 +741,14 @@ function AppContent() {
                 secondary
                 onPress={() => favorite(selected)}
               />
-              <Field
-                label="Fecha (AAAA-MM-DD)"
+              <DateField
+                label="Fecha"
                 value={date}
-                onChangeText={(v) => {
+                onChange={(v) => {
                   setDate(v);
                   setQuote(null);
                 }}
-                placeholder="2026-10-15"
+                placeholder="Elegir fecha"
               />
               <View style={s.row}>
                 <View style={s.flex}>
@@ -669,13 +858,15 @@ function AppContent() {
                 <>
                   <View style={s.hero}>
                     <Image
-                      source={{ uri: `${origin}/demo/pool.jpg` }}
-                      style={StyleSheet.absoluteFillObject}
+                      source={heroImage}
+                      style={s.heroImage}
+                      resizeMode="cover"
+                      accessibilityLabel="Piscina rodeada de naturaleza, imagen ilustrativa"
                     />
                     <View style={s.heroText}>
                       <Text style={s.heroTitle}>Un ratito para vos.</Text>
                       <Text style={s.heroSubtitle}>
-                        Tu proxima escapada, en Paraguay.
+                        Tu próxima escapada en Paraguay.
                       </Text>
                     </View>
                   </View>
@@ -704,10 +895,10 @@ function AppContent() {
                       />
                     </View>
                   </View>
-                  <Field
-                    label="Fecha (AAAA-MM-DD)"
+                  <DateField
+                    label="Fecha"
                     value={date}
-                    onChangeText={setDate}
+                    onChange={setDate}
                     placeholder="Cualquier fecha"
                   />
                   <Button
@@ -1020,6 +1211,22 @@ function AppContent() {
   );
 }
 export default function App() {
+  const [fontsLoaded, fontError] = useFonts({
+    Poppins_400Regular,
+    Poppins_500Medium,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
+    Poppins_800ExtraBold,
+  });
+  if (fontError) throw fontError;
+  if (!fontsLoaded)
+    return (
+      <SafeAreaProvider>
+        <SafeAreaView style={s.safe}>
+          <ActivityIndicator size="large" color="#194b3b" style={s.loader} />
+        </SafeAreaView>
+      </SafeAreaProvider>
+    );
   return (
     <SafeAreaProvider>
       <AppContent />
@@ -1067,16 +1274,36 @@ const s = StyleSheet.create({
   },
   buttonText: { fontSize: 14, fontWeight: "600", color: "white" },
   field: { marginVertical: 10 },
-  label: { fontSize: 12, fontWeight: "600", color: "#4a5e40", marginBottom: 8 },
+  label: { fontSize: 13, fontWeight: "600", color: "#4a5e40", marginBottom: 8 },
   input: {
     borderWidth: 1,
     borderColor: "#d6dfce",
-    borderRadius: 5,
+    borderRadius: 10,
     padding: 13,
     fontSize: 15,
+    fontFamily: "Poppins_400Regular",
     color: "#25352c",
     minHeight: 47,
   },
+  dateInput: {
+    minHeight: 50,
+    borderWidth: 1,
+    borderColor: "#d6dfce",
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "white",
+  },
+  dateText: { flex: 1, fontSize: 15, color: "#25352c" },
+  datePlaceholder: { color: "#8a9387" },
+  dateDone: {
+    alignSelf: "flex-end",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+  },
+  dateDoneText: { color: "#194b3b", fontWeight: "600" },
   row: { flexDirection: "row", gap: 12 },
   flex: { flex: 1 },
   hero: {
@@ -1086,9 +1313,22 @@ const s = StyleSheet.create({
     marginBottom: 20,
     backgroundColor: "#194b3b",
   },
-  heroText: { marginTop: "auto", backgroundColor: "#14271c80", padding: 22 },
-  heroTitle: { fontSize: 25, fontWeight: "700", color: "white" },
-  heroSubtitle: { fontSize: 13, color: "white", marginTop: 8 },
+  heroImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: "100%",
+    height: "100%",
+  },
+  heroText: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "#14271ca6",
+    paddingHorizontal: 22,
+    paddingVertical: 19,
+  },
+  heroTitle: { fontSize: 27, fontWeight: "700", color: "white" },
+  heroSubtitle: { fontSize: 14, color: "white", marginTop: 5 },
   property: {
     marginTop: 23,
     position: "relative",
@@ -1146,4 +1386,5 @@ const s = StyleSheet.create({
   },
   pending: { fontSize: 13, color: "#96613a", marginVertical: 10 },
   quote: { padding: 18, backgroundColor: "#f1f5ea", marginVertical: 15 },
+  loader: { flex: 1 },
 });

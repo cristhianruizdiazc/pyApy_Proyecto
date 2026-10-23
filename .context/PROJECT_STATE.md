@@ -1,14 +1,22 @@
 # Estado de pyApy
 
-Actualizado: 2026-09-26, America/Asuncion.
+Actualizado: 2026-10-22, America/Asuncion.
 
 ## Estado vigente
+
+Fase 24 cerrada en un staging Docker aislado sobre el host disponible: modo produccion sin fixtures, TLS local, smoke, E2E de sesion segura, 23/23 pruebas de seguridad/concurrencia, backup de DB/uploads, restore aislado, rollback entre imagenes y probe de monitoreo aprobaron. No existe staging remoto/publico porque faltan dominio, host, registro, secretos gestionados y destino de alertas; tampoco se verifico un dispositivo nativo. No se autoriza ni inicia Fase 25. Ver [Fase 24](phases/phase-24-preproduction.md) y [guia de staging](../docs/STAGING.md).
+
+Fase 22 de auditoría final cerrada el 2026-09-27. Se reejecutaron los gates de lint, 23 pruebas, build, Expo, contenedores, auditoría de dependencias y restauración aislada; se creó la matriz antes/después en [Fase 22](phases/phase-22-audit.md). Persisten brechas de producción y no se declara pyApy 1.0.
+
+Fase 23 revalidada y cerrada el 2026-10-22: instalación limpia, migraciones/fixtures, `npm run check`, exportación Android/iOS, 45 E2E, permisos, restore, reporte PHP y runtime Compose pasaron. El perfil Docker `test` aprobó 23/23 pruebas y los volúmenes persistieron tras reinicio. Quedan 16 avisos altos upstream en tooling Expo/Metro sin parche compatible publicado; instalación física y firma release siguen pendientes.
+
+La interfaz movil usa Poppins en pesos 400-800, campos de texto con radio de 10 px y selector nativo de fecha en busqueda y reserva. El hero conserva la fotografia local y superpone el mensaje principal. Se generó el APK local de demostración offline para Android (`com.pyapy.mobile`): incorpora catálogo ilustrativo y fotos locales, por lo que no requiere API ni base de datos. Está firmado con clave de depuración para instalación directa, no para Play Store; falta probarlo físicamente en un teléfono.
 
 Fase 21 cerrada: README raiz y las nuevas guias `docs/DEVELOPMENT.md` y `docs/OPERATIONS.md` consolidan instalacion, componentes, mobile, autenticacion, reservas, offline, Docker, CI, backup/restore, produccion pendiente y troubleshooting. Los documentos de arquitectura, base, API, seguridad y operacion se actualizaron contra el estado comprobado; no se inventaron proveedor, staging ni capacidades de produccion. Ver [Fase 21](phases/phase-21-documentation.md).
 
 Fase 20 cerrada: GitHub Actions separa gates de calidad/build/contenedores de E2E, usa PostgreSQL efimero y conserva diagnosticos ante fallo. La corrida final `36255899826` sobre `656f899` aprobo ambos jobs: 23 pruebas unitarias/API, builds web/mobile/Docker y 43 E2E con una repeticion responsive omitida deliberadamente. No existe job de despliegue: falta aprobar staging, secretos gestionados, monitoreo, backup integral y rollback. Ver [Fase 20](phases/phase-20-cicd.md) y [ADR-010](decisions/ADR-010-ci-pipeline.md).
 
-Fase 19 cerrada para configuracion local: Compose separa imagen `production` y perfil `test`, fixture demo explicito, secretos fuera de Git y ejemplo de produccion sin credenciales. La validacion estatica de ambas variantes paso; falta el gate real de build/up/health/volumenes porque este equipo no tiene motor Docker. Ver [Fase 19](phases/phase-19-docker.md) y [ADR-009](decisions/ADR-009-container-environments.md).
+Fase 19 cerrada para configuración y revalidada en Fase 23: Compose separa imagen `production` y perfil `test`, mantiene secretos fuera de Git y fue comprobado con build/up/health, pruebas y persistencia real de volúmenes. Ver [Fase 19](phases/phase-19-docker.md), [Fase 23](phases/phase-23-release-candidate.md) y [ADR-009](decisions/ADR-009-container-environments.md).
 
 Fase 18 cerrada en alcance local: WebP responsivo demo, hero bajo demanda, skeleton de ficha y mapa explicito bajaron LCP movil a 2.50/3.33 s (portada/ficha) y CLS desktop de ficha a 0.003. La revision de planes SQL demo no justifica cambios estructurales. Las cuatro corridas Lighthouse alcanzaron 1.00 en accesibilidad, best practices y SEO. No son SLO ni evidencia de carga/produccion. Ver [rendimiento UX 01](phases/performance-ux-01.md) y [ADR-008](decisions/ADR-008-demo-image-delivery.md).
 
@@ -34,7 +42,7 @@ Monorepo npm, React/Vite, Express, contratos Zod, PostgreSQL, Expo/React Native 
 
 Base aislada en 127.0.0.1:55432. API sin superusuario, identidad independiente para migraciones y rol de lectura limitado para PHP. Datos ficticios; credenciales generadas en archivos ignorados por Git.
 
-Web local: http://127.0.0.1:5173; instancia vigente en `.local/dev.json`. React Native exporta Android/iOS, pero no fue ejecutado en dispositivo. Cola offline implementada y probada a nivel de contrato, no validada con perdida real de conectividad nativa.
+Web local: http://127.0.0.1:5173; instancia vigente en `.local/dev.json`. React Native exporta Android/iOS y dispone de un APK Android de demostración offline local, pero aún no fue instalado/verificado en un teléfono. Cola offline implementada y probada a nivel de contrato, no validada con perdida real de conectividad nativa.
 
 ## Evidencia
 
@@ -46,13 +54,13 @@ Web local: http://127.0.0.1:5173; instancia vigente en `.local/dev.json`. React 
 - UI 03: `npm run check` aprobado (23 pruebas); suite E2E final con **41 aprobadas y una repetición responsive omitida**, lint/build finales aprobados. Responsive de portada/ficha/cuenta/paneles verificado a 320/390/768/1024/1440 px. Fallos intermedios y correcciones en TESTING.md.
 - Backup restaurado en base temporal, conteos y exclusion conservados.
 - Reporte PHP ejecutado con rol de solo lectura.
-- npm audit: cero vulnerabilidades reportadas en la ejecucion registrada.
-- Compose validado sintacticamente; las imagenes Docker construyeron en GitHub Actions. `compose up`, health checks y volumenes siguen sin ejecutarse.
+- La auditoría histórica tuvo cero avisos; la revalidación actual deja 16 avisos altos upstream en tooling Expo/Metro sin parche compatible, registrados como R-022.
+- Compose validado sintáctica y funcionalmente: imágenes, `compose up`, health checks, pruebas y persistencia de volúmenes aprobados localmente.
 
 ## Limites de entrega
 
 Entregadas las tres fases autorizadas de integración visual y el primer cierre automatizado de accesibilidad de la web conectada. Lighthouse ya tiene línea base, pero queda optimización móvil/CLS, validación cultural, WCAG integral, lector/zoom, revisión de navegación asistida, paginación real de servidor y recuperación de confirmaciones fuera de la pestaña actual. Base y API mantienen sus contratos; la integración no equivale a producción 1.0.
 
-Pendientes: Fase 22 de auditoria final, paridad y pruebas nativas, pruebas de carga y accesibilidad completas, integraciones externas autorizadas, runtime Compose, endurecimiento operacional, staging, rollback y produccion. Detalle en [RIESGOS](RISKS.md) y [BACKLOG](BACKLOG.md).
+Pendientes: paridad y pruebas nativas físicas, seguimiento de advisories Expo/Metro, pruebas de carga y accesibilidad completas, integraciones externas autorizadas, endurecimiento operacional, staging, rollback y producción. Detalle en [RIESGOS](RISKS.md) y [BACKLOG](BACKLOG.md).
 
 Los documentos de Fase 0 son historicos. Este estado reemplaza sus afirmaciones sobre workspace vacio y autorizacion pendiente.

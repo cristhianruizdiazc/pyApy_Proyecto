@@ -1,5 +1,58 @@
 # Evidencias de verificacion
 
+## Fase 24 preproduccion aislada - 2026-10-22
+
+- Compose staging: build y despliegue aprobados; DB/API/gateway saludables y web activa en `https://localhost:8443`.
+- `npm run staging:smoke`: PASS para TLS, shell web, health con DB, auth privada y request ID.
+- `tests/e2e/staging.spec.js --project=desktop`: 1/1; registro ficticio, cookie segura, sesion y logout.
+- Perfil Docker aislado: 23/23 pruebas; incluye seguridad adversarial y diez reservas simultaneas con una unica confirmacion.
+- Backup DB de 52,808 bytes y backup del volumen uploads; restore temporal: 2 migraciones y 1 constraint de exclusion.
+- Rollback a imagenes locales RC anteriores y regreso a candidatas: health y smoke PASS en ambos despliegues.
+- Probe externo: `ok=true`, HTTP 200, 74 ms. No se probo entrega a un sistema de alertas remoto.
+- `npm run check`: primer intento fallo porque PostgreSQL local estaba apagado; tras `npm run db:local`, lint, 23/23 y build aprobaron.
+
+## Revalidación Release Candidate — 2026-10-22
+
+- `npm ci --ignore-scripts`: PASS; 768 paquetes instalados.
+- `npm run setup`: PASS; PostgreSQL aislado iniciado, migraciones/permisos reaplicados y fixtures sin duplicación.
+- `npm run check`: PASS; lint, 23/23 pruebas y build Vite 8.3.5.
+- `node scripts/verify-web-integration.mjs`: PASS; 45 E2E aprobadas y una repetición responsive omitida deliberadamente.
+- `npm run mobile:check` y `npm run mobile:export`: PASS; dependencias Expo 57 compatibles y bundles Android/iOS generados.
+- Permisos, reporte PHP y `npm run db:verify-restore`: PASS.
+- Compose: imágenes productivas construidas; DB/API saludables; web HTTP 200; API interna HTTP 200; perfil test 23/23; DB y uploads persistieron tras reinicio.
+- Auditoría: corregidos avisos de Vite, sharp, shell-quote e ip-address. Permanecen 16 altos transitivos en Expo/Metro sin versión compatible corregida publicada. No se aplicó el downgrade mayor sugerido por `--force`.
+- No ejecutado: instalación física nativa y firma release; `adb` no está disponible.
+
+## Release Candidate — 2026-09-27
+
+- `npm ci --ignore-scripts`: PASS; 768 paquetes añadidos, 773 auditados y cero vulnerabilidades.
+- `npm run setup`: PASS; PostgreSQL local listo, migraciones idempotentes, permisos reaplicados y fixtures existentes sin duplicación.
+- `npm run check`: PASS; lint, 23/23 pruebas y build web posteriores a la instalación limpia.
+- `npm run mobile:check`: PASS; `npm run mobile:export`: bundles Android/iOS generados en `apps/mobile/dist`.
+- `node scripts/verify-web-integration.mjs`: PASS; 43 E2E aprobadas y una omitida deliberadamente.
+- `npm run containers:verify`: PASS estático. Docker runtime no ejecutado porque `docker` no está disponible en este equipo.
+
+## APK móvil de demostración offline - 2026-09-27
+
+- `EXPO_PUBLIC_OFFLINE_DEMO=true npx expo prebuild --platform android --no-install`: configuración nativa Android generada con `com.pyapy.mobile`.
+- `EXPO_PUBLIC_OFFLINE_DEMO=true .\\gradlew.bat :app:assembleDebug --no-daemon`: aprobado; produjo `apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk` (144,847,990 bytes; SHA-256 `25C82073901D8D3AE6951AC7C6D451E26C966D60D868C8B2F6691CC7D81FDD4B`).
+- El APK incorpora el catálogo demostrativo y las imágenes `pool.jpg`, `house.jpg` y `retreat.jpg`; no requiere API ni base de datos durante la demostración.
+- `aapt dump badging`: confirmó aplicación `com.pyapy.mobile`, actividad iniciable y SDK mínimo 24 (Android 7.0). `apksigner verify --verbose`: firma v2 válida con certificado `Android Debug`.
+- Verificación final: `npm run lint`, `npm run mobile:check`, Prettier y `git diff --check` aprobados.
+- No había dispositivo ADB conectado para instalarlo. El APK fue generado y firmado con la clave de depuración; falta la verificación visual e instalación en un teléfono físico.
+
+## Ajustes visuales y calendario movil - 2026-09-26
+
+- `npm run lint`: aprobado sin errores ni advertencias.
+- `npm run mobile:check`: dependencias compatibles con Expo 57.
+- `npm run mobile:export`: bundles Android/iOS generados; incluye solo Poppins 400, 500, 600, 700 y 800, Feather y la fotografia local del hero.
+- `npm audit --audit-level=moderate`: cero vulnerabilidades reportadas. Falta la inspeccion visual interactiva en el emulador tras ejecutar la app.
+
+## Hero móvil con imagen local - 2026-09-26
+
+- `npm run mobile:export`: aprobado para Android e iOS. Metro incorporó explícitamente `apps/web/public/demo/pool.jpg` (484 KB) como asset local compartido con la web.
+- Prettier y `git diff --check`: aprobados. La comprobación visual nativa requiere recargar Expo en el emulador; no depende de Internet para mostrar el hero.
+
 ## Fase 21 Documentacion - 2026-09-26
 
 - Enlaces locales revisados en README, guias `docs/` y 10 documentos de contexto: 13 documentos, cero enlaces rotos.

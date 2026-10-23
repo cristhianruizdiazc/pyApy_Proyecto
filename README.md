@@ -103,7 +103,7 @@ docker compose --env-file .local/compose.env up --build -d
 docker compose --env-file .local/compose.env --profile tools run --rm admin-report
 ```
 
-El generador no sobrescribe secretos. Compose enlaza la web a `127.0.0.1:8080`, no publica PostgreSQL y no carga fixtures. Motor Docker requerido: en este equipo solo se instalo Compose; no hay motor/WSL operativo. La configuracion y el build de imagenes fueron comprobados en CI Linux; siguen pendientes el arranque Compose, health checks y volumenes en un host con motor.
+El generador no sobrescribe secretos. Compose enlaza la web al puerto definido en `.local/compose.env`, no publica PostgreSQL y no carga fixtures. En la revalidación de Fase 23 se comprobaron localmente build, `compose up`, health checks, perfil de pruebas y persistencia de los volúmenes de PostgreSQL y uploads. Esto no sustituye repetir los gates en staging.
 
 CI ejecuta instalacion limpia, auditoria, lint, pruebas, builds, validacion de contenedores y E2E. La corrida final del commit de cierre aprobo ambos jobs: [GitHub Actions](https://github.com/cristhianruizdiazc/pyApy_Proyecto/actions/runs/36256453136).
 

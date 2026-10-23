@@ -1,0 +1,9 @@
+https://{$STAGING_HOST}:{$STAGING_HTTPS_PORT} {
+	tls internal
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+	reverse_proxy web:8080
+}
