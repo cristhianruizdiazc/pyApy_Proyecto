@@ -77,7 +77,7 @@ app.get("/api/health", async (req, res) => {
   await pool.query("SELECT 1");
   res.json({ status: "ok" });
 });
-if (config.demo)
+if (config.demo || config.production)
   app.use("/demo", express.static(resolve(root, "apps/web/public/demo")));
 app.use("/api/v1", session, (req, res, next) => {
   res.set("Cache-Control", "no-store");
