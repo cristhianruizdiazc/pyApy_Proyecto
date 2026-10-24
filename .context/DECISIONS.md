@@ -18,6 +18,7 @@
 | D-013 | REGISTRADO | Medir Lighthouse como línea base y conservar sus déficits móviles/CLS como trabajo pendiente, sin aceptar SLO locales | ADR-007, auditoría `performance-baseline`, 2026-09-24 |
 
 | D-014 | ADOPTADO | CI con gates reproducibles y sin deploy implicito hasta aprobar staging, secretos y rollback | ADR-010, 2026-09-25 |
+| D-015 | ADOPTADO | Limitar pyApy v1 al producto web responsive; conservar React Native congelado y fuera de los criterios de release de v1 | Decisión expresa del usuario y ADR-011, 2026-10-22 |
 
 La aclaración sobre el comienzo desde cero es histórica. En septiembre 2026 se incorpora la carpeta de la primera versión como referencia de integración. Esto no modifica stack, roles ni reglas de negocio.
 

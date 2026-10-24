@@ -1,6 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700&family=Manrope:wght@400;500;600;650;700;750;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
 :root {
-  font-family: "DM Sans", sans-serif;
+  font-family: "Poppins", sans-serif;
   color: #25312b;
   background: #fff;
   font-synthesis: none;
@@ -30,6 +30,7 @@
 * {
   box-sizing: border-box;
   letter-spacing: 0;
+  font-family: "Poppins", sans-serif !important;
 }
 body {
   margin: 0;
@@ -71,10 +72,16 @@ a:focus-visible {
   outline-offset: 4px;
 }
 input:focus,
-select:focus,
 textarea:focus {
   outline: 2px solid #52775b;
   outline-offset: 2px;
+}
+/* The departure-date control keeps its normal appearance when selected. */
+.search-main input[type="date"]:focus,
+.search-main input[type="date"]:focus-within {
+  outline: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
 }
 img {
   display: block;
@@ -91,7 +98,7 @@ p {
 h1,
 h2,
 h3 {
-  font-family: Manrope, sans-serif;
+  font-family: "Poppins", sans-serif !important;
 }
 h1 {
   font-size: 36px;
@@ -143,6 +150,72 @@ textarea {
 textarea {
   min-height: 90px;
   resize: vertical;
+}
+:root select {
+  border-radius: 15px;
+}
+select:focus,
+select:focus-within {
+  outline: none !important;
+  border-color: #d8ddd5 !important;
+  box-shadow: none !important;
+}
+.search-main select:focus,
+.search-main select:focus-within {
+  border-color: transparent !important;
+}
+:root select:enabled:hover,
+:root select:enabled:focus {
+  background-color: #fff;
+}
+select option {
+  background: #fff;
+  color: #25312b;
+}
+/* Native OS menus cannot be rounded; opt into the styleable picker
+   only in browsers that support customizable selects. */
+@supports (appearance: base-select) {
+  select,
+  select::picker(select) {
+    appearance: base-select;
+  }
+  select::picker-icon {
+    content: "";
+    width: 12px;
+    height: 12px;
+    background: currentColor;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='m2 4 4 4 4-4' fill='none' stroke='black' stroke-width='1.8'/%3E%3C/svg%3E") center / contain no-repeat;
+    rotate: none;
+    transition: none;
+  }
+  select::picker(select) {
+    /* Keep the list below its field instead of aligning the selected row
+       over the field or flipping the popup above it. */
+    inset: auto;
+    top: anchor(bottom);
+    left: anchor(left);
+    margin: 6px 0 0;
+    position-try-fallbacks: none;
+    max-height: max(0px, min(320px, calc(100dvh - anchor(bottom) - 14px)));
+    border: 1px solid #d8ddd5;
+    border-radius: 15px;
+    overflow: hidden;
+    overflow-y: auto;
+    background: #fff;
+    color: #25312b;
+  }
+  select option::checkmark {
+    display: none;
+  }
+  select option:checked {
+    background-color: #fff;
+    color: #25312b;
+  }
+  select option:hover,
+  select option:focus-visible {
+    background-color: var(--green);
+    color: #fff;
+  }
 }
 input[type="checkbox"] {
   width: 17px;

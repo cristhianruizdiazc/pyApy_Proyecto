@@ -1,5 +1,13 @@
 # Historial de trabajo
 
+## 2026-10-22 - Alcance web para v1
+
+- Decisión del usuario: no continuar el desarrollo de la aplicación React Native durante esta v1 y concentrar producto, pruebas y lanzamiento en la web responsive.
+- Se conserva `apps/mobile` y su evidencia histórica, sin eliminación; queda congelada como base posible para una etapa posterior.
+- Paridad nativa, dispositivos, firma de tiendas, caché móvil y advisories Expo/Metro dejan de bloquear v1 web, pero no se consideran resueltos.
+- Fase 25 continúa condicionada por infraestructura web remota, CA pública, secretos, alertas y backup externo.
+- Decisión formalizada en [ADR-011](decisions/ADR-011-web-first-v1.md) y sincronizada con estado, backlog y riesgos.
+
 ## 2026-10-22 - Fase 24 preproduccion aislada
 
 - Desplegado `pyapy-staging` con API en modo produccion, TLS local, DB/uploads persistentes y servicios internos no publicados.

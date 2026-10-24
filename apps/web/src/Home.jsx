@@ -176,6 +176,16 @@ export default function Home() {
       block: "start",
     });
   }
+  function exploreLocations() {
+    setMap(true);
+    setSelected(null);
+    resultsRef.current?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
+      block: "start",
+    });
+  }
   async function saveIntent() {
     if (!user) return nav("/ingresar");
     try {
@@ -434,6 +444,14 @@ export default function Home() {
             {map ? "Ver espacios" : "Explorar el mapa"}
           </button>
         </div>
+        {!query.isError && !query.isPending && !map && items.length > 0 && (
+          <div className="locations-action">
+            <button className="primary" type="button" onClick={exploreLocations}>
+              <Map size={17} aria-hidden="true" />
+              Explorar ubicaciones
+            </button>
+          </div>
+        )}
       </section>
       <Sponsors />
     </main>

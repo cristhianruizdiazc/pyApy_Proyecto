@@ -1,0 +1,95 @@
+.help-page {
+  max-width: 1120px;
+}
+
+.help-heading {
+  max-width: 700px;
+  margin-bottom: 34px;
+}
+
+.help-heading h1 {
+  margin: 8px 0 12px;
+}
+
+.help-heading p,
+.help-steps p,
+.help-details p {
+  color: var(--muted);
+}
+
+.help-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.help-steps article {
+  position: relative;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: white;
+}
+
+.help-steps article > svg {
+  color: var(--green);
+}
+
+.help-steps h2 {
+  margin: 20px 0 8px;
+  font-size: 19px;
+}
+
+.help-steps p,
+.help-details p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.help-step-number {
+  position: absolute;
+  top: 20px;
+  right: 22px;
+  color: #9aa59c;
+  font: 700 13px Manrope, sans-serif;
+}
+
+.help-details {
+  margin-top: 24px;
+  padding: 28px;
+  border-radius: 10px;
+  background: var(--light);
+}
+
+.help-details > div:first-child {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.help-details > div:first-child > svg {
+  color: var(--green);
+}
+
+.help-details h2 {
+  margin: 0 0 8px;
+  font-size: 21px;
+}
+
+.help-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+@media (max-width: 700px) {
+  .help-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .help-steps article,
+  .help-details {
+    padding: 22px;
+  }
+}

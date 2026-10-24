@@ -1,0 +1,124 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Usuario de pyApy con rol asignado y credenciales seguras",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "ID de usuario Firebase Auth" },
+        "email": { "type": "string", "format": "email", "description": "Correo electrónico verificado" },
+        "displayName": { "type": "string", "description": "Nombre completo" },
+        "role": { "type": "string", "enum": ["customer", "owner", "admin"], "description": "Rol en el sistema" },
+        "ownerPropertyId": { "type": "string", "description": "ID del alojamiento propio si es anfitrión" },
+        "phone": { "type": "string", "description": "Teléfono o WhatsApp de contacto" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Fecha de registro" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Property": {
+      "title": "Property",
+      "description": "Alojamiento temporal verificado en Paraguay (quinta, quincho, cabaña)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Identificador único de la propiedad" },
+        "name": { "type": "string", "description": "Nombre de la quinta o alojamiento" },
+        "department": { "type": "string", "description": "Departamento de Paraguay" },
+        "city": { "type": "string", "description": "Ciudad" },
+        "neighborhood": { "type": "string", "description": "Barrio o zona" },
+        "approximateReference": { "type": "string", "description": "Referencia pública sin coordenadas exactas" },
+        "ownerId": { "type": "string", "description": "ID del anfitrión propietario" },
+        "hostName": { "type": "string", "description": "Nombre público del anfitrión" },
+        "hostPhone": { "type": "string", "description": "Teléfono oficial de contacto" },
+        "hostEmail": { "type": "string", "description": "Correo oficial" },
+        "isVerified": { "type": "boolean", "description": "Si cuenta con sello oficial verificado pyApy" },
+        "verificationStatus": { "type": "string", "enum": ["submitted", "pending_review", "under_review", "verified", "rejected"], "description": "Estado de auditoría anti-fraude" },
+        "capacity": { "type": "number", "description": "Capacidad máxima de personas" },
+        "pricePerDay": { "type": "number", "description": "Precio diario en Guaraníes" },
+        "pricePerTurn": { "type": "number", "description": "Precio por turno en Guaraníes" }
+      },
+      "required": ["id", "name", "department", "city", "ownerId", "capacity"]
+    },
+    "Reservation": {
+      "title": "Reservation",
+      "description": "Reserva confirmada mediante el motor transaccional de pyApy",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID de la reserva" },
+        "locator": { "type": "string", "description": "Localizador alfanumérico seguro (ej. PY-2026-XXXXX)" },
+        "propertyId": { "type": "string", "description": "ID de la propiedad reservada" },
+        "propertyName": { "type": "string", "description": "Nombre de la propiedad" },
+        "ownerId": { "type": "string", "description": "ID del anfitrión" },
+        "customerId": { "type": "string", "description": "ID del cliente" },
+        "clientName": { "type": "string", "description": "Nombre del cliente" },
+        "clientDoc": { "type": "string", "description": "Cédula de Identidad o pasaporte" },
+        "clientPhone": { "type": "string", "description": "Teléfono de contacto" },
+        "startDate": { "type": "string", "description": "Fecha de inicio (YYYY-MM-DD)" },
+        "startTime": { "type": "string", "description": "Hora de ingreso (HH:mm)" },
+        "endDate": { "type": "string", "description": "Fecha de salida (YYYY-MM-DD)" },
+        "endTime": { "type": "string", "description": "Hora de salida (HH:mm)" },
+        "guestCount": { "type": "number", "description": "Cantidad de personas" },
+        "totalAmountPyg": { "type": "number", "description": "Monto total calculado por el servidor en Gs." },
+        "origin": { "type": "string", "enum": ["pyapy"], "description": "Origen certificado server-side pyApy" },
+        "reservationStatus": { "type": "string", "enum": ["pending", "confirmed", "active", "completed", "cancelled"], "description": "Estado de la reserva" },
+        "paymentStatus": { "type": "string", "enum": ["pending", "paid", "partially_paid", "not_applicable"], "description": "Estado del pago" }
+      },
+      "required": ["id", "locator", "propertyId", "ownerId", "clientName", "clientPhone", "startDate", "totalAmountPyg", "origin", "reservationStatus"]
+    },
+    "OwnerBooking": {
+      "title": "OwnerBooking",
+      "description": "Reserva externa registrada por el anfitrión para bloquear su calendario",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID del booking externo" },
+        "propertyId": { "type": "string", "description": "ID de la propiedad" },
+        "ownerId": { "type": "string", "description": "ID del propietario" },
+        "title": { "type": "string", "description": "Motivo o título del evento" },
+        "guestCount": { "type": "number", "description": "Cantidad de personas" },
+        "startDate": { "type": "string", "description": "Fecha inicio" },
+        "startTime": { "type": "string", "description": "Hora inicio" },
+        "endDate": { "type": "string", "description": "Fecha fin" },
+        "endTime": { "type": "string", "description": "Hora fin" }
+      },
+      "required": ["id", "propertyId", "ownerId", "startDate", "startTime", "endTime"]
+    },
+    "Block": {
+      "title": "Block",
+      "description": "Bloqueo por mantenimiento, limpieza profunda o uso personal",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID del bloqueo" },
+        "propertyId": { "type": "string", "description": "ID de la propiedad" },
+        "ownerId": { "type": "string", "description": "ID del propietario" },
+        "type": { "type": "string", "enum": ["maintenance", "personal_use", "unavailable", "other"], "description": "Tipo de bloqueo" },
+        "reason": { "type": "string", "description": "Motivo del bloqueo" },
+        "startDate": { "type": "string", "description": "Fecha inicio" },
+        "startTime": { "type": "string", "description": "Hora inicio" },
+        "endDate": { "type": "string", "description": "Fecha fin" },
+        "endTime": { "type": "string", "description": "Hora fin" }
+      },
+      "required": ["id", "propertyId", "ownerId", "type", "startDate", "startTime", "endTime"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Perfiles de usuarios y roles"
+    },
+    "/properties/{propertyId}": {
+      "schema": "Property",
+      "description": "Catálogo de alojamientos temporales"
+    },
+    "/reservations/{reservationId}": {
+      "schema": "Reservation",
+      "description": "Reservas oficiales atómicas"
+    },
+    "/ownerBookings/{bookingId}": {
+      "schema": "OwnerBooking",
+      "description": "Reservas directas del anfitrión"
+    },
+    "/blocks/{blockId}": {
+      "schema": "Block",
+      "description": "Bloqueos de mantenimiento y limpieza"
+    }
+  }
+}

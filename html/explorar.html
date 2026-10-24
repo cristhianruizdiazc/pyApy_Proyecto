@@ -12,29 +12,48 @@
     <link rel="stylesheet" href="styles.css" />
     <link rel="icon" href="assets/logoElegido.png" type="image/png" />
     <link rel="stylesheet" href="filters.css" />
+    <link rel="stylesheet" href="catalog-header.css" />
     <script src="selection.js" defer></script>
   </head>
   <body class="catalog-scope">
     <a class="skip" href="#contenido">Saltar al contenido</a>
-    <header class="site-header">
+    <header class="site-header catalog-header">
       <div class="header-inner">
-        <a class="brand" href="../index.html"
+        <a class="brand chosen-brand" href="../index.html"
           ><img
-            class="chosen-logo"
             src="assets/logoElegido.png"
             alt="pyApy"
-            width="65"
-            height="64"
-        /></a>
+            width="66"
+            height="60"
+          /><span>Quintas · Casas · Bungalows</span></a
+        >
         <nav class="header-nav" aria-label="Navegacion principal">
-          <a href="explorar.html" aria-current="page">Explorar</a
-          ><a href="ubicaciones.html">Ubicaciones</a
-          ><a href="propietario.html">Mi espacio</a
-          ><a href="indice.html">Indice</a>
+          <a href="../index.html">Inicio</a
+          ><a href="explorar.html" aria-current="page">Explorar</a
+          ><a href="ayuda.html">Cómo funciona</a
+          ><a href="propietario.html">Soy Anfitrión</a>
         </nav>
         <div class="header-end">
-          <span class="demo">Demo HTML</span
-          ><a class="button" href="ingresar.html">Ingresar</a>
+          <span class="country"
+            ><img
+              class="icon"
+              src="assets/icons/MapPin.svg"
+              alt=""
+              width="24"
+              height="24"
+            />Paraguay</span
+          ><a
+            class="header-favorite"
+            href="favoritos.html"
+            aria-label="Favoritos"
+            ><img
+              class="icon"
+              src="assets/icons/Heart.svg"
+              alt=""
+              width="24"
+              height="24" /></a
+          ><a class="button" href="ingresar.html">Ingresar</a
+          ><a class="button primary" href="registro.html">Registrarse</a>
           <details class="mobile-menu">
             <summary title="Abrir menu" aria-label="Menu">
               <img
@@ -46,12 +65,16 @@
               />
             </summary>
             <nav aria-label="Menu movil">
-              <a href="explorar.html">Explorar</a
-              ><a href="ubicaciones.html">Ubicaciones</a
-              ><a href="cuenta.html">Mi cuenta</a
-              ><a href="propietario.html">Propietario</a
-              ><a href="administracion.html">Administracion</a
-              ><a href="indice.html">Indice completo</a>
+              <a href="../index.html">Inicio</a>
+              <a href="explorar.html" aria-current="page">Explorar</a>
+              <a href="ayuda.html">Cómo funciona</a>
+              <a href="propietario.html">Soy Anfitrión</a>
+              <span class="mobile-country">Paraguay</span>
+              <a href="favoritos.html" aria-label="Favoritos">Favoritos</a>
+              <a href="ingresar.html">Ingresar</a>
+              <a href="registro.html">Registrarse</a>
+              <a href="ubicaciones.html">Ubicaciones</a>
+              <a href="indice.html">Índice completo</a>
             </nav>
           </details>
         </div>

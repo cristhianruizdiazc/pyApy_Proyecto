@@ -1,0 +1,15 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+audit-*.json
+audit-adversarial-results.json
+tmp/
+*.tmp
+*.csv
+.data/
+data/*.json

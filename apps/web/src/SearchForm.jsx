@@ -1,5 +1,6 @@
 import { useId, useState } from "react";
 import {
+  Building2,
   CalendarDays,
   Clock3,
   Flame,
@@ -64,6 +65,7 @@ const categories = [
   { label: "Piscinas", icon: Waves, value: "Piscina" },
   { label: "Casas", icon: House, value: "Casa" },
   { label: "Quinchos", icon: Flame, value: "Quincho" },
+  { label: "Bungalows", icon: Building2, value: "Bungalow" },
 ];
 const kindLabel = (kind) => (kind === "Salon" ? "Salón" : kind);
 const queryKeys = [
@@ -358,17 +360,6 @@ export default function SearchForm({ catalog, params, onSearch }) {
                 </option>
               </select>
             </label>
-            <button
-              type="button"
-              className={"filter-button" + (expanded ? " active" : "")}
-              aria-label={expanded ? "Menos filtros" : "Más filtros"}
-              title="Personalizar búsqueda"
-              aria-expanded={expanded}
-              aria-controls={panelId}
-              onClick={() => setExpanded((current) => !current)}
-            >
-              <SlidersHorizontal size={14} />
-            </button>
           </div>
           <div className="guest-search-field">
             <span>
@@ -441,27 +432,6 @@ export default function SearchForm({ catalog, params, onSearch }) {
             <Clock3 size={15} /> Horario de búsqueda:{" "}
             <strong>{schedule}</strong>
           </p>
-          <div className="search-options">
-            <div className="category-tabs" role="group" aria-label="Categorías">
-              {categories.map(({ label, icon: Icon, value }) => (
-                <button
-                  key={label}
-                  type="button"
-                  className={draft.kind === value ? "active" : ""}
-                  aria-pressed={draft.kind === value}
-                  onClick={() => {
-                    const nextDraft = { ...draft, kind: value };
-                    setDraft(nextDraft);
-                    search(nextDraft);
-                  }}
-                >
-                  <Icon size={19} aria-hidden="true" />
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-
           <label>
             Cantidad exacta de personas{" "}
             <input
@@ -558,6 +528,26 @@ export default function SearchForm({ catalog, params, onSearch }) {
           </fieldset>
         </div>
       </form>
+      <div className="search-options home-category-options">
+        <div className="category-tabs" role="group" aria-label="Categorías">
+          {categories.map(({ label, icon: Icon, value }) => (
+            <button
+              key={label}
+              type="button"
+              className={draft.kind === value ? "active" : ""}
+              aria-pressed={draft.kind === value}
+              onClick={() => {
+                const nextDraft = { ...draft, kind: value };
+                setDraft(nextDraft);
+                search(nextDraft);
+              }}
+            >
+              <Icon size={19} aria-hidden="true" />
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }

@@ -3,6 +3,7 @@
 - [ADR-008 - Entrega responsiva de imagenes demo](ADR-008-demo-image-delivery.md).
 - [ADR-009 - Perfiles de contenedor y secretos por entorno](ADR-009-container-environments.md).
 - [ADR-010 - CI reproducible sin despliegue implicito](ADR-010-ci-pipeline.md).
+- [ADR-011 - Alcance web para pyApy v1](ADR-011-web-first-v1.md).
 
 Las restricciones y autorizaciones están en [DECISIONS.md](../DECISIONS.md). Estos ADR describen decisiones de implementación local, no certificación de producción.
 

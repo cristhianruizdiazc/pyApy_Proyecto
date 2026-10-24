@@ -1,0 +1,49 @@
+﻿/* Match the cover header without applying its hero or catalog layout. */
+.catalog-header {
+  min-height: 64px;
+  background: #faf9f5;
+  color: #163847;
+  border: 0;
+}
+.catalog-header .header-inner {
+  width: min(1280px, calc(100% - 64px));
+  gap: 20px;
+}
+.catalog-header .chosen-brand img {
+  width: 65px;
+  height: 64px;
+  object-fit: contain;
+}
+.catalog-header .chosen-brand span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+.catalog-header .header-nav { gap: 28px; font-size: 12px; }
+.catalog-header .header-end { gap: 14px; }
+.catalog-header .header-end .button { padding: 9px 18px; font-size: 12px; }
+.catalog-header .country {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.catalog-header .country .icon,
+.catalog-header .header-favorite .icon { width: 18px; height: 18px; }
+.catalog-header .header-favorite {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+}
+@media (max-width: 1100px) {
+  .catalog-header .chosen-brand span,
+  .catalog-header .country { display: none; }
+}
+@media (max-width: 780px) {
+  .catalog-header .header-inner { width: calc(100% - 32px); }
+  .catalog-header .header-end { gap: 5px; }
+  .catalog-header .header-end .button { padding: 8px 10px; font-size: 11px; }
+  .catalog-header .header-favorite { display: none; }
+}

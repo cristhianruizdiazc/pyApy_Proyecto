@@ -1,0 +1,10 @@
+{
+  "name": "pyApy - Alojamientos Temporales en Paraguay",
+  "description": "Marketplace y buscador de casas quintas, cabañas y estancias de verano en Paraguay con disponibilidad real, reserva segura, panel de anfitriones y gestión de demanda.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

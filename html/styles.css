@@ -1490,3 +1490,15 @@ td .icon-button {
     scroll-behavior: auto !important;
   }
 }
+
+.mobile-menu .mobile-country {
+  display: block;
+  padding: 12px;
+  color: var(--muted);
+}
+.mobile-menu a[aria-current="page"] {
+  color: var(--green);
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}

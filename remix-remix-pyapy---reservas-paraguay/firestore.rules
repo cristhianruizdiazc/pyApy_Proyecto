@@ -1,0 +1,135 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions for real authentication and authorization
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Role verification strictly via custom claims (No email-based privilege backdoor)
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.admin == true;
+    }
+
+    // Default-deny catchall: All unlisted paths are strictly closed
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // USERS COLLECTION
+    // Users can read/write their own document; Admins can access all.
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow write: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+    }
+
+    // PROPERTIES COLLECTION (Contains sensitive PII: ownerCi, ownerAddress, hostPhone, hostEmail, internalNotes)
+    // Direct client reading of properties is restricted to the authenticated owner of that property or Admins.
+    // Public marketplace catalog access is served through the authoritative Express API /api/properties
+    // (with strict PII sanitization) or via the sanitized propertiesPublic projection.
+    match /properties/{propertyId} {
+      allow read: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && (
+        isAdmin() || (
+          request.resource.data.ownerId == request.auth.uid &&
+          request.resource.data.isVerified == false &&
+          request.resource.data.isVip == false &&
+          request.resource.data.verificationStatus == "pending"
+        )
+      );
+      allow update: if isAuthenticated() && (
+        isAdmin() || (
+          resource.data.ownerId == request.auth.uid &&
+          request.resource.data.ownerId == resource.data.ownerId &&
+          request.resource.data.isVerified == resource.data.isVerified &&
+          request.resource.data.verificationStatus == resource.data.verificationStatus &&
+          request.resource.data.isVip == resource.data.isVip &&
+          request.resource.data.get('verificationDate', null) == resource.data.get('verificationDate', null) &&
+          request.resource.data.get('verificationNotes', null) == resource.data.get('verificationNotes', null) &&
+          request.resource.data.get('subscriptionPlan', null) == resource.data.get('subscriptionPlan', null) &&
+          request.resource.data.get('rating', 0) == resource.data.get('rating', 0) &&
+          request.resource.data.get('reviewsCount', 0) == resource.data.get('reviewsCount', 0)
+        )
+      );
+      allow delete: if isAdmin();
+    }
+
+    // PROPERTIES PUBLIC PROJECTION (Sanitized: NO PII, no ownerCi, no hostPhone, no hostEmail)
+    match /propertiesPublic/{propertyId} {
+      allow read: if true;
+      allow write: if false; // Only server Admin SDK can project sanitized documents
+    }
+
+    // RESERVATIONS COLLECTION
+    // Critical security collection: Reservations must be committed atomically via server Admin SDK.
+    // Direct client creation, modification, or cancellation is strictly prohibited.
+    match /reservations/{reservationId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == resource.data.customerId ||
+        request.auth.uid == resource.data.ownerId ||
+        isAdmin()
+      );
+      allow create: if false; // Direct client creation is strictly forbidden. Must pass through server Admin SDK.
+      allow update: if false; // Direct client update is strictly forbidden.
+      allow delete: if false; // Direct client deletion is strictly forbidden.
+    }
+
+    // OWNER BOOKINGS COLLECTION
+    // Validated and created server-side via Admin SDK with ownership checks.
+    match /ownerBookings/{bookingId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == resource.data.ownerId ||
+        isAdmin()
+      );
+      allow write: if false; // Server-authoritative only
+    }
+
+    // MAINTENANCE BLOCKS COLLECTION
+    // Validated and created server-side via Admin SDK with ownership checks.
+    match /blocks/{blockId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == resource.data.ownerId ||
+        isAdmin()
+      );
+      allow write: if false; // Server-authoritative only
+    }
+
+    // SEARCH INTENT COLLECTION
+    // Created exclusively via Express /api/search-intents with rate limiting, anti-spam, and length validation.
+    match /searchIntents/{intentId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == resource.data.userId ||
+        isAdmin()
+      );
+      allow write: if false; // Server-authoritative only
+    }
+
+    // REVIEWS COLLECTION
+    // Public can read reviews.
+    // Writes strictly forbidden directly from client: server validates completed reservation and author.
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow write: if false; // Server-authoritative only
+    }
+
+    // SPONSORS COLLECTION
+    match /sponsors/{sponsorId} {
+      allow read: if true;
+      allow write: if false; // Admin SDK only
+    }
+
+    // AUDIT LOGS COLLECTION
+    // Immutable security trail: read-only for Admins, NO direct writes by any client.
+    match /auditLogs/{logId} {
+      allow read: if isAdmin();
+      allow write: if false; // Server-only append
+    }
+
+    // IDEMPOTENCY KEYS COLLECTION
+    // Internal server transaction locks: no direct client access.
+    match /idempotencyKeys/{key} {
+      allow read, write: if false;
+    }
+  }
+}

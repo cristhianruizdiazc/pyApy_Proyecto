@@ -1,6 +1,46 @@
 import { test, expect } from "@playwright/test";
 import { localInterval } from "../../packages/contracts/index.mjs";
 
+test("Cómo funciona abre la ayuda de React", async ({ page }) => {
+  await page.goto("/");
+  const link = page
+    .getByRole("navigation", { name: "Navegación principal" })
+    .getByRole("link", { name: "Cómo funciona", exact: true });
+  if (!(await link.isVisible()))
+    await page.getByRole("button", { name: "Abrir menú" }).click();
+  await link.click();
+  await expect(page).toHaveURL(/\/ayuda#ayuda$/);
+  await expect(
+    page.getByRole("heading", { name: "Cómo funciona pyApy", exact: true }),
+  ).toBeVisible();
+});
+
+test("la portada ofrece los tipos del HTML y explora ubicaciones en el mapa", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  const categories = page.getByRole("group", { name: "Categorías" });
+  await expect(categories.getByRole("button")).toHaveText([
+    "Todos",
+    "Quintas",
+    "Piscinas",
+    "Casas",
+    "Quinchos",
+    "Bungalows",
+  ]);
+  await categories.getByRole("button", { name: "Bungalows" }).click();
+  await expect(page).toHaveURL(/kind=Bungalow/);
+  await expect(
+    page.getByRole("link", { name: "Bungalow Arami", exact: true }),
+  ).toBeVisible();
+
+  await categories.getByRole("button", { name: "Todos", exact: true }).click();
+  await expect(page).not.toHaveURL(/kind=/);
+  await page.getByRole("button", { name: "Explorar ubicaciones" }).click();
+  await expect(page.locator(".leaflet-container")).toBeVisible();
+});
+
 test("opciones de personas permiten elegir un plan y conservar una cantidad exacta", async ({
   page,
 }) => {

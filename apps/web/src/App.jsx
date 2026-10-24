@@ -27,6 +27,7 @@ const Detail = lazy(() => import("./Detail.jsx"));
 const Account = lazy(() => import("./Account.jsx"));
 const Owner = lazy(() => import("./Owner.jsx"));
 const Admin = lazy(() => import("./Admin.jsx"));
+const Help = lazy(() => import("./Help.jsx"));
 function Auth() {
   const location = useLocation();
   const [register, setRegister] = useState(
@@ -199,8 +200,7 @@ function Header({ user }) {
             <NavLink to="/" end>
               Inicio
             </NavLink>
-            <Link to="/?sort=match#results">Explorar</Link>
-            <a href="/#como-funciona">Cómo funciona</a>
+            <Link to="/ayuda#ayuda">Cómo funciona</Link>
             <Link
               className="nav-host-link"
               to={user ? "/propietario" : "/ingresar"}
@@ -365,6 +365,7 @@ export default function App() {
               <Route path="/cuenta" element={<Account view="cuenta" />} />
               <Route path="/propietario" element={<Owner />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/ayuda" element={<Help />} />
               <Route
                 path="*"
                 element={

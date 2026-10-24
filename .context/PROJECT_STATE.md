@@ -4,7 +4,9 @@ Actualizado: 2026-10-22, America/Asuncion.
 
 ## Estado vigente
 
-Fase 24 cerrada en un staging Docker aislado sobre el host disponible: modo produccion sin fixtures, TLS local, smoke, E2E de sesion segura, 23/23 pruebas de seguridad/concurrencia, backup de DB/uploads, restore aislado, rollback entre imagenes y probe de monitoreo aprobaron. No existe staging remoto/publico porque faltan dominio, host, registro, secretos gestionados y destino de alertas; tampoco se verifico un dispositivo nativo. No se autoriza ni inicia Fase 25. Ver [Fase 24](phases/phase-24-preproduction.md) y [guia de staging](../docs/STAGING.md).
+Decisión de alcance vigente: pyApy v1 se centrará exclusivamente en la aplicación web React responsive. La aplicación React Native/Expo existente se conserva, pero queda congelada y fuera de los criterios de aceptación, staging y producción de v1. Sus pruebas físicas, paridad, firma y advisories específicos no bloquean la versión web. Ver [ADR-011](decisions/ADR-011-web-first-v1.md).
+
+Fase 24 cerrada en un staging Docker aislado sobre el host disponible: modo produccion sin fixtures, TLS local, smoke, E2E de sesion segura, 23/23 pruebas de seguridad/concurrencia, backup de DB/uploads, restore aislado, rollback entre imagenes y probe de monitoreo aprobaron. No existe staging remoto/publico porque faltan dominio, host, registro, secretos gestionados y destino de alertas. La falta de dispositivo nativo ya no bloquea v1 por ADR-011. No se autoriza ni inicia Fase 25. Ver [Fase 24](phases/phase-24-preproduction.md) y [guia de staging](../docs/STAGING.md).
 
 Fase 22 de auditoría final cerrada el 2026-09-27. Se reejecutaron los gates de lint, 23 pruebas, build, Expo, contenedores, auditoría de dependencias y restauración aislada; se creó la matriz antes/después en [Fase 22](phases/phase-22-audit.md). Persisten brechas de producción y no se declara pyApy 1.0.
 
@@ -61,6 +63,6 @@ Web local: http://127.0.0.1:5173; instancia vigente en `.local/dev.json`. React 
 
 Entregadas las tres fases autorizadas de integración visual y el primer cierre automatizado de accesibilidad de la web conectada. Lighthouse ya tiene línea base, pero queda optimización móvil/CLS, validación cultural, WCAG integral, lector/zoom, revisión de navegación asistida, paginación real de servidor y recuperación de confirmaciones fuera de la pestaña actual. Base y API mantienen sus contratos; la integración no equivale a producción 1.0.
 
-Pendientes: paridad y pruebas nativas físicas, seguimiento de advisories Expo/Metro, pruebas de carga y accesibilidad completas, integraciones externas autorizadas, endurecimiento operacional, staging, rollback y producción. Detalle en [RIESGOS](RISKS.md) y [BACKLOG](BACKLOG.md).
+Pendientes de v1 web: pruebas de carga y accesibilidad completas, integraciones externas autorizadas, endurecimiento operacional, staging remoto, backup externo, alertas y producción. Paridad, pruebas físicas y advisories Expo/Metro quedan como deuda móvil posterior a v1. Detalle en [RIESGOS](RISKS.md), [BACKLOG](BACKLOG.md) y [ADR-011](decisions/ADR-011-web-first-v1.md).
 
 Los documentos de Fase 0 son historicos. Este estado reemplaza sus afirmaciones sobre workspace vacio y autorizacion pendiente.
