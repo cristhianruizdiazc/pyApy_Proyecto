@@ -88,6 +88,17 @@ app.use("/api/v1", properties);
 app.use("/api/v1", images);
 app.use("/api/v1", management);
 app.use("/api/v1", bookings);
+if (config.production) {
+  const webBuild = resolve(root, "apps/web/dist");
+  app.use(express.static(webBuild, { index: false }));
+  app.use((req, res, next) => {
+    if (req.method === "GET" && !req.path.startsWith("/api/"))
+      return res.sendFile(resolve(webBuild, "index.html"), (error) => {
+        if (error) next(error);
+      });
+    next();
+  });
+}
 app.use((req, res) =>
   res
     .status(404)
