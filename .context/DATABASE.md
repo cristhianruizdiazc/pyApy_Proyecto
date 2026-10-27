@@ -18,6 +18,9 @@ Cluster exclusivo: `.local/postgres`, 127.0.0.1:55432, base `pyapy`. Credenciale
 
 - `001_initial.sql`: extension btree_gist, entidades, constraints, indices, catalogos y configuracion inicial.
 - `002_reporting.sql`: vista administrativa agregada para PHP.
+- `003_public_demo_properties.sql`: catálogo público ilustrativo.
+- `004_progressive_search.sql`: función de validación de intervalos para selección SQL, índice de búsqueda, etapas/outcomes de analytics y evento search_select. Aplicada localmente el 2026-10-25 y en pruebas temporales; no desplegada a producción.
+- `005_search_intent_preferences.sql`: conserva servicios indispensables y ciudad/presupuesto estrictos al guardar el interés de búsqueda, sin modificar la migración 004 ya aplicada. Aplicada localmente y en pruebas temporales.
 
 El migrador registra checksum, usa bloqueo asesor y transaccion. Alterar una migracion ya aplicada produce error; agregar una migracion nueva. No hay rollback destructivo automatico. Las migraciones se aplicaron tambien en PostgreSQL efimero de la CI final; no se realizaron cambios de esquema en Fases 20 o 21.
 

@@ -4,6 +4,8 @@ Actualizado: 2026-10-22, America/Asuncion.
 
 ## Estado vigente
 
+2026-10-25: implementada búsqueda por etapas con selección/paginación SQL sin recorte de 500, requisitos indispensables, radios/sobreprecio configurables y horarios concretos verificados. Web responsive adaptada; contrato aditivo conservado para React Native congelado por ADR-011. Turno inicial de 24 horas conservado. Informe y verificaciones: [búsqueda progresiva](phases/progressive-search-2026-10-25.md). Las menciones históricas siguientes a paginación pendiente no describen esta búsqueda pública actual; listados privados siguen con sus límites.
+
 Decisión de alcance vigente: pyApy v1 se centrará exclusivamente en la aplicación web React responsive. La aplicación React Native/Expo existente se conserva, pero queda congelada y fuera de los criterios de aceptación, staging y producción de v1. Sus pruebas físicas, paridad, firma y advisories específicos no bloquean la versión web. Ver [ADR-011](decisions/ADR-011-web-first-v1.md).
 
 Fase 24 cerrada en un staging Docker aislado sobre el host disponible: modo produccion sin fixtures, TLS local, smoke, E2E de sesion segura, 23/23 pruebas de seguridad/concurrencia, backup de DB/uploads, restore aislado, rollback entre imagenes y probe de monitoreo aprobaron. No existe staging remoto/publico porque faltan dominio, host, registro, secretos gestionados y destino de alertas. La falta de dispositivo nativo ya no bloquea v1 por ADR-011. No se autoriza ni inicia Fase 25. Ver [Fase 24](phases/phase-24-preproduction.md) y [guia de staging](../docs/STAGING.md).

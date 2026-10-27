@@ -61,7 +61,11 @@ export async function createBooking(
     }
     const p = await loadProperty(db, input.propertyId, { lock: true });
     if (kind === "pyapy") {
-      if (p.status !== "published" || (!config.demo && p.is_demo))
+      if (
+        p.status !== "published" ||
+        !p.owner_active ||
+        (!config.demo && p.is_demo)
+      )
         fail(404, "NOT_FOUND", "Propiedad no disponible.");
       if (p.owner_id === user.id)
         fail(
@@ -99,8 +103,8 @@ export async function createBooking(
     ).rows[0];
     await audit(db, user.id, "booking_create", r.id);
     await db.query(
-      "INSERT INTO analytics_events(event,property_id) VALUES('reserve',$1)",
-      [p.id],
+      "INSERT INTO analytics_events(event,property_id,search_stage) VALUES('reserve',$1,$2)",
+      [p.id, input.searchStage || null],
     );
     for (const recipient of new Set([user.id, p.owner_id]))
       await db.query(
@@ -116,7 +120,11 @@ export async function createBooking(
 bookings.post("/reservations/quote", async (req, res) => {
   const input = bookingSchema.parse(req.body);
   const p = await loadProperty(pool, input.propertyId);
-  if (p.status !== "published" || (!config.demo && p.is_demo))
+  if (
+    p.status !== "published" ||
+    !p.owner_active ||
+    (!config.demo && p.is_demo)
+  )
     fail(404, "NOT_FOUND", "Propiedad no disponible.");
   if (input.guests > p.capacity)
     fail(422, "CAPACITY", "La cantidad de personas supera la capacidad.");

@@ -435,7 +435,8 @@ test("busqueda muestra alternativas y descarta capacidad insuficiente", async ()
     .query({ city: "Ciudad inexistente", guests: 2 });
   assert.equal(result.status, 200);
   assert.equal(result.body.items.length, 0);
-  assert.ok(result.body.alternatives.length >= 1);
+  // An unknown city has no geographic reference: do not invent proximity.
+  assert.equal(result.body.alternatives.length, 0);
   assert.equal(
     (await request(app).get("/api/v1/properties").query({ guests: 100 })).body
       .items.length,

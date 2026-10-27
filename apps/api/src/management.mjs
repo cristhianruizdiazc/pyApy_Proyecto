@@ -23,21 +23,36 @@ management.get("/sponsors", async (req, res) =>
 management.post("/events", async (req, res) => {
   const data = z
     .object({
-      event: z.enum(["view", "sponsor_click", "sponsor_impression"]),
+      event: z.enum([
+        "view",
+        "sponsor_click",
+        "sponsor_impression",
+        "search_select",
+      ]),
+      searchStage: z
+        .enum(["exact", "location", "budget", "services", "schedule"])
+        .optional(),
       propertyId: idSchema.optional(),
       campaignId: idSchema.optional(),
     })
     .strict()
     .parse(req.body);
-  if (data.event === "view") {
+  if (data.event === "view" || data.event === "search_select") {
+    if (data.event === "search_select" && !data.searchStage)
+      fail(422, "INVALID_EVENT", "Falta la etapa.");
     if (!data.propertyId) fail(422, "INVALID_EVENT", "Falta la propiedad.");
     const p = await loadProperty(pool, data.propertyId);
     if (p.status !== "published")
       fail(404, "NOT_FOUND", "Propiedad no encontrada.");
   } else if (!data.campaignId) fail(422, "INVALID_EVENT", "Falta la campana.");
   await pool.query(
-    "INSERT INTO analytics_events(event,property_id,campaign_id) VALUES($1,$2,$3)",
-    [data.event, data.propertyId || null, data.campaignId || null],
+    "INSERT INTO analytics_events(event,property_id,campaign_id,search_stage) VALUES($1,$2,$3,$4)",
+    [
+      data.event,
+      data.propertyId || null,
+      data.campaignId || null,
+      data.searchStage || null,
+    ],
   );
   res.status(201).json({ ok: true });
 });

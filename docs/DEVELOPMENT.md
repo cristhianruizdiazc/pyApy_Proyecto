@@ -26,6 +26,8 @@ Docker es opcional para desarrollo. El motor Docker no esta disponible en este e
 
 ## Primera instalacion
 
+En Windows, `iniciar-pyapy.bat` (opcion 1) comprueba las dependencias de la web y la API. Si faltan, ejecuta `npm ci --include=dev` automaticamente antes de arrancar; esa reparacion requiere conexion a Internet. Si npm falla, muestra el error y detiene el arranque. El entorno PostgreSQL y `.env` deben estar preparados como se indica abajo.
+
 Desde la raiz del repositorio:
 
 ```powershell

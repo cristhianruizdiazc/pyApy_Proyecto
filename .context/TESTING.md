@@ -1,5 +1,9 @@
 # Evidencias de verificacion
 
+## Búsqueda por etapas — 2026-10-25
+
+`npm run check` aprobado: lint, 32 pruebas sobre PostgreSQL temporal real y build. E2E nuevos: 4/4 aprobados en escritorio y web móvil, incluidos en los **53 aprobados y una omisión existente** de la ejecución web final con `--grep-invert 'staging entrega'`. El intento general previo tuvo dos fallos del escenario TLS de staging (`cookie.secure=true` sobre desarrollo HTTP); no se modifica la protección ni se afirma validar TLS. Informe final, alcance, reejecución e incidencias: [búsqueda por etapas](phases/progressive-search-2026-10-25.md). `git diff --check` aprobado. No se ejecutaron pruebas nativas ni despliegue de producción.
+
 ## Fase 24 preproduccion aislada - 2026-10-22
 
 - Compose staging: build y despliegue aprobados; DB/API/gateway saludables y web activa en `https://localhost:8443`.

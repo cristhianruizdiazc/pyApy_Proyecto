@@ -127,6 +127,11 @@ export default function BookingPanel({
     let input;
     try {
       input = inputFromDraft(draft, p.id);
+      const stage = new URLSearchParams(search).get("searchStage");
+      if (
+        ["exact", "location", "budget", "services", "schedule"].includes(stage)
+      )
+        input.searchStage = stage;
     } catch (err) {
       setError(err);
       return;
@@ -137,6 +142,7 @@ export default function BookingPanel({
         endsAt: input.endsAt,
         guests: String(input.guests),
       });
+      if (input.searchStage) selected.set("searchStage", input.searchStage);
       return nav("/ingresar", { state: { from: detailHref(p.id, selected) } });
     }
     const version = revision.current;

@@ -34,6 +34,6 @@ CI construye las imagenes y ejecuta gates sobre PostgreSQL efimero; la corrida f
 
 ## Limites conocidos
 
-Busqueda puntua hasta 500 candidatos y pagina de 20 en 20; la respuesta informa searchLimited. Listados privados tambien tienen limites. Debe sustituirse por consultas/paginacion escalables antes de volumen real. Rate limiting vive en memoria por proceso; no es distribuido. El worker vive en el proceso API y usa SKIP LOCKED para evitar entregas simultaneas.
+Búsqueda actualizada el 2026-10-25: selección/clasificación/paginación en PostgreSQL sin recorte de 500 candidatos, con hidratación únicamente de la página y alternativas seleccionadas. Etapas exclusivas y fechas verificadas, límites configurados, pesos administrables conservados y contrato aditivo; ver [ADR-012](decisions/ADR-012-progressive-search.md). Falta medir carga representativa. Listados privados conservan sus límites. Rate limiting vive en memoria por proceso; no es distribuido. El worker vive en el proceso API y usa SKIP LOCKED para evitar entregas simultáneas.
 
 No existen proveedores de email/push/WhatsApp ni integracion MCP de redes sociales. Enlaces sociales validados no equivalen a integracion autenticada.

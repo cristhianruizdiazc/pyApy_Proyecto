@@ -4,6 +4,8 @@ Estado actualizado: 2026-10-22. Fase 24 cerrada en staging aislado; v1 enfocada 
 
 ## Lectura para continuar
 
+Entrega local más reciente (2026-10-25): [búsqueda por etapas](phases/progressive-search-2026-10-25.md), decisión [ADR-012](decisions/ADR-012-progressive-search.md). Mantiene ADR-011 y no autoriza producción.
+
 Ultima fase cerrada: [Fase 21 Documentacion](phases/phase-21-documentation.md). La instalacion, desarrollo, operacion y recuperacion se consolidaron en el README raiz y `docs/`; staging, deploy y rollback siguen pendientes.
 
 La decisión vigente más reciente es [ADR-011](decisions/ADR-011-web-first-v1.md): React Native se conserva congelado para después de v1 y no bloquea el release web. El último cierre de fase es [Fase 24](phases/phase-24-preproduction.md); no declara producción.

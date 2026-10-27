@@ -1,5 +1,7 @@
 # pyApy
 
+Búsqueda por etapas (2026-10-25): exactas, ubicación cercana, sobreprecio acotado, servicios opcionales y horarios verificados. Configuración inicial y límites en [ADR-012](.context/decisions/ADR-012-progressive-search.md); [contratos API](.context/API.md) e [informe de pruebas](.context/phases/progressive-search-2026-10-25.md). Sin despliegue de producción; React Native conserva su alcance congelado de v1.
+
 Marketplace de espacios por horas en Paraguay. Version local **0.1.0**, con datos ficticios, API y PostgreSQL reales. No es una release de produccion.
 
 Guia de desarrollo: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Operacion, staging y recuperacion: [docs/OPERATIONS.md](docs/OPERATIONS.md). Contratos HTTP: [.context/API.md](.context/API.md).

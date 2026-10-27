@@ -1,5 +1,5 @@
 /* Public landing page: composition and proportions from attachments/image5.png. */
-.reference-site {
+.site-shell {
   --green: #07513e;
   --ink: #173b4b;
   --paper: #faf9f5;
@@ -9,7 +9,7 @@
   display: flex;
   flex-direction: column;
 }
-.reference-site #main {
+.site-shell #main {
   flex: 1;
 }
 .sr-only {
@@ -178,7 +178,8 @@
 }
 .reference-home .hero h1 em {
   display: inline-block;
-  font-family: "Segoe Print", "Brush Script MT", cursive;
+  font-family: "Segoe Print", "Brush Script MT", cursive !important;
+  font-style: italic;
   font-weight: 500;
   font-size: 1.2em;
   line-height: 0.75;
@@ -314,6 +315,9 @@
   padding: 20px;
   box-shadow: 0 10px 30px #193f3310;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.reference-home .advanced-filters > label > input {
+  border-radius: 15px;
 }
 .reference-home .search-options,
 .reference-home .search-schedule {
@@ -591,7 +595,7 @@
 .reference-home .map-toggle[aria-pressed="true"] {
   opacity: 1;
 }
-.reference-site .site-footer {
+.site-shell .site-footer {
   position: relative;
   min-height: clamp(55px, 5.25vw, 80px);
   padding: 22px 20px 16px;
@@ -602,10 +606,10 @@
   background: var(--paper);
   overflow: hidden;
 }
-.reference-site .site-footer::before {
+.site-shell .site-footer::before {
   display: none;
 }
-.reference-site .site-footer .home-footer-copy {
+.site-shell .site-footer .home-footer-copy {
   display: flex;
   align-items: center;
   gap: 9px;
@@ -617,7 +621,7 @@
   font-weight: 700;
   letter-spacing: 0.12em;
 }
-.reference-site .footer-waves {
+.site-shell .footer-waves {
   pointer-events: none;
   position: absolute;
   bottom: 0;
@@ -625,7 +629,7 @@
   width: 100%;
   height: clamp(55px, 6vw, 100px);
 }
-.reference-site .footer-flower {
+.site-shell .footer-flower {
   pointer-events: none;
   position: absolute;
   bottom: 10px;
@@ -791,7 +795,7 @@
   .reference-home .rail-buttons {
     opacity: 1;
   }
-  .reference-site .site-footer {
+  .site-shell .site-footer {
     min-height: 100px;
     padding-top: 40px;
   }
@@ -874,11 +878,11 @@
   .reference-home .map-toggle {
     opacity: 1;
   }
-  .reference-site .site-footer .home-footer-copy {
+  .site-shell .site-footer .home-footer-copy {
     font-size: 8px;
     letter-spacing: 0.07em;
   }
-  .reference-site .footer-flower {
+  .site-shell .footer-flower {
     width: 43px;
     right: 2px;
     bottom: 2px;

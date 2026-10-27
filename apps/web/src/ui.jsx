@@ -7,7 +7,8 @@ import {
   useState,
 } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { detailHref } from "./booking-selection.js";
+import { api } from "./api.js";
+import { detailHref, formatStay } from "./booking-selection.js";
 import {
   Heart,
   MapPin,
@@ -104,11 +105,23 @@ export function PropertyCard({
   const href = detailHref(
     p.id,
     location.pathname === "/" ? location.search : "",
+    p,
   );
   return (
     <article
       className={`property-card${selected ? " is-selected" : ""}`}
       data-property-id={p.id}
+      onClick={(event) => {
+        if (p.stage && event.target.closest("a"))
+          api("/events", {
+            method: "POST",
+            body: {
+              event: "search_select",
+              propertyId: p.id,
+              searchStage: p.stage,
+            },
+          }).catch(() => {});
+      }}
       onMouseEnter={() => onHover?.(p.id)}
       onFocus={() => onHover?.(p.id)}
     >
@@ -186,6 +199,57 @@ export function PropertyCard({
           <MapPin size={14} />
           {p.city}, {p.department}
         </p>
+      )}
+      {p.stage && (
+        <div className="alternative-details">
+          {p.stage === "location" && (
+            <p>
+              A {p.distanceKm.toFixed(1)} km del punto de referencia de{" "}
+              {p.distanceReference.city} (distancia geográfica aproximada).
+            </p>
+          )}
+          {p.budgetExcess > 0 && (
+            <p>
+              G. {money(p.budgetExcess)} sobre tu presupuesto (
+              {p.budgetExcessPercent.toFixed(1)} %).
+            </p>
+          )}
+          {p.missingOptionalAmenities?.length > 0 && (
+            <p>
+              No incluye servicios opcionales:{" "}
+              {p.missingOptionalAmenities
+                .map(
+                  (code) =>
+                    ({
+                      pool: "Piscina",
+                      grill: "Parrilla",
+                      wifi: "Wi-Fi",
+                      parking: "Estacionamiento",
+                      pets: "Acepta mascotas",
+                      air: "Aire acondicionado",
+                      kitchen: "Cocina",
+                      accessible: "Acceso adaptado",
+                    })[code] || code,
+                )
+                .join(", ")}
+              .
+            </p>
+          )}
+          {p.proposedInterval && (
+            <p>
+              Disponible del {formatStay(p.proposedInterval.startsAt)} al{" "}
+              {formatStay(p.proposedInterval.endsAt)}. Al abrir se seleccionará
+              este intervalo.
+            </p>
+          )}
+          <p>
+            Total estimado: G. {money(p.estimatedTotal)} por {p.estimatedHours}{" "}
+            h.{" "}
+            {p.availabilityChecked
+              ? "Verificado online; se revalida al reservar."
+              : "Estimado sobre la duración mínima; disponibilidad sin verificar."}
+          </p>
+        </div>
       )}
       <div className="card-bottom">
         <span>

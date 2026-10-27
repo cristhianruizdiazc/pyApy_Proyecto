@@ -1,5 +1,7 @@
 # Registro de decisiones de arquitectura
 
+- [ADR-012 — Búsqueda por etapas](ADR-012-progressive-search.md).
+
 - [ADR-008 - Entrega responsiva de imagenes demo](ADR-008-demo-image-delivery.md).
 - [ADR-009 - Perfiles de contenedor y secretos por entorno](ADR-009-container-environments.md).
 - [ADR-010 - CI reproducible sin despliegue implicito](ADR-010-ci-pipeline.md).

@@ -340,7 +340,9 @@ export default function App() {
   }, [location.pathname, location.hash]);
   return (
     <SessionContext.Provider value={{ user, session }}>
-      <div className={location.pathname === "/" ? "reference-site" : ""}>
+      <div
+        className={`site-shell${location.pathname === "/" ? " reference-site" : ""}`}
+      >
         <a className="skip-link" href="#main">
           Ir al contenido
         </a>
@@ -379,46 +381,27 @@ export default function App() {
           </Suspense>
         </div>
         <footer className="site-footer">
-          {location.pathname === "/" ? (
-            <>
-              <p className="home-footer-copy">
-                <Heart size={12} /> PYAPY — VIVÍ PARAGUAY, VIVÍ SUS QUINTAS
-              </p>
-              <svg
-                className="footer-waves"
-                viewBox="0 0 1440 100"
-                preserveAspectRatio="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M0 12C80-10 96 80 200 68S350 63 430 100H0Z"
-                  fill="#d2decc"
-                />
-                <path d="M0 57C150 45 192 94 355 100H0Z" fill="#afc7ab" />
-                <path
-                  d="M1160 100C1280 17 1310 96 1440 24V100Z"
-                  fill="#d2decc"
-                />
-              </svg>
-              <img
-                className="footer-flower"
-                src="/brand/nanduti-flower.svg"
-                alt=""
-              />
-            </>
-          ) : (
-            <>
-              <Link className="brand" to="/">
-                <img
-                  className="chosen-logo"
-                  src="/brand/logoElegido.png"
-                  alt="pyApy"
-                />
-              </Link>
-              <p>Un lugar. Tu gente. Un buen plan.</p>
-              <span>Inspirados en los hilos del encaje ju y el ñandutí.</span>
-            </>
-          )}
+          <p className="home-footer-copy">
+            <Heart size={12} /> PYAPY — VIVÍ PARAGUAY, VIVÍ SUS QUINTAS
+          </p>
+          <svg
+            className="footer-waves"
+            viewBox="0 0 1440 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M0 12C80-10 96 80 200 68S350 63 430 100H0Z"
+              fill="#d2decc"
+            />
+            <path d="M0 57C150 45 192 94 355 100H0Z" fill="#afc7ab" />
+            <path d="M1160 100C1280 17 1310 96 1440 24V100Z" fill="#d2decc" />
+          </svg>
+          <img
+            className="footer-flower"
+            src="/brand/nanduti-flower.svg"
+            alt=""
+          />
         </footer>
       </div>
     </SessionContext.Provider>

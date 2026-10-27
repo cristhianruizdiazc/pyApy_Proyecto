@@ -142,6 +142,9 @@ export default function Home() {
   });
   const saved = new Set(favorites.data?.items.map((p) => p.id) || []);
   const items = query.data?.items || [];
+  const alternativeCount =
+    (query.data?.alternatives.length || 0) +
+    (query.data?.otherDates.length || 0);
   const featuredImageOrder = ["pool", "house", "cabin", "palms"];
   const featuredItems = [...items].sort((a, b) => {
     const rank = (property) => {
@@ -278,8 +281,11 @@ export default function Home() {
               <div>
                 <span className="eyebrow">ENCONTRÁ TU PRÓXIMO PLAN</span>
                 <h2>
-                  {query.data?.total || 0} espacios
-                  {params.get("startsAt") ? " disponibles" : ""}
+                  {query.data?.total
+                    ? `${query.data.total} espacios${params.get("startsAt") ? " disponibles" : ""}`
+                    : alternativeCount
+                      ? `Encontramos ${alternativeCount} opciones cercanas a lo que buscás`
+                      : "Probemos otro plan"}
                 </h2>
               </div>
               <div className="results-actions">
@@ -316,7 +322,7 @@ export default function Home() {
                 encontrar tu plan.
               </p>
             )}
-            {items.length === 0 && (
+            {items.length === 0 && alternativeCount === 0 && (
               <Empty title="Probemos otro plan.">
                 <p>
                   No hay coincidencias exactas. Probá otra zona, presupuesto o
@@ -396,43 +402,64 @@ export default function Home() {
             )}
           </>
         )}
-        {!query.isError && query.data?.alternatives.length > 0 && (
-          <div className="alternatives">
-            <h3>Otras opciones para tu escapada</h3>
-            <p className="muted">
-              Pueden variar la zona, el presupuesto o los servicios que
-              elegiste.
-            </p>
-            <div className="property-grid">
-              {query.data.alternatives.map((p) => (
-                <PropertyCard
-                  key={p.id}
-                  p={p}
-                  favorite={saved.has(p.id)}
-                  onFavorite={favorite}
-                />
-              ))}
-            </div>
-          </div>
+        {!query.isError &&
+          [
+            [
+              "location",
+              "Alternativas cerca del destino",
+              query.data?.alternatives || [],
+            ],
+            [
+              "budget",
+              "Alternativas con un pequeño sobreprecio",
+              query.data?.alternatives || [],
+            ],
+            [
+              "services",
+              "Alternativas sin algunos servicios opcionales",
+              query.data?.alternatives || [],
+            ],
+            [
+              "schedule",
+              "Otros horarios y fechas verificados",
+              query.data?.otherDates || [],
+            ],
+          ].map(
+            ([stage, title, options]) =>
+              options.some((p) => p.stage === stage) && (
+                <section
+                  className="alternatives"
+                  key={stage}
+                  aria-label={title}
+                >
+                  <h3>{title}</h3>
+                  <div className="property-grid">
+                    {options
+                      .filter((p) => p.stage === stage)
+                      .map((p) => (
+                        <PropertyCard
+                          key={p.id}
+                          p={p}
+                          favorite={saved.has(p.id)}
+                          onFavorite={favorite}
+                        />
+                      ))}
+                  </div>
+                </section>
+              ),
+          )}
+        {!query.isError && query.data?.limits?.scheduleExplorationBounded && (
+          <p className="muted">
+            Exploramos hasta {query.data.limits.windowDays} dias posteriores,
+            conservando la duracion. No es una revision de todas las fechas
+            posibles.
+          </p>
         )}
-        {!query.isError && query.data?.otherDates.length > 0 && (
-          <div className="alternatives">
-            <h3>Para disfrutar en otra fecha</h3>
-            <p className="muted">
-              Estos espacios están ocupados en tu horario. Consultá una nueva
-              fecha.
-            </p>
-            <div className="property-grid">
-              {query.data.otherDates.map((p) => (
-                <PropertyCard
-                  key={p.id}
-                  p={p}
-                  favorite={saved.has(p.id)}
-                  onFavorite={favorite}
-                />
-              ))}
-            </div>
-          </div>
+        {!query.isError && query.data?.limits?.alternativesTruncated && (
+          <p className="muted">
+            Hay mas alternativas que el maximo mostrado. Ajusta los filtros para
+            precisar tu busqueda.
+          </p>
         )}
         <div className="map-toggle-row">
           <button
@@ -446,7 +473,11 @@ export default function Home() {
         </div>
         {!query.isError && !query.isPending && !map && items.length > 0 && (
           <div className="locations-action">
-            <button className="primary" type="button" onClick={exploreLocations}>
+            <button
+              className="primary"
+              type="button"
+              onClick={exploreLocations}
+            >
               <Map size={17} aria-hidden="true" />
               Explorar ubicaciones
             </button>

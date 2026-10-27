@@ -13,7 +13,11 @@ import { requireUser, requireRole } from "./auth.mjs";
 import { fail } from "./errors.mjs";
 import { config } from "./config.mjs";
 
+import { selectSearch } from "./progressive-search.mjs";
+import { searchConfig } from "./search-config.mjs";
+
 export const propertySelect = `SELECT p.*,g.city,g.department,pr.price_per_hour,a.min_hours,a.max_hours,a.open_hour,a.close_hour,a.cancellation_hours,
+ EXISTS(SELECT 1 FROM users owner WHERE owner.id=p.owner_id AND owner.active) owner_active,
  COALESCE((SELECT json_agg(json_build_object('id',i.id,'url',i.path,'alt',i.alt) ORDER BY i.position,i.id) FROM property_images i WHERE i.property_id=p.id),'[]') images,
  COALESCE((SELECT json_agg(pa.amenity_code ORDER BY pa.amenity_code) FROM property_amenities pa WHERE pa.property_id=p.id),'[]') amenities,
  (SELECT round(avg(r.rating),1) FROM reviews r WHERE r.property_id=p.id AND r.visible) rating,
@@ -135,87 +139,125 @@ properties.get("/catalog", async (req, res) => {
 });
 properties.get("/properties", async (req, res) => {
   const q = searchSchema.parse(req.query);
-  const wanted = q.amenities.split(",").filter(Boolean);
   if (
     q.startsAt &&
     (durationHours(q.startsAt, q.endsAt) <= 0 ||
+      durationHours(q.startsAt, q.endsAt) > 720 ||
       Date.parse(q.startsAt) <= Date.now())
   )
-    fail(422, "INVALID_INTERVAL", "Elegi un intervalo futuro valido.");
-  const args = [q.guests, q.kind || null, !config.demo];
-  const rows = (
-    await pool.query(
-      `${propertySelect} WHERE p.status='published' AND p.capacity >= $1 AND ($2::text IS NULL OR p.kind=$2) AND (NOT $3::boolean OR NOT p.is_demo) ORDER BY p.created_at DESC LIMIT 500`,
-      args,
-    )
-  ).rows;
-  const busy = q.startsAt
-    ? new Set(
-        (
-          await pool.query(
-            "SELECT DISTINCT property_id FROM reservations WHERE status='confirmed' AND tstzrange(starts_at,ends_at,'[)') && tstzrange($1,$2,'[)')",
-            [q.startsAt, q.endsAt],
-          )
-        ).rows.map((r) => r.property_id),
-      )
-    : new Set();
-  const weights = Object.fromEntries(
-    (await pool.query("SELECT * FROM matching_weights")).rows.map((r) => [
-      r.criterion,
-      r.weight,
-    ]),
-  );
-  const scored = rows.map((row) => {
-    const p = publicProperty(row);
-    let valid = true;
-    if (q.startsAt) {
-      try {
-        validatePeriod(row, q.startsAt, q.endsAt);
-      } catch {
-        valid = false;
-      }
-    }
-    p.available = valid && !busy.has(p.id);
-    p.availabilityChecked = Boolean(q.startsAt);
-    p.estimatedTotal =
-      Math.ceil(q.startsAt ? durationHours(q.startsAt, q.endsAt) : p.minHours) *
-      p.pricePerHour;
-    p.score = scoreProperty(p, { ...q, wanted }, weights);
-    p.exact =
-      p.available &&
-      (!q.city || p.city.toLowerCase() === q.city.toLowerCase()) &&
-      (!q.budget || p.estimatedTotal <= q.budget) &&
-      wanted.every((a) => p.amenities.includes(a));
-    return p;
+    fail(
+      422,
+      "INVALID_INTERVAL",
+      "Elegi un intervalo futuro valido de hasta 720 horas.",
+    );
+  const result = await transaction(async (db) => {
+    let queries = 0;
+    const connection = db;
+    db = {
+      query: (...args) => {
+        if (++queries > searchConfig.maxQueries)
+          fail(
+            503,
+            "SEARCH_LIMIT",
+            "No pudimos completar la búsqueda dentro de sus límites.",
+          );
+        return connection.query(...args);
+      },
+    };
+    await db.query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ");
+    await db.query("SELECT set_config('statement_timeout',$1,true)", [
+      String(searchConfig.timeoutMs),
+    ]);
+    const selection = await selectSearch(db, q, config.demo);
+    const ids = selection.selected.map((x) => x.id);
+    const rows = ids.length
+      ? (await db.query(`${propertySelect} WHERE p.id=ANY($1::uuid[])`, [ids]))
+          .rows
+      : [];
+    const byId = new Map(rows.map((row) => [row.id, row]));
+    const selected = selection.selected.map((x) => {
+      const p = publicProperty(byId.get(x.id));
+      const excess = q.budget ? Math.max(0, x.total - q.budget) : 0;
+      return {
+        ...p,
+        stage: x.stage,
+        exact: x.stage === "exact",
+        score: Math.round(x.score),
+        available: Boolean(q.startsAt),
+        availabilityChecked: Boolean(q.startsAt),
+        availabilityStatus: q.startsAt ? "verified" : "unchecked",
+        estimatedTotal: x.total,
+        estimateBasis: q.startsAt
+          ? "requested_duration_rounded_up_hours"
+          : "property_minimum_hours",
+        estimatedHours: Math.ceil(
+          q.startsAt ? durationHours(q.startsAt, q.endsAt) : p.minHours,
+        ),
+        differences: x.stage === "exact" ? [] : [x.stage],
+        distanceKm: x.distance,
+        distanceReference:
+          x.distance === null
+            ? null
+            : {
+                type: "city_reference",
+                city: q.city,
+                method: "geographic",
+                approximate: true,
+              },
+        locationRadiusKm:
+          x.stage === "location"
+            ? searchConfig.radiiKm.find((r) => x.distance <= r)
+            : null,
+        budgetExcess: excess,
+        budgetExcessPercent: (excess / q.budget) * 100 || 0,
+        missingOptionalAmenities: x.missing,
+        proposedInterval:
+          x.stage === "schedule"
+            ? {
+                startsAt: new Date(x.startsAt).toISOString(),
+                endsAt: new Date(x.endsAt).toISOString(),
+              }
+            : null,
+      };
+    });
+    const alternatives = selected.filter(
+      (x) => x.stage !== "exact" && x.stage !== "schedule",
+    );
+    const otherDates = selected
+      .filter((x) => x.stage === "schedule")
+      .slice(0, searchConfig.maxIntervals);
+    const outcome = selection.total
+      ? "exact"
+      : alternatives.length + otherDates.length
+        ? "alternatives"
+        : "empty";
+    await db.query(
+      "INSERT INTO analytics_events(event,search_outcome) VALUES('search',$1)",
+      [outcome],
+    );
+    return {
+      items: selected.filter((x) => x.exact),
+      total: selection.total,
+      page: q.page,
+      alternatives,
+      otherDates,
+      searchLimited: false,
+      limits: {
+        ...searchConfig,
+        alternativesTruncated:
+          selection.alternative_total > alternatives.length + otherDates.length,
+        scheduleExplorationBounded: Boolean(q.startsAt),
+        combinationsIncluded: false,
+      },
+    };
   });
-  const compare = (a, b) =>
-    q.sort === "price"
-      ? a.estimatedTotal - b.estimatedTotal
-      : q.sort === "capacity"
-        ? a.capacity - b.capacity
-        : b.score - a.score;
-  const exact = scored.filter((p) => p.exact).sort(compare);
-  const alternatives = scored
-    .filter((p) => !p.exact && p.available)
-    .sort(compare)
-    .slice(0, 6);
-  const otherDates = scored
-    .filter((p) => !p.available)
-    .sort(compare)
-    .slice(0, 6);
-  res.json({
-    items: exact.slice((q.page - 1) * 20, q.page * 20),
-    total: exact.length,
-    page: q.page,
-    alternatives,
-    otherDates,
-    searchLimited: rows.length === 500,
-  });
+  res.json(result);
 });
+
 properties.post("/search-intents", requireUser, async (req, res) => {
   const q = searchSchema.parse(req.body);
   await pool.query(
-    "INSERT INTO search_intents(user_id,city,guests,budget,starts_at,ends_at,requested_amenities,results_count) VALUES($1,$2,$3,$4,$5,$6,$7,0)",
+    "INSERT INTO search_intents(user_id,city,guests,budget,starts_at,ends_at,requested_amenities,results_count,required_amenities,strict_city,strict_budget) VALUES($1,$2,$3,$4,$5,$6,$7,0,$8,$9,$10)",
     [
       req.user.id,
       q.city || null,
@@ -224,6 +266,9 @@ properties.post("/search-intents", requireUser, async (req, res) => {
       q.startsAt || null,
       q.endsAt || null,
       q.amenities.split(",").filter(Boolean),
+      q.requiredAmenities.split(",").filter(Boolean),
+      q.strictCity,
+      q.strictBudget,
     ],
   );
   res.status(201).json({ ok: true });

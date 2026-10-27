@@ -642,3 +642,8 @@
     padding-inline: 0;
   }
 }
+.alternative-details {
+  padding: 0 1rem;
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}

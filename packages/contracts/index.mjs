@@ -36,6 +36,9 @@ export const intervalSchema = z
 export const bookingSchema = intervalSchema.extend({
   propertyId: idSchema,
   guests: z.number().int().min(1).max(1000),
+  searchStage: z
+    .enum(["exact", "location", "budget", "services", "schedule"])
+    .optional(),
 });
 export const propertySchema = z
   .object({
@@ -61,6 +64,10 @@ export const propertySchema = z
   .refine((p) => p.minHours <= p.maxHours, {
     message: "La duracion minima supera a la maxima.",
   });
+const searchBoolean = z
+  .union([z.boolean(), z.enum(["true", "false"])])
+  .transform((v) => v === true || v === "true")
+  .default(false);
 export const searchSchema = z
   .object({
     city: z.string().max(100).optional(),
@@ -68,6 +75,9 @@ export const searchSchema = z
     guests: z.coerce.number().int().min(1).max(1000).default(1),
     budget: z.coerce.number().int().min(1000).max(1000000000).optional(),
     amenities: z.string().max(500).default(""),
+    requiredAmenities: z.string().max(500).default(""),
+    strictCity: searchBoolean,
+    strictBudget: searchBoolean,
     startsAt: z.iso.datetime({ offset: true }).optional(),
     endsAt: z.iso.datetime({ offset: true }).optional(),
     sort: z.enum(["match", "price", "capacity"]).default("match"),

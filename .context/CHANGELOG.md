@@ -1,5 +1,20 @@
 # Historial de trabajo
 
+## 2026-10-26 - Lanzador de Windows
+
+- Detectada copia del BAT en el Escritorio: buscaba `node_modules` junto a esa copia y fallaba aunque el proyecto tuviera Vite instalado.
+- Convertido el BAT del Escritorio en un acceso al lanzador de `C:\pyApy_Proyecto`.
+- El lanzador del proyecto comprueba dependencias principales de web/API y ejecuta `npm ci --include=dev` si faltan; detiene el arranque si la reparacion falla. Conservados requisitos de Node 24 y configuracion PostgreSQL.
+- Documentado el comportamiento en `docs/DEVELOPMENT.md`.
+- Verificacion desde el BAT del Escritorio: instalacion automatica de 769 paquetes, PostgreSQL listo, Vite y API iniciados; web y `/api/health` respondieron HTTP 200. npm informo 10 vulnerabilidades (1 moderada y 9 altas), sin aplicar actualizaciones ajenas al arreglo.
+
+## 2026-10-25 — Búsqueda por etapas
+
+- Selección, conteo y paginación SQL sin recorte previo de 500; requisitos indispensables y etapas de una sola diferencia.
+- Configuración validada de radios, sobreprecio, alternativas, exploración y consultas; fechas realmente comprobadas, bloqueos y reglas respetados.
+- Web responsive con agrupación, diferencias y traslado explícito del intervalo; turno inicial de 24 horas conservado. React Native congelado por ADR-011.
+- Migraciones 004/005, preferencias del interés guardado y analytics agregados sin PII de búsqueda. Documentación y evidencia en [informe](phases/progressive-search-2026-10-25.md) y [ADR-012](decisions/ADR-012-progressive-search.md).
+
 ## 2026-10-22 - Alcance web para v1
 
 - Decisión del usuario: no continuar el desarrollo de la aplicación React Native durante esta v1 y concentrar producto, pruebas y lanzamiento en la web responsive.

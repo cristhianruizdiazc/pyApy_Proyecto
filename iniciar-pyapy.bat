@@ -29,10 +29,24 @@ if errorlevel 1 (
   echo No se encontro npm. Revisa la instalacion de Node.js.
   goto error
 )
-if not exist "node_modules\vite\bin\vite.js" (
-  echo Faltan dependencias. Ejecuta npm ci desde esta carpeta.
+call :comprobar_dependencias
+if not errorlevel 1 goto dependencias_listas
+echo.
+echo Faltan dependencias o la instalacion esta incompleta.
+echo Instalando las dependencias del proyecto con npm ci...
+echo Esta operacion requiere conexion a Internet y puede tardar unos minutos.
+call npm ci --include=dev
+if errorlevel 1 (
+  echo No se pudieron instalar las dependencias. Revisa el error de npm anterior.
   goto error
 )
+call :comprobar_dependencias
+if errorlevel 1 (
+  echo La instalacion termino, pero siguen faltando dependencias para arrancar.
+  goto error
+)
+
+:dependencias_listas
 if not exist ".env" goto sinconfig
 if not exist ".local\postgres\PG_VERSION" goto sinconfig
 
@@ -49,6 +63,11 @@ echo.
 call npm run dev
 if errorlevel 1 goto error
 goto fin
+
+:comprobar_dependencias
+if not exist "node_modules\vite\bin\vite.js" exit /b 1
+node -e "for (const name of ['vite', '@vitejs/plugin-react', 'react', 'react-dom', 'react-router-dom', '@tanstack/react-query', 'leaflet', 'react-leaflet', 'lucide-react', 'express', 'cookie-parser', 'cors', 'express-rate-limit', 'helmet', 'multer', 'pg', 'sharp', '@pyapy/contracts']) require.resolve(name)" >nul 2>&1
+exit /b %errorlevel%
 
 :sinconfig
 echo Falta preparar el entorno local.

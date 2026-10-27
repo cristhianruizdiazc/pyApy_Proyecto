@@ -74,6 +74,9 @@ const queryKeys = [
   "budget",
   "kind",
   "amenities",
+  "requiredAmenities",
+  "strictCity",
+  "strictBudget",
   "startsAt",
   "endsAt",
   "sort",
@@ -108,6 +111,11 @@ function initialDraft(params) {
     amenities: [
       ...new Set((params.get("amenities") || "").split(",").filter(Boolean)),
     ],
+    requiredAmenities: (params.get("requiredAmenities") || "")
+      .split(",")
+      .filter(Boolean),
+    strictCity: params.get("strictCity") === "true",
+    strictBudget: params.get("strictBudget") === "true",
     date: "",
     start: "09:00",
     end: "09:00",
@@ -257,6 +265,11 @@ export default function SearchForm({ catalog, params, onSearch }) {
     if (values.amenities.length)
       next.set("amenities", values.amenities.join(","));
     else next.delete("amenities");
+    for (const key of ["strictCity", "strictBudget"])
+      next.set(key, String(values[key]));
+    if (values.requiredAmenities.length)
+      next.set("requiredAmenities", values.requiredAmenities.join(","));
+    else next.delete("requiredAmenities");
     if (values.date) {
       next.set("startsAt", selectedPeriod.interval.startsAt);
       next.set("endsAt", selectedPeriod.interval.endsAt);
@@ -423,6 +436,15 @@ export default function SearchForm({ catalog, params, onSearch }) {
             {message}
           </p>
         )}
+        <button
+          type="button"
+          className="text-button"
+          aria-expanded={expanded}
+          aria-controls={panelId}
+          onClick={() => setExpanded((v) => !v)}
+        >
+          Más filtros
+        </button>
         <div
           id={panelId}
           className={`advanced-filters${expanded ? " expanded" : ""}`}
@@ -502,7 +524,43 @@ export default function SearchForm({ catalog, params, onSearch }) {
             </select>
           </label>
           <fieldset className="amenity-filters">
-            <legend>Lo que no puede faltar</legend>
+            <legend>Requisitos indispensables</legend>
+            <label>
+              <input
+                type="checkbox"
+                checked={draft.strictCity}
+                onChange={(e) => update("strictCity", e.target.checked)}
+              />
+              Mantener estrictamente la ciudad
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={draft.strictBudget}
+                onChange={(e) => update("strictBudget", e.target.checked)}
+              />
+              Mantener estrictamente el presupuesto
+            </label>
+            {amenityOptions.map((a) => (
+              <label key={a.code}>
+                <input
+                  type="checkbox"
+                  checked={draft.requiredAmenities.includes(a.code)}
+                  onChange={(e) =>
+                    update(
+                      "requiredAmenities",
+                      e.target.checked
+                        ? [...draft.requiredAmenities, a.code]
+                        : draft.requiredAmenities.filter((v) => v !== a.code),
+                    )
+                  }
+                />
+                {a.label} indispensable
+              </label>
+            ))}
+          </fieldset>
+          <fieldset className="amenity-filters">
+            <legend>Servicios opcionales preferidos</legend>
             {amenityOptions.map((amenity) => (
               <label key={amenity.code}>
                 <input

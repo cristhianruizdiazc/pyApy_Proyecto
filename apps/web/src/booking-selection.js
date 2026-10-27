@@ -35,11 +35,16 @@ export function formatStay(value) {
     hourCycle: "h23",
   });
 }
-export function detailHref(id, search = "") {
+export function detailHref(id, search = "", alternative = null) {
   const source = new URLSearchParams(search),
     next = new URLSearchParams();
-  for (const key of ["startsAt", "endsAt", "guests"])
+  for (const key of ["startsAt", "endsAt", "guests", "searchStage"])
     if (source.has(key)) next.set(key, source.get(key));
+  if (alternative?.proposedInterval) {
+    next.set("startsAt", alternative.proposedInterval.startsAt);
+    next.set("endsAt", alternative.proposedInterval.endsAt);
+  }
+  if (alternative?.stage) next.set("searchStage", alternative.stage);
   return `/espacios/${id}${next.size ? `?${next}` : ""}`;
 }
 export function draftFromSearch(search, capacity) {
