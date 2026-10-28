@@ -60,6 +60,12 @@ export async function createBooking(
       return { reservation: output(prior), replayed: true };
     }
     const p = await loadProperty(db, input.propertyId, { lock: true });
+    if (p.is_public_sample)
+      fail(
+        422,
+        "SAMPLE_PROPERTY",
+        "Esta propiedad ficticia no admite reservas.",
+      );
     if (kind === "pyapy") {
       if (
         p.status !== "published" ||
@@ -120,6 +126,8 @@ export async function createBooking(
 bookings.post("/reservations/quote", async (req, res) => {
   const input = bookingSchema.parse(req.body);
   const p = await loadProperty(pool, input.propertyId);
+  if (p.is_public_sample)
+    fail(422, "SAMPLE_PROPERTY", "Esta propiedad ficticia no admite reservas.");
   if (
     p.status !== "published" ||
     !p.owner_active ||

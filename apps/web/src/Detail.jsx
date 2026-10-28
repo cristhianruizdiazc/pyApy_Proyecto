@@ -107,18 +107,31 @@ function DetailPage({ id }) {
       <nav className="detail-shortcuts" aria-label="En esta ficha">
         <a href="#sobre-el-espacio">El espacio</a>
         <a href="#ubicacion">Ubicación</a>
-        <a href="#reservar">
-          Elegir fecha <ArrowRight size={16} />
-        </a>
+        {!p.isPublicSample && (
+          <a href="#reservar">
+            Elegir fecha <ArrowRight size={16} />
+          </a>
+        )}
       </nav>
       <div className="detail-columns">
-        <BookingPanel
-          key={`${id}:${user?.id || "guest"}:${location.search}`}
-          property={p}
-          user={user}
-          search={location.search}
-          availability={availability}
-        />
+        {p.isPublicSample ? (
+          <aside className="booking-panel" aria-label="Propiedad ficticia">
+            <h2>Espacio de demostración</h2>
+            <p>
+              Esta propiedad es ficticia. Las fotos y los precios son
+              ilustrativos; no admite reservas reales.
+            </p>
+            <Link to="/">Seguir explorando</Link>
+          </aside>
+        ) : (
+          <BookingPanel
+            key={`${id}:${user?.id || "guest"}:${location.search}`}
+            property={p}
+            user={user}
+            search={location.search}
+            availability={availability}
+          />
+        )}
         <div className="detail-info">
           <div className="facts">
             <span>

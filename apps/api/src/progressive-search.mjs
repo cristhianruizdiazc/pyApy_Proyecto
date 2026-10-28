@@ -19,7 +19,7 @@ base AS (
  (NOT (q ? 'city') OR lower(g.city)=lower(q->>'city')) city_ok,
  (SELECT 6371*2*asin(sqrt(least(1.0,power(sin(radians((p.latitude-ref.latitude)::float8)/2),2)+cos(radians(p.latitude::float8))*cos(radians(ref.latitude::float8))*power(sin(radians((p.longitude-ref.longitude)::float8)/2),2))))
  FROM geographic_locations ref WHERE lower(ref.city)=lower(q->>'city')) distance
- FROM properties p JOIN users u ON u.id=p.owner_id AND u.active
+ FROM properties p JOIN users u ON u.id=p.owner_id AND (u.active OR p.is_public_sample)
  JOIN geographic_locations g ON g.id=p.city_id JOIN pricing_rules pr ON pr.property_id=p.id
  JOIN availability_rules a ON a.property_id=p.id CROSS JOIN input
  WHERE p.status='published' AND p.capacity>=(q->>'guests')::int

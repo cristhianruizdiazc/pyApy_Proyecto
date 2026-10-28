@@ -134,6 +134,7 @@ export function PropertyCard({
         {compact ? (
           <span className="card-city">
             <MapPin size={11} />
+            {p.isDemo && "Demo · "}
             {p.city}
           </span>
         ) : (
