@@ -41,6 +41,29 @@ const body = (day = 1, id = property.id) => ({
   guests: 5,
   ...future(day),
 });
+test("map image policy permits OpenStreetMap without allowing arbitrary image hosts or scripts", async () => {
+  const response = await request(app).get("/api/v1/catalog");
+  assert.equal(response.status, 200);
+  const directives = Object.fromEntries(
+    response.headers["content-security-policy"].split(";").map((part) => {
+      const [name, ...values] = part.trim().split(/\s+/);
+      return [name, values];
+    }),
+  );
+  assert.ok(directives["img-src"].includes("https://tile.openstreetmap.org"));
+  assert.ok(directives["img-src"].includes("https://*.tile.openstreetmap.org"));
+  assert.ok(
+    !directives["img-src"].some((source) =>
+      ["*", "https:", "http:"].includes(source),
+    ),
+  );
+  assert.deepEqual(directives["script-src"], ["'self'"]);
+  assert.deepEqual(directives["object-src"], ["'none'"]);
+  assert.equal(
+    response.headers["referrer-policy"],
+    "strict-origin-when-cross-origin",
+  );
+});
 test.before(async () => {
   owner = await signup("owner");
   client = await signup("client");

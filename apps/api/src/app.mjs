@@ -32,7 +32,21 @@ app.use((req, res, next) => {
   });
   next();
 });
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        imgSrc: [
+          "'self'",
+          "data:",
+          "https://tile.openstreetmap.org",
+          "https://*.tile.openstreetmap.org",
+        ],
+      },
+    },
+    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+  }),
+);
 app.use(
   cors({
     origin: config.WEB_ORIGIN,
