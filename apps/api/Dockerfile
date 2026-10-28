@@ -28,6 +28,7 @@ COPY --chown=node:node packages/contracts packages/contracts
 COPY --chown=node:node database database
 COPY --chown=node:node scripts scripts
 COPY --chown=node:node tests tests
+COPY --chown=node:node apps/web/public/properties apps/web/public/properties
 RUN mkdir -p /tmp/test-uploads && chown node:node /tmp/test-uploads
 USER node
 CMD ["npm", "test"]

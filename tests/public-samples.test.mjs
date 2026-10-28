@@ -1,13 +1,15 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
+import { existsSync } from "node:fs";
+import { readFile } from "node:fs/promises";
 import request from "supertest";
 import { app } from "../apps/api/src/app.mjs";
 import { pool } from "../apps/api/src/db.mjs";
 
 test.after(() => pool.end());
 
-test("six fictional public samples remain searchable with their inactive owner", async () => {
+test("six public demo listings remain searchable with their inactive owner", async () => {
   const samples = (
     await pool.query(
       `SELECT p.id,p.name,u.active FROM properties p JOIN users u ON u.id=p.owner_id
@@ -20,11 +22,11 @@ test("six fictional public samples remain searchable with their inactive owner",
     samples.map((p) => p.name).sort(),
     [
       "Casa del Lago",
-      "Quinta Yvytu",
+      "La Sagrada",
       "El Patio de Altos",
-      "Quinta Tajy",
+      "La Escondida",
       "Bungalow Arasá",
-      "Refugio Ysyry",
+      "Maria",
     ].sort(),
   );
   const search = await request(app).get("/api/v1/properties");
@@ -41,6 +43,64 @@ test("six fictional public samples remain searchable with their inactive owner",
     assert.equal(detail.status, 200);
     assert.equal(detail.body.isPublicSample, true);
   }
+});
+
+test("real property names, cities and all 19 original photos replace three old samples", async () => {
+  const expected = [
+    {
+      name: "La Escondida",
+      city: "Luque",
+      folder: "la-escondida",
+      prefix: "luque",
+      count: 8,
+    },
+    {
+      name: "La Sagrada",
+      city: "San Bernardino",
+      folder: "la-sagrada",
+      prefix: "sanber",
+      count: 7,
+    },
+    {
+      name: "Maria",
+      city: "Atyra",
+      folder: "maria",
+      prefix: "atyra",
+      count: 4,
+    },
+  ];
+  for (const property of expected) {
+    const search = await request(app)
+      .get("/api/v1/properties")
+      .query({ city: property.city });
+    assert.equal(search.status, 200);
+    const p = search.body.items.find((item) => item.name === property.name);
+    assert.ok(p, `${property.name} must be searchable in ${property.city}`);
+    assert.equal(p.kind, "Quinta");
+    assert.equal(p.images.length, property.count);
+    assert.ok(!p.description.includes("ficticia"));
+    for (let n = 1; n <= property.count; n++) {
+      const image = p.images[n - 1];
+      assert.equal(image.url, `/properties/${property.folder}/${n}.jpeg`);
+      assert.equal(image.alt, `${property.name}, fotografía ${n}`);
+      const original =
+        property.prefix === "sanber" && n === 5
+          ? "sanber5jpeg.jpeg"
+          : `${property.prefix}${n}.jpeg`;
+      const photo = await readFile(`apps/web/public${image.url}`);
+      assert.equal(photo.subarray(0, 3).toString("hex"), "ffd8ff");
+      // Original source files stay in the user's local Photos folder.
+      // CI checks the published assets; local verification also checks fidelity.
+      if (existsSync(`Photos/${original}`))
+        assert.deepEqual(photo, await readFile(`Photos/${original}`));
+    }
+  }
+  const old = await pool.query(
+    `SELECT p.id FROM properties p JOIN users u ON u.id=p.owner_id
+     WHERE u.email='catalog-demo-owner@pyapy.invalid'
+     AND p.name IN ('Quinta Tajy','Quinta Yvytu','Refugio Ysyry')`,
+  );
+  assert.equal(old.rowCount, 0);
 });
 
 test("public samples cannot be quoted or booked even if their owner is activated", async () => {

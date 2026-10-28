@@ -115,11 +115,11 @@ function DetailPage({ id }) {
       </nav>
       <div className="detail-columns">
         {p.isPublicSample ? (
-          <aside className="booking-panel" aria-label="Propiedad ficticia">
+          <aside className="booking-panel" aria-label="Ficha de demostración">
             <h2>Espacio de demostración</h2>
             <p>
-              Esta propiedad es ficticia. Las fotos y los precios son
-              ilustrativos; no admite reservas reales.
+              Esta ficha está en modo demostración y no admite reservas reales.
+              Los precios y la disponibilidad están pendientes de confirmación.
             </p>
             <Link to="/">Seguir explorando</Link>
           </aside>
