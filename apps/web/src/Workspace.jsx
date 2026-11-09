@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { ArrowDown, Search } from "lucide-react";
 import { Empty, ErrorMessage, Loading } from "./ui.jsx";
 import "./workspace.css";
@@ -17,13 +17,34 @@ export function QueryState({ query, children, retryLabel = "Reintentar" }) {
   return children;
 }
 
-export function WorkspaceTabs({ items, value, onChange, label, children }) {
+export function WorkspaceTabs({
+  items,
+  value,
+  onChange,
+  label,
+  navigation = false,
+  children,
+}) {
   const id = useId();
   const buttons = useRef([]);
+  const [wide, setWide] = useState(
+    () => window.matchMedia("(min-width: 1081px)").matches,
+  );
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1081px)");
+    const update = () => setWide(media.matches);
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
   return (
-    <>
-      <div className="tabs workspace-tabs" role="tablist" aria-label={label}>
-        {items.map(([key, text], index) => (
+    <div className={navigation ? "workspace-layout" : "workspace-inline-tabs"}>
+      <div
+        className="tabs workspace-tabs"
+        role="tablist"
+        aria-label={label}
+        aria-orientation={navigation && wide ? "vertical" : "horizontal"}
+      >
+        {items.map(([key, text, Icon], index) => (
           <button
             key={key}
             type="button"
@@ -43,9 +64,11 @@ export function WorkspaceTabs({ items, value, onChange, label, children }) {
                   ? 0
                   : event.key === "End"
                     ? items.length - 1
-                    : event.key === "ArrowRight"
+                    : event.key === "ArrowRight" ||
+                        (navigation && event.key === "ArrowDown")
                       ? (index + 1) % items.length
-                      : event.key === "ArrowLeft"
+                      : event.key === "ArrowLeft" ||
+                          (navigation && event.key === "ArrowUp")
                         ? (index + items.length - 1) % items.length
                         : null;
               if (next === null) return;
@@ -58,6 +81,7 @@ export function WorkspaceTabs({ items, value, onChange, label, children }) {
               onChange(items[next][0]);
             }}
           >
+            {Icon && <Icon size={18} aria-hidden="true" />}
             {text}
           </button>
         ))}
@@ -71,7 +95,7 @@ export function WorkspaceTabs({ items, value, onChange, label, children }) {
       >
         {children}
       </section>
-    </>
+    </div>
   );
 }
 

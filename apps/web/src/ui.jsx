@@ -104,8 +104,13 @@ export function PropertyCard({
   const location = useLocation();
   const href = detailHref(
     p.id,
-    location.pathname === "/" ? location.search : "",
+    location.pathname === "/" || location.pathname.startsWith("/espacios/")
+      ? location.search
+      : "",
     p,
+    location.pathname === "/"
+      ? `${location.pathname}${location.search}${location.hash}`
+      : null,
   );
   return (
     <article
@@ -274,22 +279,27 @@ export function PropertyCard({
     </article>
   );
 }
-export function Modal({ title, onClose, children }) {
+export function Modal({ title, onClose, onKeyDown, className, children }) {
   const ref = useRef(null);
   const titleId = useId();
   useEffect(() => {
     const dialog = ref.current;
     const previousFocus = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
     dialog.showModal();
+    document.body.style.overflow = "hidden";
     return () => {
       dialog.close();
+      document.body.style.overflow = previousOverflow;
       if (previousFocus?.isConnected) previousFocus.focus?.();
     };
   }, []);
   return (
     <dialog
+      className={className}
       ref={ref}
       aria-labelledby={titleId}
+      onKeyDown={onKeyDown}
       onCancel={(e) => {
         e.preventDefault();
         onClose();

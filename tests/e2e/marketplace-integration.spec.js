@@ -1,7 +1,9 @@
 import { test, expect } from "@playwright/test";
 import { localInterval } from "../../packages/contracts/index.mjs";
 
-test("Cómo funciona abre la ayuda de React", async ({ page }) => {
+test("Cómo funciona abre los pasos y conserva el acceso a ayuda", async ({
+  page,
+}) => {
   await page.goto("/");
   const link = page
     .getByRole("navigation", { name: "Navegación principal" })
@@ -9,6 +11,9 @@ test("Cómo funciona abre la ayuda de React", async ({ page }) => {
   if (!(await link.isVisible()))
     await page.getByRole("button", { name: "Abrir menú" }).click();
   await link.click();
+  await expect(page).toHaveURL(/\/#como-funciona$/);
+  await expect(page.locator("#como-funciona .steps-grid li")).toHaveCount(3);
+  await page.getByRole("link", { name: "Más ayuda para reservar" }).click();
   await expect(page).toHaveURL(/\/ayuda#ayuda$/);
   await expect(
     page.getByRole("heading", { name: "Cómo funciona pyApy", exact: true }),
@@ -37,35 +42,35 @@ test("la portada ofrece los tipos del HTML y explora ubicaciones en el mapa", as
 
   await categories.getByRole("button", { name: "Todos", exact: true }).click();
   await expect(page).not.toHaveURL(/kind=/);
-  await page.getByRole("button", { name: "Explorar ubicaciones" }).click();
+  await page.getByRole("button", { name: "Ver mapa", exact: true }).click();
   await expect(page.locator(".leaflet-container")).toBeVisible();
 });
 
-test("opciones de personas permiten elegir un plan y conservar una cantidad exacta", async ({
+test("personas permite ingresar y conservar una cantidad exacta", async ({
   page,
+  request,
 }) => {
+  const response = await request.get("/api/v1/properties?guests=23");
+  expect(response.ok()).toBe(true);
+  const property = (await response.json()).items.find(
+    (p) => !p.isPublicSample && p.capacity >= 24,
+  );
+  expect(
+    property,
+    "Una propiedad reservable con capacidad para conservar y editar personas",
+  ).toBeTruthy();
   await page.goto("/");
-  const presets = page.getByLabel("Tamaño del grupo", {
+  const guests = page.getByRole("textbox", {
+    name: "Personas",
     exact: true,
   });
-  await expect(presets.locator("option")).toHaveText([
-    "Cantidad de personas",
-    "En pareja",
-    "Más de 3 personas",
-    "Más de 5 personas",
-    "Más de 10 personas",
-    "Más de 20 personas",
-    "Más de 30 personas",
-  ]);
-  await presets.selectOption("21");
-  await expect(
-    page.getByLabel("Cantidad de personas", { exact: true }),
-  ).toHaveValue("21");
+  await expect(guests).toBeVisible();
+  await guests.fill("23");
   await page.getByRole("button", { name: "Más filtros", exact: true }).click();
-  await page.getByLabel("Cantidad de personas", { exact: true }).fill("23");
+  await expect(page.locator('.search-form [name="guests"]')).toHaveCount(1);
   await page.getByRole("button", { name: "Buscar espacios" }).click();
   await expect(page).toHaveURL(/guests=23/);
-  await page.locator(".property-grid .card-title").first().click();
+  await page.locator(`[data-property-id="${property.id}"] .card-title`).click();
   await expect(page.getByLabel("Personas", { exact: true })).toHaveValue("23");
   await page.getByLabel("Personas", { exact: true }).fill("24");
   await expect(page.getByLabel("Personas", { exact: true })).toHaveValue("24");
@@ -86,7 +91,7 @@ test("filtros conservan horario paraguayo, borrador y navegación de historial",
     ...interval,
   });
   await page.goto(`/?${params}`);
-  await expect(page.getByLabel("Fecha de la escapada")).toHaveValue(day);
+  await expect(page.getByLabel("Fecha de entrada")).toHaveValue(day);
   await expect(page.locator(".search-schedule")).toContainText(
     "20:00 – Hasta 02:00",
   );
@@ -95,7 +100,7 @@ test("filtros conservan horario paraguayo, borrador y navegación de historial",
   await expect(page.locator('input[name="end"]')).toHaveValue("02:00");
   await expect(page.locator('input[value="pool"]')).toBeChecked();
   await expect(page.locator('select[name="kind"]')).toHaveValue("Casa");
-  await page.getByLabel("Cantidad de personas").fill("4");
+  await page.getByLabel("Personas", { exact: true }).fill("4");
   await page.getByRole("button", { name: "Quintas", exact: true }).click();
   await expect(page).toHaveURL(/kind=Quinta/);
   const current = new URL(page.url()).searchParams;
@@ -106,14 +111,14 @@ test("filtros conservan horario paraguayo, borrador y navegación de historial",
   await page.getByRole("button", { name: /Más filtros/ }).click();
   await expect(page.locator('select[name="kind"]')).toHaveValue("Quinta");
   await page.goBack();
-  await expect(page.getByLabel("Cantidad de personas")).toHaveValue("2");
+  await expect(page.getByLabel("Personas", { exact: true })).toHaveValue("2");
   await page.goForward();
-  await expect(page.getByLabel("Cantidad de personas")).toHaveValue("4");
+  await expect(page.getByLabel("Personas", { exact: true })).toHaveValue("4");
   await page
     .getByRole("button", { name: "Limpiar filtros", exact: true })
     .click();
   await expect(page).toHaveURL("/");
-  await expect(page.getByLabel("Fecha de la escapada")).toHaveValue("");
+  await expect(page.getByLabel("Fecha de entrada")).toHaveValue("");
   await expect(page.locator('select[name="city"]')).toHaveValue("");
   await expect(
     page.getByRole("heading", { name: "Las mejores quintas te esperan" }),
@@ -155,6 +160,7 @@ test("imagen fallida conserva tarjeta accesible y enlace de detalle", async ({
   );
   await page.goto("/?city=Aregua");
   const card = page.locator(".property-card").first();
+  await card.scrollIntoViewIfNeeded();
   await expect(
     card.getByRole("img", { name: /Imagen no disponible/ }),
   ).toBeVisible();
@@ -180,7 +186,7 @@ test("identidad responsive, menú con teclado y movimiento reducido", async ({
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: /Tu próxima escapada/ }),
+    page.getByRole("heading", { name: /Tu próxima escapada/, level: 1 }),
   ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Las mejores quintas te esperan" }),

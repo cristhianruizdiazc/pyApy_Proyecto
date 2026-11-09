@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useLocation } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Plus,
@@ -18,6 +18,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { kinds, money, localInterval } from "@pyapy/contracts";
+import { returnState } from "./auth-return.js";
 import { api } from "./api.js";
 import {
   useSession,
@@ -30,11 +31,12 @@ import {
 import { Reservations, ReservationBrowser } from "./Reservations.jsx";
 import { QueryState, RecordList, WorkspaceTabs } from "./Workspace.jsx";
 import { localParts } from "./booking-selection.js";
+import PageState from "./PageState.jsx";
 const ownerSections = [
-  ["properties", "Espacios"],
-  ["calendar", "Calendario"],
-  ["bookings", "Reservas"],
-  ["plans", "Mi plan"],
+  ["properties", "Espacios", House],
+  ["calendar", "Calendario", CalendarDays],
+  ["bookings", "Reservas", Check],
+  ["plans", "Mi plan", Wallet],
 ];
 function PropertyForm({ property, catalog, onSave, onClose }) {
   const [error, setError] = useState(null);
@@ -72,6 +74,7 @@ function PropertyForm({ property, catalog, onSave, onClose }) {
   }
   return (
     <Modal
+      className="management-dialog"
       title={property ? "Editar espacio" : "Nuevo espacio"}
       onClose={onClose}
     >
@@ -89,7 +92,7 @@ function PropertyForm({ property, catalog, onSave, onClose }) {
             />
           </label>
           <label>
-            Descripcion
+            Descripción
             <textarea
               name="description"
               defaultValue={property?.description}
@@ -156,7 +159,7 @@ function PropertyForm({ property, catalog, onSave, onClose }) {
               />
             </label>
             <label>
-              Cancelacion anticipada (h)
+              Cancelación anticipada (h)
               <input
                 name="cancellationHours"
                 type="number"
@@ -169,7 +172,7 @@ function PropertyForm({ property, catalog, onSave, onClose }) {
           </div>
           <div className="form-row">
             <label>
-              Minimo de horas
+              Mínimo de horas
               <input
                 name="minHours"
                 type="number"
@@ -180,7 +183,7 @@ function PropertyForm({ property, catalog, onSave, onClose }) {
               />
             </label>
             <label>
-              Maximo de horas
+              Máximo de horas
               <input
                 name="maxHours"
                 type="number"
@@ -267,7 +270,7 @@ function PropertyForm({ property, catalog, onSave, onClose }) {
             />
           </label>
           <label>
-            Publicacion
+            Publicación
             <select name="status" defaultValue={property?.status || "draft"}>
               <option value="draft">Borrador</option>
               <option value="published">Publicado</option>
@@ -340,7 +343,11 @@ function MediaForm({ property, onClose, onUpdate }) {
     }
   }
   return (
-    <Modal title={`Imagenes y contacto: ${property.name}`} onClose={onClose}>
+    <Modal
+      className="management-dialog"
+      title={`Imágenes y contacto: ${property.name}`}
+      onClose={onClose}
+    >
       <WorkspaceTabs
         items={[
           ["photos", "Fotos"],
@@ -407,8 +414,11 @@ function MediaForm({ property, onClose, onUpdate }) {
           >
             <form key={privateData.dataUpdatedAt} onSubmit={savePrivate}>
               <h3>Datos privados del espacio</h3>
+              <p className="muted">
+                Estos datos de llegada no se muestran en la ficha pública.
+              </p>
               <label>
-                Direccion exacta
+                Dirección exacta
                 <input
                   name="address"
                   defaultValue={privateData.data?.address}
@@ -416,7 +426,7 @@ function MediaForm({ property, onClose, onUpdate }) {
                 />
               </label>
               <label>
-                Telefono privado
+                Teléfono privado
                 <input
                   name="phone"
                   defaultValue={privateData.data?.phone}
@@ -692,7 +702,8 @@ function Calendar({ items, properties, onAdded }) {
       </section>
       {date && (
         <Modal
-          title={`Registrar ocupacion: ${date}`}
+          className="management-dialog"
+          title={`Registrar ocupación: ${date}`}
           onClose={() => setDate(null)}
         >
           <form onSubmit={add}>
@@ -763,7 +774,7 @@ function Calendar({ items, properties, onAdded }) {
               <ErrorMessage error={error} />
               <button className="primary" disabled={pending}>
                 <CalendarDays size={17} />
-                {pending ? "Guardando..." : "Registrar ocupacion"}
+                {pending ? "Guardando..." : "Registrar ocupación"}
               </button>
             </fieldset>
           </form>
@@ -777,6 +788,7 @@ export default function Owner() {
   return <OwnerWorkspace key={user?.id || "guest"} />;
 }
 function OwnerWorkspace() {
+  const location = useLocation();
   const { user, session } = useSession();
   const client = useQueryClient();
   const enabled = Boolean(user && ["owner", "admin"].includes(user.role));
@@ -832,20 +844,45 @@ function OwnerWorkspace() {
     ])
       client.invalidateQueries({ queryKey: [key] });
   }
-  if (session.isPending) return <Loading />;
+  if (session.isPending)
+    return (
+      <main className="page workspace-loading" aria-busy="true">
+        <Loading />
+      </main>
+    );
+  if (session.isError && !user)
+    return (
+      <PageState title="No pudimos comprobar tu sesión.">
+        <p>Reintentá para continuar con tu panel.</p>
+        <button className="primary" onClick={() => session.refetch()}>
+          Reintentar sesión
+        </button>
+      </PageState>
+    );
   if (!user)
     return (
-      <main className="page">
-        <h1>Tu espacio puede ser el proximo gran plan.</h1>
-        <Link className="primary" to="/ingresar">
+      <PageState
+        title="Tu espacio puede ser el próximo gran plan."
+        kicker="PARA ANFITRIONES"
+        icon={House}
+      >
+        <p>Ingresá para publicar y administrar tus espacios.</p>
+        <Link className="primary" to="/ingresar" state={returnState(location)}>
           Ingresar para publicar
         </Link>
-      </main>
+      </PageState>
     );
   if (!enabled)
     return (
-      <main className="page narrow">
-        <h1>Sumate como propietario.</h1>
+      <PageState
+        title="Sumate como propietario."
+        kicker="PARA ANFITRIONES"
+        icon={House}
+      >
+        <p>
+          Para publicar necesitás un perfil de propietario. Completá y confirmá
+          el formulario para crearlo.
+        </p>
         <form
           onSubmit={async (e) => {
             e.preventDefault();
@@ -875,7 +912,7 @@ function OwnerWorkspace() {
             <ArrowRight size={17} />
           </button>
         </form>
-      </main>
+      </PageState>
     );
   return (
     <main className="page owner-page workspace-page">
@@ -934,6 +971,7 @@ function OwnerWorkspace() {
         </QueryState>
       )}
       <WorkspaceTabs
+        navigation
         items={ownerSections}
         value={tab}
         onChange={setTab}
@@ -994,8 +1032,8 @@ function OwnerWorkspace() {
                           </button>
                           <button
                             className="icon-button outlined"
-                            title="Imagenes y contacto"
-                            aria-label={`Imagenes y contacto de ${p.name}`}
+                            title="Imágenes y contacto"
+                            aria-label={`Imágenes y contacto de ${p.name}`}
                             onClick={() => setMedia(p)}
                           >
                             <Upload size={18} />
@@ -1007,7 +1045,7 @@ function OwnerWorkspace() {
                 )}
               </RecordList>
             ) : (
-              <Empty title="Tu primer espacio empieza aca.">
+              <Empty title="Tu primer espacio empieza acá.">
                 <button className="primary" onClick={() => setCreating(true)}>
                   <Plus size={17} />
                   Publicar un espacio
@@ -1026,7 +1064,7 @@ function OwnerWorkspace() {
                   onAdded={refresh}
                 />
               ) : (
-                <Empty title="Primero registra un espacio." />
+                <Empty title="Primero registrá un espacio." />
               )}
             </QueryState>
           </QueryState>
@@ -1054,8 +1092,8 @@ function OwnerWorkspace() {
             >
               <h2>
                 {subscription.data?.subscription
-                  ? `${subscription.data.subscription.name} · ${subscription.data.subscription.status === "active" ? "Activo" : subscription.data.subscription.status === "pending" ? "Pendiente de confirmacion" : "Vencido"}`
-                  : "Elegi tu plan"}
+                  ? `${subscription.data.subscription.name} · ${subscription.data.subscription.status === "active" ? "Activo" : subscription.data.subscription.status === "pending" ? "Pendiente de confirmación" : "Vencido"}`
+                  : "Elegí tu plan"}
               </h2>
               <div className="plans-grid">
                 {catalog.data?.plans.map((p) => (
@@ -1064,7 +1102,7 @@ function OwnerWorkspace() {
                     <p>
                       <strong>Gs. {money(p.monthly_price)}</strong> / mes
                     </p>
-                    <p>Sin comision por reserva.</p>
+                    <p>Sin comisión por reserva.</p>
                     <button
                       className="secondary"
                       disabled={pending}
@@ -1077,7 +1115,7 @@ function OwnerWorkspace() {
                           });
                           refresh();
                           setNotice(
-                            "Solicitud registrada. La activacion y el pago se coordinan con administracion.",
+                            "Solicitud registrada. La activación y el pago se coordinan con administración.",
                           );
                         } catch (err) {
                           setError(err);
@@ -1119,8 +1157,12 @@ function OwnerWorkspace() {
         />
       )}{" "}
       {cancel && (
-        <Modal title="Cancelar ocupacion" onClose={() => setCancel(null)}>
-          <p>{cancel.propertyName}: se liberara el intervalo reservado.</p>
+        <Modal
+          className="management-dialog"
+          title="Cancelar ocupación"
+          onClose={() => setCancel(null)}
+        >
+          <p>{cancel.propertyName}: se liberará el intervalo reservado.</p>
           <ErrorMessage error={error} />
           <button
             className="primary destructive"
@@ -1142,7 +1184,7 @@ function OwnerWorkspace() {
             }}
           >
             <X size={17} />
-            Confirmar cancelacion
+            Confirmar cancelación
           </button>
         </Modal>
       )}

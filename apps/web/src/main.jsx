@@ -3,9 +3,12 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App.jsx";
+import "./tokens.css";
 import "./styles.css";
 import "./marketplace.css";
-import "./home-reference.css";
+import "./home.css";
+import "./results.css";
+import "./site-layout.css";
 const client = new QueryClient({
   defaultOptions: {
     queries: { retry: 1, staleTime: 30000, refetchOnWindowFocus: false },

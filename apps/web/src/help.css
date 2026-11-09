@@ -1,95 +1,158 @@
-.help-page {
-  max-width: 1120px;
+﻿.page.help-page {
+  width: min(var(--content-width), calc(100% - 64px));
+  max-width: none;
+  padding: 48px 0 72px;
 }
-
 .help-heading {
-  max-width: 700px;
-  margin-bottom: 34px;
+  max-width: 740px;
+  margin-bottom: 36px;
 }
-
+.help-heading .eyebrow {
+  color: var(--clay);
+  font-size: 11px;
+}
 .help-heading h1 {
-  margin: 8px 0 12px;
+  font-size: clamp(34px, 4vw, 48px);
+  font-weight: 550;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  margin: 14px 0 20px;
 }
-
-.help-heading p,
-.help-steps p,
-.help-details p {
+.help-heading p {
+  font-size: 15px;
   color: var(--muted);
+  line-height: 1.8;
 }
-
 .help-steps {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
+  gap: 22px;
 }
-
 .help-steps article {
   position: relative;
-  padding: 28px;
+  padding: 30px;
   border: 1px solid var(--line);
-  border-radius: 10px;
-  background: white;
+  border-radius: var(--radius);
+  background: var(--white);
 }
-
 .help-steps article > svg {
-  color: var(--green);
+  color: var(--forest);
+  margin-top: 12px;
 }
-
-.help-steps h2 {
-  margin: 20px 0 8px;
-  font-size: 19px;
-}
-
-.help-steps p,
-.help-details p {
-  margin: 0;
-  font-size: 14px;
-}
-
 .help-step-number {
   position: absolute;
-  top: 20px;
-  right: 22px;
-  color: #9aa59c;
-  font: 700 13px Manrope, sans-serif;
+  top: 22px;
+  right: 24px;
+  color: var(--clay);
+  font: 500 34px var(--font-display);
 }
-
+.help-steps h2 {
+  font-size: 25px;
+  font-weight: 550;
+  letter-spacing: -0.025em;
+  margin: 30px 0 16px;
+}
+.help-steps p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--muted);
+}
 .help-details {
-  margin-top: 24px;
-  padding: 28px;
-  border-radius: 10px;
-  background: var(--light);
+  margin-top: 28px;
+  padding: 32px;
+  border-radius: var(--radius);
+  background: var(--forest);
+  color: var(--white);
 }
-
 .help-details > div:first-child {
   display: flex;
-  align-items: flex-start;
-  gap: 18px;
+  align-items: start;
+  gap: 22px;
 }
-
 .help-details > div:first-child > svg {
-  color: var(--green);
+  color: var(--gold);
 }
-
 .help-details h2 {
-  margin: 0 0 8px;
-  font-size: 21px;
+  font-size: 28px;
+  font-weight: 550;
+  margin: 0 0 16px;
 }
-
+.help-details p {
+  font-size: 14px;
+  color: #e9eddf;
+  line-height: 1.8;
+  margin: 0;
+}
 .help-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 24px;
+  margin-top: 28px;
 }
-
-@media (max-width: 700px) {
+.help-actions .primary {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--forest-deep);
+}
+.help-actions .secondary {
+  background: var(--white);
+  color: var(--forest);
+}
+.help-faq {
+  margin-top: 44px;
+  max-width: 880px;
+}
+.help-faq h2 {
+  font-size: 32px;
+  font-weight: 550;
+  margin-bottom: 24px;
+}
+.help-faq details {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  padding: 6px 22px;
+  background: var(--white);
+}
+.help-faq summary {
+  cursor: pointer;
+  min-height: 48px;
+  padding: 14px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--forest);
+}
+.help-faq p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+@media (max-width: 980px) {
   .help-steps {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
-
+  .help-steps h2 {
+    margin-top: 18px;
+  }
+}
+@media (max-width: 780px) {
+  .page.help-page {
+    width: calc(100% - 40px);
+  }
+}
+@media (max-width: 600px) {
+  .page.help-page {
+    width: calc(100% - 32px);
+    padding-top: 32px;
+  }
   .help-steps article,
   .help-details {
-    padding: 22px;
+    padding: 24px;
+  }
+  .help-details > div:first-child {
+    flex-direction: column;
+    gap: 18px;
   }
 }

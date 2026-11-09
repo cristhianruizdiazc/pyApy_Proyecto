@@ -1,0 +1,53 @@
+﻿.page.page-state {
+  width: min(760px, calc(100% - 32px));
+  padding: 44px 0 72px;
+}
+.state-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: var(--shadow);
+  overflow-wrap: anywhere;
+}
+.state-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  background: var(--paper-2);
+  color: var(--forest);
+  border-radius: 50%;
+  margin-bottom: 24px;
+}
+.state-card > .eyebrow {
+  color: var(--clay);
+  margin-bottom: 12px;
+}
+.state-card h1 {
+  font-size: clamp(30px, 4vw, 40px);
+  font-weight: 550;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.state-card p {
+  font-size: 14px;
+  color: var(--muted);
+}
+.state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+.state-card form {
+  margin-top: 28px;
+}
+.state-card form .primary {
+  margin-top: 8px;
+}
+@media (max-width: 600px) {
+  .state-card {
+    padding: 28px 22px;
+  }
+}

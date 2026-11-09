@@ -1,0 +1,92 @@
+/* HTML principal del prototipo: .context/phases/rediseno-fase-0-2026-11-04/REFERENCIA.md */
+@font-face {
+  font-family: "Fraunces";
+  src: url("/fonts/fraunces-normal.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fraunces";
+  src: url("/fonts/fraunces-italic.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 400 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/poppins-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/poppins-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/poppins-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/poppins-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/poppins-800.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+:root {
+  --forest: #0f3b2d;
+  --forest-deep: #08261d;
+  --forest-soft: #1c5543;
+  --paper: #f4f5ee;
+  --paper-2: #eaede2;
+  --white: #fff;
+  --ink: #12211a;
+  --muted: #56665a;
+  --line: #d5dacb;
+  --clay: #a64f2b;
+  --clay-bright: #c9683f;
+  --gold: #e4b36a;
+  --focus: #1f6e52;
+  --radius: 18px;
+  --radius-sm: 10px;
+  --radius-pill: 999px;
+  --shadow: 0 26px 60px -32px rgb(8 38 29 / 45%);
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: "Poppins", "Segoe UI", system-ui, sans-serif;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-11: 44px;
+  --content-width: 1200px;
+  --header-height: 84px;
+  --control-height: 48px;
+  --target-size: 44px;
+  --error-ink: #8e3419;
+  --error-bg: #fbebe4;
+  --success-ink: #1c5543;
+  --success-bg: #eaf2e5;
+  /* Compatibility names consumed by screens awaiting their own redesign phase. */
+  --green: var(--forest);
+  --light: var(--paper-2);
+  --linen: var(--paper-2);
+  --accent: var(--clay);
+}

@@ -35,7 +35,26 @@ export function formatStay(value) {
     hourCycle: "h23",
   });
 }
-export function detailHref(id, search = "", alternative = null) {
+// Only the search route can be a results origin, never an external URL or panel.
+export function resultsOrigin(value) {
+  if (typeof value !== "string" || !/^\/(?:\?|#|$)/.test(value)) return null;
+  if (
+    [...value].some(
+      (char) =>
+        char === "\\" || char.charCodeAt(0) <= 32 || char.charCodeAt(0) === 127,
+    )
+  )
+    return null;
+  try {
+    const url = new URL(value, "https://pyapy.invalid");
+    return url.origin === "https://pyapy.invalid" && url.pathname === "/"
+      ? value
+      : null;
+  } catch {
+    return null;
+  }
+}
+export function detailHref(id, search = "", alternative = null, origin = null) {
   const source = new URLSearchParams(search),
     next = new URLSearchParams();
   for (const key of ["startsAt", "endsAt", "guests", "searchStage"])
@@ -45,6 +64,8 @@ export function detailHref(id, search = "", alternative = null) {
     next.set("endsAt", alternative.proposedInterval.endsAt);
   }
   if (alternative?.stage) next.set("searchStage", alternative.stage);
+  const returnTo = resultsOrigin(origin || source.get("returnTo"));
+  if (returnTo) next.set("returnTo", returnTo);
   return `/espacios/${id}${next.size ? `?${next}` : ""}`;
 }
 export function draftFromSearch(search, capacity) {

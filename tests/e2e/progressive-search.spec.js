@@ -7,7 +7,7 @@ test("alternatives show differences and explicitly transfer the chosen interval"
 }) => {
   const response = await request.get("/api/v1/properties");
   expect(response.ok()).toBeTruthy();
-  const p = (await response.json()).items[0];
+  const p = (await response.json()).items.find((item) => !item.isPublicSample);
   expect(p).toBeTruthy();
   const original = localInterval("2030-01-10", "09:00", "13:00");
   const proposed = localInterval("2030-01-11", "09:00", "13:00");

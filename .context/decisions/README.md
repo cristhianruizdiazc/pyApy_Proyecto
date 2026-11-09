@@ -1,5 +1,7 @@
 # Registro de decisiones de arquitectura
 
+- [ADR-013 — Rediseño web basado en el prototipo](ADR-013-frontend-redesign.md).
+
 - [ADR-012 — Búsqueda por etapas](ADR-012-progressive-search.md).
 
 - [ADR-008 - Entrega responsiva de imagenes demo](ADR-008-demo-image-delivery.md).

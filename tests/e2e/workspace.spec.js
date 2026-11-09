@@ -148,7 +148,7 @@ test("cuenta filtra guardados y marca notificación como leída sin perder acces
   await expect(
     page.getByText("Recordatorio de tu escapada de prueba"),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Marcar como leida" }).click();
+  await page.getByRole("button", { name: "Marcar como leída" }).click();
   await expect(
     page.getByRole("heading", { name: "Estás al día." }),
   ).toBeVisible();
@@ -157,7 +157,7 @@ test("cuenta filtra guardados y marca notificación como leída sin perder acces
     page.getByText("Recordatorio de tu escapada de prueba"),
   ).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Marcar como leida" }),
+    page.getByRole("button", { name: "Marcar como leída" }),
   ).toHaveCount(0);
 });
 
@@ -246,15 +246,15 @@ test("propietario edita espacio y conserva formularios de fotos, contacto y rede
     "14 personas",
   );
   const mediaButton = page.getByRole("button", {
-    name: `Imagenes y contacto de ${space.p.name}`,
+    name: `Imágenes y contacto de ${space.p.name}`,
   });
   await mediaButton.click();
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("tab", { name: "Datos de llegada" }).click();
   await dialog
-    .getByLabel("Direccion exacta")
+    .getByLabel("Dirección exacta")
     .fill("Calle ficticia de prueba 123");
-  await dialog.getByLabel("Telefono privado").fill("000000");
+  await dialog.getByLabel("Teléfono privado").fill("000000");
   await dialog
     .getByRole("button", { name: "Guardar contacto privado" })
     .click();
@@ -327,7 +327,7 @@ test("calendario con agenda crea bloqueo real y permite cancelarlo desde reserva
     .getByRole("combobox", { name: "Tipo", exact: true })
     .selectOption("block");
   await dialog
-    .getByRole("button", { name: "Registrar ocupacion", exact: true })
+    .getByRole("button", { name: "Registrar ocupación", exact: true })
     .click();
   await expect(dialog).toHaveCount(0);
   await expect(
@@ -343,7 +343,7 @@ test("calendario con agenda crea bloqueo real y permite cancelarlo desde reserva
     .click();
   await page
     .getByRole("dialog")
-    .getByRole("button", { name: "Confirmar cancelacion" })
+    .getByRole("button", { name: "Confirmar cancelación" })
     .click();
   await expect(page.locator(".reservation-row")).toContainText("Cancelada");
 });
@@ -357,7 +357,7 @@ test("administración filtra, verifica y suspende sin perder acceso a auditoría
   await page.getByLabel("Buscar en registros cargados").fill(space.p.name);
   const row = page.locator("tbody tr").filter({ hasText: space.p.name });
   await row
-    .getByRole("button", { name: `Cambiar verificacion de ${space.p.name}` })
+    .getByRole("button", { name: `Cambiar verificación de ${space.p.name}` })
     .click();
   await expect(row).toContainText("Verificado");
   await row.getByRole("button", { name: "Suspender", exact: true }).click();
@@ -455,7 +455,7 @@ test("paneles y cuenta mantienen navegación y ancho en pantallas pequeñas", as
     ["admin", "/admin?section=users"],
   ]) {
     await visit(page, accounts[role], path);
-    await expect(page.locator(".workspace-page")).toBeVisible();
+    await expect(page.getByRole("main")).toBeVisible();
     await expect(page.locator(".loading")).toHaveCount(0);
     for (const width of widths) {
       await page.setViewportSize({ width, height: 1000 });

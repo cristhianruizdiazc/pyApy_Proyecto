@@ -1,0 +1,54 @@
+﻿/* Continuation stays above the destination and never performs an action on login. */
+.auth-continuation {
+  width: min(var(--content-width), calc(100% - 64px));
+  margin: 24px auto;
+  padding: 22px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--forest);
+  border-radius: 14px;
+  background: var(--white);
+  box-shadow: var(--shadow);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.auth-continuation > p {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--muted);
+}
+.auth-continuation > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 13px;
+  text-decoration: underline;
+  color: var(--forest);
+}
+.auth-continuation > .error {
+  flex-basis: 100%;
+}
+.auth-continuation .primary,
+.auth-continuation .secondary {
+  min-height: 44px;
+  font-size: 13px;
+}
+.auth-continuation.success {
+  background: var(--success-bg);
+  border-color: var(--forest);
+  color: var(--success-ink);
+}
+@media (max-width: 780px) {
+  .auth-continuation {
+    width: calc(100% - 40px);
+    padding: 20px;
+  }
+}
+@media (max-width: 600px) {
+  .auth-continuation {
+    width: calc(100% - 32px);
+  }
+}

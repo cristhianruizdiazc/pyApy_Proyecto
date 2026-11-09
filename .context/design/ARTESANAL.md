@@ -1,5 +1,7 @@
 # Identidad artesanal — primera entrega
 
+Registro histórico. Desde 2026-11-04 los tokens, fuentes y estructura compartida vigentes están en [SISTEMA-VISUAL.md](SISTEMA-VISUAL.md), implementados en la [fase 1 del rediseño](../phases/rediseno-fase-1-2026-11-04.md). Los valores y carga de fuentes descritos debajo corresponden a la entrega original.
+
 Fecha: 2026-09-19. Dirección elegida por el usuario: **Artesanal sutil**, primero sobre la web conectada.
 
 ## Sistema visual

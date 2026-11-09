@@ -1,5 +1,10 @@
 import { lazy, Suspense, useRef, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useSearchParams,
+  useLocation,
+} from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
@@ -13,16 +18,13 @@ import {
   ShieldCheck,
   Heart,
 } from "lucide-react";
+import { returnState } from "./auth-return.js";
 import { api } from "./api.js";
 import Sponsors from "./Sponsors.jsx";
 import SearchForm from "./SearchForm.jsx";
-import {
-  useSession,
-  PropertyCard,
-  Loading,
-  ErrorMessage,
-  Empty,
-} from "./ui.jsx";
+import PropertyCard from "./SearchPropertyCard.jsx";
+import useResultsScroll from "./useResultsScroll.js";
+import { useSession, Loading, ErrorMessage, Empty } from "./ui.jsx";
 const PropertyMap = lazy(() => import("./Map.jsx"));
 function Rail({ items, favorites, onFavorite, onExplore }) {
   const ref = useRef(null);
@@ -64,7 +66,6 @@ function Rail({ items, favorites, onFavorite, onExplore }) {
           <div className="rail-item" key={p.id}>
             <PropertyCard
               p={p}
-              compact
               favorite={favorites.has(p.id)}
               onFavorite={onFavorite}
             />
@@ -95,24 +96,118 @@ function Benefits() {
     [TreePine, "Naturaleza", "Respirá aire puro"],
     [Waves, "Piscinas", "Disfrutá el verano"],
     [CookingPot, "Parrillas", "Compartí en familia"],
-    [ShieldCheck, "Reservas seguras", "Tu tranquilidad primero"],
+    [ShieldCheck, "Reservá con confianza", "Disponibilidad antes de confirmar"],
     [Heart, "Apoyo local", "Anfitriones paraguayos"],
   ];
   return (
+    <section className="home-benefits" aria-labelledby="benefits-title">
+      <h2 className="sr-only" id="benefits-title">
+        Por qué elegir pyApy
+      </h2>
+      <ul className="benefits-list layout-container">
+        {features.map(([Icon, title, copy]) => (
+          <li key={title}>
+            <span className="benefit-icon">
+              <Icon size={22} strokeWidth={1.8} aria-hidden="true" />
+            </span>
+            <div>
+              <h3>{title}</h3>
+              <p>{copy}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+function Hosts({ user }) {
+  return (
     <section
-      className="home-benefits page-width"
-      id="como-funciona"
-      aria-label="Cómo funciona pyApy"
+      className="home-hosts"
+      id="anfitriones"
+      aria-labelledby="hosts-title"
     >
-      {features.map(([Icon, title, copy]) => (
-        <div key={title}>
-          <Icon size={34} strokeWidth={1.35} />
-          <div>
-            <strong>{title}</strong>
-            <span>{copy}</span>
-          </div>
-        </div>
-      ))}
+      <div className="hosts-media">
+        <img
+          src="/brand/anfitriones.webp"
+          alt="Jardín arbolado con alojamientos al atardecer, imagen ilustrativa"
+          width="1200"
+          height="800"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div className="hosts-panel">
+        <p className="eyebrow">Para anfitriones</p>
+        <h2 id="hosts-title">
+          Tu quinta puede ser el próximo plan de alguien.
+        </h2>
+        <p>
+          Sumá tu espacio a pyApy y hacelo visible para quienes buscan una
+          escapada en Paraguay.
+        </p>
+        <ul>
+          {[
+            "Creá tu perfil y publicá tu espacio.",
+            "Definí precios por hora, horarios y condiciones.",
+            "Gestioná reservas y bloqueos desde tu calendario.",
+          ].map((text) => (
+            <li key={text}>
+              <Check size={18} aria-hidden="true" />
+              {text}
+            </li>
+          ))}
+        </ul>
+        <Link
+          className="hosts-cta"
+          to={user ? "/propietario" : "/ingresar"}
+          state={{ from: "/propietario" }}
+        >
+          Publicá tu quinta <ArrowRight size={18} aria-hidden="true" />
+        </Link>
+      </div>
+    </section>
+  );
+}
+function Steps() {
+  const steps = [
+    [
+      "Buscá y filtrá",
+      "Elegí ciudad, fecha, horario y cantidad de personas. Ajustá el presupuesto y los servicios para encontrar tu espacio.",
+    ],
+    [
+      "Conocé el lugar",
+      "Mirá las fotos, los servicios, la capacidad y las reglas. Compará opciones y revisá su precio por hora.",
+    ],
+    [
+      "Consultá y reservá",
+      "Ingresá y consultá disponibilidad y precio para tu horario. Revisá el total y confirmá tu reserva.",
+    ],
+  ];
+  return (
+    <section
+      className="home-steps"
+      id="como-funciona"
+      aria-labelledby="steps-title"
+    >
+      <div className="layout-container">
+        <p className="eyebrow">Así de simple</p>
+        <h2 id="steps-title">Tu próxima escapada, en tres pasos.</h2>
+        <ol className="steps-grid">
+          {steps.map(([title, copy], index) => (
+            <li key={title}>
+              <span className="step-number" aria-hidden="true">
+                0{index + 1}
+              </span>
+              <h3>{title}</h3>
+              <p>{copy}</p>
+            </li>
+          ))}
+        </ol>
+        <Link className="steps-help" to="/ayuda#ayuda">
+          Más ayuda para reservar <ArrowRight size={16} aria-hidden="true" />
+        </Link>
+      </div>
     </section>
   );
 }
@@ -120,13 +215,17 @@ export default function Home() {
   const [params, setParams] = useSearchParams();
   const { user } = useSession();
   const nav = useNavigate();
+  const location = useLocation();
+  function login(action) {
+    client.setQueryData(["session"], { user: null });
+    nav("/ingresar", { state: returnState(location, action) });
+  }
   const client = useQueryClient();
   const [map, setMap] = useState(false);
   const [selected, setSelected] = useState(null);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState(null);
   const resultsRef = useRef(null);
-  const searchRef = useRef(null);
   const catalog = useQuery({
     queryKey: ["catalog"],
     queryFn: () => api("/catalog"),
@@ -140,11 +239,12 @@ export default function Home() {
     queryFn: () => api("/favorites"),
     enabled: Boolean(user),
   });
+  useResultsScroll(!query.isPending);
   const saved = new Set(favorites.data?.items.map((p) => p.id) || []);
   const items = query.data?.items || [];
   const alternativeCount =
-    (query.data?.alternatives.length || 0) +
-    (query.data?.otherDates.length || 0);
+    (query.data?.alternatives?.length || 0) +
+    (query.data?.otherDates?.length || 0);
   const featuredImageOrder = ["pool", "house", "cabin", "palms"];
   const featuredItems = [...items].sort((a, b) => {
     const rank = (property) => {
@@ -158,13 +258,15 @@ export default function Home() {
   });
   const hasSearch = params.size > 0;
   async function favorite(id) {
-    if (!user) return nav("/ingresar");
+    if (!user) return login({ type: "favorite", id });
     try {
       await api(`/favorites/${id}`, {
         method: saved.has(id) ? "DELETE" : "PUT",
       });
       client.invalidateQueries({ queryKey: ["favorites"] });
     } catch (err) {
+      if (err.status === 401)
+        return login({ type: "favorite", id, remove: saved.has(id) });
       setError(err);
     }
   }
@@ -172,16 +274,7 @@ export default function Home() {
     setNotice("");
     setError(null);
     setParams(next);
-    resultsRef.current?.scrollIntoView({
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "instant"
-        : "smooth",
-      block: "start",
-    });
-  }
-  function exploreLocations() {
-    setMap(true);
-    setSelected(null);
+    resultsRef.current?.focus({ preventScroll: true });
     resultsRef.current?.scrollIntoView({
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
         ? "instant"
@@ -190,7 +283,7 @@ export default function Home() {
     });
   }
   async function saveIntent() {
-    if (!user) return nav("/ingresar");
+    if (!user) return login({ type: "interest" });
     try {
       await api("/search-intents", {
         method: "POST",
@@ -198,57 +291,113 @@ export default function Home() {
       });
       setNotice("Guardamos tu interés en esta búsqueda.");
     } catch (err) {
+      if (err.status === 401) return login({ type: "interest" });
       setError(err);
     }
   }
   return (
     <main className="marketplace-home reference-home">
-      <section className="hero" aria-label="Escapadas en Paraguay">
+      <section className="hero" id="inicio" aria-labelledby="hero-title">
         <img
           className="hero-image visible"
-          src="/brand/escapada-atardecer.png"
+          src="/brand/escapada-2172.webp"
+          srcSet="/brand/escapada-960.webp 960w, /brand/escapada-1600.webp 1600w, /brand/escapada-2172.webp 2172w"
+          sizes="(max-width: 780px) 2172px, 100vw"
+          width="2172"
+          height="724"
           alt="Piscina y quincho frente al lago al atardecer, imagen ilustrativa"
           fetchPriority="high"
           decoding="async"
         />
-        <div className="hero-shade" />
-        <div className="hero-content">
-          <div className="hero-eyebrow">
-            <Waves size={18} strokeWidth={1.4} /> DESCUBRÍ PARAGUAY
+        <div className="hero-shade" aria-hidden="true" />
+        <div className="hero-inner layout-container">
+          <div className="hero-content">
+            <div className="hero-eyebrow">
+              <Waves size={18} strokeWidth={1.4} /> DESCUBRÍ PARAGUAY
+            </div>
+            <h1 id="hero-title">
+              Tu próxima escapada, <em>más cerca</em> de lo que pensás.
+            </h1>
+            <p>
+              Quintas, casas y espacios recreativos en los mejores destinos del
+              Paraguay: naturaleza, descanso y experiencias únicas, todo en un
+              solo lugar.
+            </p>
+            {catalog.data?.cities.length > 0 && (
+              <p className="hero-places" aria-label="Destinos del catálogo">
+                {catalog.data.cities.slice(0, 5).map((city) => (
+                  <span key={city.id}>{city.city}</span>
+                ))}
+              </p>
+            )}
           </div>
-          <h1>
-            Tu próxima escapada,
-            <br />
-            <em>más cerca</em>
-            <br />
-            de lo que pensás.
-          </h1>
-          <p>
-            Quintas, casas y bungalows en los mejores destinos
-            <br className="desktop-break" /> del Paraguay. Naturaleza, descanso
-            y experiencias
-            <br className="desktop-break" /> únicas, todo en un solo lugar.
-          </p>
+          <div id="buscar">
+            <SearchForm
+              key={params.toString()}
+              catalog={catalog.data}
+              params={params}
+              onSearch={search}
+            />
+            <div className="catalog-feedback">
+              <ErrorMessage error={catalog.error} />
+            </div>
+          </div>
         </div>
       </section>
-      <div id="buscar" ref={searchRef}>
-        <SearchForm
-          key={params.toString()}
-          catalog={catalog.data}
-          params={params}
-          onSearch={search}
-        />
-        <div className="page-width">
-          <ErrorMessage error={catalog.error} />
-        </div>
-      </div>
       <Benefits />
       <section
         className="results-section page-width"
         id="results"
         ref={resultsRef}
+        tabIndex={-1}
+        aria-label="Resultados de búsqueda"
         aria-busy={query.isFetching}
       >
+        <p className="sr-only" role="status" aria-atomic="true">
+          {query.isFetching
+            ? "Buscando espacios…"
+            : query.isError
+              ? "No pudimos cargar los resultados. Podés reintentar la búsqueda."
+              : `${query.data?.total || 0} coincidencias exactas y ${alternativeCount} alternativas.`}
+        </p>
+        <div className="map-toggle-row">
+          <button
+            className="map-toggle"
+            type="button"
+            aria-pressed={map}
+            disabled={
+              !map && (query.isPending || query.isError || items.length === 0)
+            }
+            aria-describedby={
+              query.isError || (!query.isPending && items.length === 0)
+                ? "map-unavailable"
+                : undefined
+            }
+            onClick={() => {
+              setMap((open) => !open);
+              setSelected(null);
+            }}
+          >
+            {map ? (
+              <Grid2X2 size={17} aria-hidden="true" />
+            ) : (
+              <Map size={17} aria-hidden="true" />
+            )}
+            {map ? "Ver espacios" : "Ver mapa"}
+          </button>
+          <p className="results-view-hint">
+            {map
+              ? "Ubicaciones públicas aproximadas · coincidencias de esta página"
+              : "Explorá los espacios y compará tu próximo plan"}
+          </p>
+          {(query.isError || (!query.isPending && items.length === 0)) && (
+            <p id="map-unavailable" className="muted">
+              {query.isError
+                ? "El mapa estará disponible cuando se puedan cargar los resultados."
+                : "No hay coincidencias exactas para mostrar en el mapa."}
+            </p>
+          )}
+        </div>
         <ErrorMessage error={error} />
         {query.isError ? (
           <div className="search-failure">
@@ -287,6 +436,15 @@ export default function Home() {
                       ? `Encontramos ${alternativeCount} opciones cercanas a lo que buscás`
                       : "Probemos otro plan"}
                 </h2>
+                <p className="results-summary">
+                  {items.length} coincidencias exactas en esta página
+                  {alternativeCount > 0 &&
+                    ` · ${alternativeCount} alternativas más abajo`}
+                  .
+                  {params.get("startsAt")
+                    ? " Disponibilidad comprobada para el intervalo solicitado; se revalida al reservar."
+                    : " Sin fecha elegida: disponibilidad sin verificar."}
+                </p>
               </div>
               <div className="results-actions">
                 {hasSearch && (
@@ -335,13 +493,12 @@ export default function Home() {
                 {notice && <p role="status">{notice}</p>}
               </Empty>
             )}
-            <div className={map ? "results-with-map" : ""}>
+            <div id="exact-results" className={map ? "results-with-map" : ""}>
               <div className="property-grid">
                 {items.map((p) => (
                   <PropertyCard
                     key={p.id}
                     p={p}
-                    compact
                     favorite={saved.has(p.id)}
                     onFavorite={favorite}
                     onHover={setSelected}
@@ -349,24 +506,40 @@ export default function Home() {
                   />
                 ))}
               </div>
-              {map && (
-                <Suspense fallback={<Loading />}>
-                  <PropertyMap
-                    items={items}
-                    selected={selected}
-                    onSelect={(id) => {
-                      setSelected(id);
-                      resultsRef.current
-                        ?.querySelector(
+              {map && !query.isError && items.length > 0 && (
+                <aside
+                  className="results-map-panel"
+                  aria-labelledby="results-map-title"
+                >
+                  <div className="results-map-head">
+                    <div>
+                      <h3 id="results-map-title">Mapa de espacios</h3>
+                      <p>Ubicaciones públicas aproximadas</p>
+                    </div>
+                    <span>{items.length} en esta página</span>
+                  </div>
+                  <Suspense fallback={<Loading />}>
+                    <PropertyMap
+                      items={items}
+                      selected={selected}
+                      onSelect={(id) => {
+                        setSelected(id);
+                        const card = resultsRef.current?.querySelector(
                           `[data-property-id="${CSS.escape(id)}"]`,
-                        )
-                        ?.scrollIntoView({
-                          block: "nearest",
-                          behavior: "instant",
-                        });
-                    }}
-                  />
-                </Suspense>
+                        );
+                        if (card?.getClientRects().length)
+                          card.scrollIntoView({
+                            block: "nearest",
+                            behavior: "instant",
+                          });
+                      }}
+                    />
+                  </Suspense>
+                  <p className="results-map-foot">
+                    El mapa muestra las coincidencias exactas de esta página.
+                    Las alternativas se presentan por separado.
+                  </p>
+                </aside>
               )}
             </div>
             {query.data?.total > 20 && (
@@ -440,6 +613,7 @@ export default function Home() {
                         <PropertyCard
                           key={p.id}
                           p={p}
+                          headingLevel={4}
                           favorite={saved.has(p.id)}
                           onFavorite={favorite}
                         />
@@ -461,30 +635,10 @@ export default function Home() {
             precisar tu busqueda.
           </p>
         )}
-        <div className="map-toggle-row">
-          <button
-            className="map-toggle"
-            aria-pressed={map}
-            onClick={() => setMap(!map)}
-          >
-            {map ? <Grid2X2 size={17} /> : <Map size={17} />}{" "}
-            {map ? "Ver espacios" : "Explorar el mapa"}
-          </button>
-        </div>
-        {!query.isError && !query.isPending && !map && items.length > 0 && (
-          <div className="locations-action">
-            <button
-              className="primary"
-              type="button"
-              onClick={exploreLocations}
-            >
-              <Map size={17} aria-hidden="true" />
-              Explorar ubicaciones
-            </button>
-          </div>
-        )}
       </section>
       <Sponsors />
+      <Hosts user={user} />
+      <Steps />
     </main>
   );
 }

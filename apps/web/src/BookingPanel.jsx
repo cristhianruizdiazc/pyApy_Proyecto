@@ -119,6 +119,23 @@ export default function BookingPanel({
     setError(null);
     setDraft((current) => ({ ...current, [field]: value }));
   }
+  function loginForSelection(input) {
+    const selected = new URLSearchParams({
+      startsAt: input.startsAt,
+      endsAt: input.endsAt,
+      guests: String(input.guests),
+    });
+    if (input.searchStage) selected.set("searchStage", input.searchStage);
+    const returnTo = new URLSearchParams(search).get("returnTo");
+    if (returnTo) selected.set("returnTo", returnTo);
+    client.setQueryData(["session"], { user: null });
+    return nav("/ingresar", {
+      state: {
+        from: detailHref(p.id, selected),
+        pendingAction: { type: "booking" },
+      },
+    });
+  }
   async function getQuote(event) {
     event.preventDefault();
     if (sending.current || attemptRef.current) return;
@@ -136,15 +153,7 @@ export default function BookingPanel({
       setError(err);
       return;
     }
-    if (!user) {
-      const selected = new URLSearchParams({
-        startsAt: input.startsAt,
-        endsAt: input.endsAt,
-        guests: String(input.guests),
-      });
-      if (input.searchStage) selected.set("searchStage", input.searchStage);
-      return nav("/ingresar", { state: { from: detailHref(p.id, selected) } });
-    }
+    if (!user) return loginForSelection(input);
     const version = revision.current;
     const controller = new AbortController();
     request.current = controller;
@@ -174,6 +183,7 @@ export default function BookingPanel({
       setQuote(next);
     } catch (err) {
       if (active.current && version === revision.current) {
+        if (err.status === 401) return loginForSelection(input);
         setError(
           err.name === "AbortError"
             ? new Error(
@@ -276,6 +286,13 @@ export default function BookingPanel({
     if (quote || confirmed) summaryRef.current?.focus({ preventScroll: true });
   }, [quote, confirmed]);
 
+  let selection = null;
+  try {
+    selection = inputFromDraft(draft, p.id);
+  } catch {
+    // An incomplete draft is expected while editing; submission reports errors.
+  }
+
   return (
     <aside className="booking-panel" id="reservar" aria-label="Tu reserva">
       <span className="eyebrow">TU PRÓXIMO BUEN PLAN</span>
@@ -284,6 +301,28 @@ export default function BookingPanel({
         <strong>Gs. {money(p.pricePerHour)}</strong>
         <span>/ hora</span>
       </div>
+      {!confirmed && (
+        <div className="booking-selection" aria-label="Intervalo elegido">
+          {selection ? (
+            <>
+              <StaySummary input={selection} />
+              <p>
+                {Number(
+                  (
+                    (Date.parse(selection.endsAt) -
+                      Date.parse(selection.startsAt)) /
+                    3600000
+                  ).toFixed(2),
+                ).toLocaleString("es-PY")}{" "}
+                h de duración · Hora de Paraguay
+              </p>
+              <p>Consultá disponibilidad para conocer el total.</p>
+            </>
+          ) : (
+            <p>Elegí fecha, horario y personas para consultar tu escapada.</p>
+          )}
+        </div>
+      )}
       {confirmed ? (
         <div
           className="booking-success"

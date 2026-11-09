@@ -15,6 +15,7 @@ import {
 import { api } from "./api.js";
 import BookingPanel from "./BookingPanel.jsx";
 import PropertyGallery from "./PropertyGallery.jsx";
+import { resultsOrigin } from "./booking-selection.js";
 import "./detail.css";
 import { useSession, Loading, ErrorMessage, PropertyCard } from "./ui.jsx";
 const PropertyMap = lazy(() => import("./Map.jsx"));
@@ -25,6 +26,15 @@ export default function Detail() {
 function DetailPage({ id }) {
   const { user } = useSession();
   const location = useLocation();
+  const origin = resultsOrigin(
+    new URLSearchParams(location.search).get("returnTo"),
+  );
+  const backLink = (
+    <Link className="back-link" to={origin || "/"}>
+      <ArrowLeft size={17} />
+      {origin ? "Volver a resultados" : "Explorar espacios"}
+    </Link>
+  );
   const [showMap, setShowMap] = useState(false);
   const query = useQuery({
     queryKey: ["property", id],
@@ -67,175 +77,186 @@ function DetailPage({ id }) {
         <button className="secondary" onClick={() => query.refetch()}>
           Reintentar espacio
         </button>
-        <Link to="/">Volver</Link>
+        {backLink}
       </main>
     );
   return (
     <main className="page detail-page">
-      <Link className="back-link" to="/">
-        <ArrowLeft size={17} />
-        Explorar espacios
-      </Link>
-      <div className="detail-heading">
-        <div>
-          <p className="eyebrow">
-            {p.kind} · {p.city}
-          </p>
-          <h1>{p.name}</h1>
-          <p className="location">
-            <MapPin size={16} />
-            {p.city}, {p.department}
-            {p.verified && (
-              <span>
-                <ShieldCheck size={16} />
-                Verificado
-              </span>
+      {backLink}
+      <article className="detail-sheet" aria-label="Ficha del espacio">
+        <div className="detail-topbar">
+          <span className="eyebrow">Ficha del espacio</span>
+          <nav className="detail-shortcuts" aria-label="En esta ficha">
+            <a href="#sobre-el-espacio">El espacio</a>
+            <a href="#ubicacion">Ubicación</a>
+            {!p.isPublicSample && (
+              <a href="#reservar">
+                Elegir fecha <ArrowRight size={16} />
+              </a>
             )}
-            {p.isDemo && (
-              <span className="badge">Propiedad de demostración</span>
-            )}
-          </p>
+          </nav>
         </div>
-        {p.rating && (
-          <span className="rating">
-            <Star size={18} />
-            {p.rating} · {p.reviewCount} opiniones
-          </span>
-        )}
-      </div>
-      <PropertyGallery property={p} />
-      <nav className="detail-shortcuts" aria-label="En esta ficha">
-        <a href="#sobre-el-espacio">El espacio</a>
-        <a href="#ubicacion">Ubicación</a>
-        {!p.isPublicSample && (
-          <a href="#reservar">
-            Elegir fecha <ArrowRight size={16} />
-          </a>
-        )}
-      </nav>
-      <div className="detail-columns">
-        {p.isPublicSample ? (
-          <aside className="booking-panel" aria-label="Ficha de demostración">
-            <h2>Espacio de demostración</h2>
-            <p>
-              Esta ficha está en modo demostración y no admite reservas reales.
-              Los precios y la disponibilidad están pendientes de confirmación.
-            </p>
-            <Link to="/">Seguir explorando</Link>
-          </aside>
-        ) : (
-          <BookingPanel
-            key={`${id}:${user?.id || "guest"}:${location.search}`}
-            property={p}
-            user={user}
-            search={location.search}
-            availability={availability}
-          />
-        )}
-        <div className="detail-info">
-          <div className="facts">
-            <span>
-              <Users />
-              Hasta {p.capacity} personas
-            </span>
-            <span>
-              <Clock />
-              Desde {p.minHours} horas
-            </span>
-            <span>
-              <CalendarDays />
-              {p.openHour}:00 a {p.closeHour}:00
-            </span>
-          </div>
-          <section id="sobre-el-espacio">
-            <h2>Un espacio para desconectar.</h2>
-            <p className="description">{p.description}</p>
-          </section>
-          <section>
-            <h2>Lo que te espera</h2>
-            <div className="amenities-list">
-              {p.amenities.map((a) => (
-                <span key={a}>
-                  <Check size={17} />
-                  {catalog.data?.amenities.find((x) => x.code === a)?.label ||
-                    a}
+        <div className="detail-columns">
+          <PropertyGallery property={p} />
+          <div className="detail-info">
+            <div className="detail-heading">
+              <div>
+                <p className="eyebrow">
+                  {p.kind} · {p.city}
+                </p>
+                <h1>{p.name}</h1>
+                <p className="location">
+                  <MapPin size={16} />
+                  {p.city}, {p.department}
+                  {p.verified && (
+                    <span>
+                      <ShieldCheck size={16} />
+                      Verificado
+                    </span>
+                  )}
+                  {p.isDemo && (
+                    <span className="badge">Propiedad de demostración</span>
+                  )}
+                </p>
+              </div>
+              {p.rating && (
+                <span className="rating">
+                  <Star size={18} />
+                  {p.rating} · {p.reviewCount} opiniones
                 </span>
-              ))}
+              )}
             </div>
-            {!p.amenities.length && (
-              <p className="muted">
-                El anfitrión todavía no detalló los servicios.
-              </p>
-            )}
-          </section>
-          <section>
-            <h2>Antes de ir</h2>
-            <p>
-              Cancelación hasta {p.cancellationHours} horas antes. Se cobra por
-              hora iniciada.
-            </p>
-            <p>
-              Estadía de {p.minHours} a {p.maxHours} horas. Los horarios se
-              muestran en Paraguay.
-            </p>
-            <details className="property-rules">
-              <summary>Reglas del espacio</summary>
-              <p className="description">
-                {p.rules || "Sin reglas adicionales publicadas."}
-              </p>
-            </details>
-          </section>
-          <section id="ubicacion">
-            <h2>Por acá empieza la escapada</h2>
-            <p>
-              {p.zone}, {p.city}. Ubicación aproximada.
-            </p>
-            <button
-              className="secondary detail-map-trigger"
-              aria-expanded={showMap}
-              onClick={() => setShowMap((visible) => !visible)}
-            >
-              {showMap ? "Ocultar mapa" : "Ver mapa aproximado"}
-            </button>
-            {showMap && (
-              <Suspense fallback={<Loading />}>
-                <PropertyMap items={[p]} />
-              </Suspense>
-            )}
-          </section>
-          <section>
-            <h2>Opiniones de quienes estuvieron</h2>
-            {p.reviews.length ? (
-              p.reviews.map((r) => (
-                <article className="review" key={r.id}>
-                  <span>
-                    <Star size={16} />
-                    {r.rating}/5
+            <div className="facts">
+              <span>
+                <Users />
+                Hasta {p.capacity} personas
+              </span>
+              <span>
+                <Clock />
+                Desde {p.minHours} horas
+              </span>
+              <span>
+                <CalendarDays />
+                {p.openHour}:00 a {p.closeHour}:00
+              </span>
+            </div>
+            <section id="sobre-el-espacio">
+              <h2>El espacio</h2>
+              <p className="description">{p.description}</p>
+            </section>
+            <section>
+              <h2>Lo que te espera</h2>
+              <div className="amenities-list">
+                {p.amenities.map((a) => (
+                  <span key={a}>
+                    <Check size={17} />
+                    {catalog.data?.amenities.find((x) => x.code === a)?.label ||
+                      a}
                   </span>
-                  <p>{r.comment}</p>
-                </article>
-              ))
-            ) : (
-              <p className="muted">Este espacio todavía no tiene opiniones.</p>
-            )}
-            {p.socials.length > 0 && (
-              <div className="socials">
-                {p.socials.map((s) => (
-                  <a
-                    key={s.platform}
-                    href={s.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {s.platform}
-                    <ArrowRight size={15} />
-                  </a>
                 ))}
               </div>
+              {!p.amenities.length && (
+                <p className="muted">
+                  El anfitrión todavía no detalló los servicios.
+                </p>
+              )}
+            </section>
+            <section id="ubicacion">
+              <h2>Por acá empieza la escapada</h2>
+              <p>
+                {p.zone}, {p.city}. Ubicación aproximada.
+              </p>
+              <button
+                className="secondary detail-map-trigger"
+                aria-expanded={showMap}
+                aria-controls="detail-map"
+                onClick={() => setShowMap((visible) => !visible)}
+              >
+                {showMap ? "Ocultar mapa" : "Ver mapa aproximado"}
+              </button>
+              {showMap && (
+                <div id="detail-map">
+                  <Suspense fallback={<Loading />}>
+                    <PropertyMap items={[p]} />
+                  </Suspense>
+                </div>
+              )}
+            </section>
+            {p.isPublicSample ? (
+              <aside
+                className="booking-panel"
+                aria-label="Ficha de demostración"
+              >
+                <h2>Espacio de demostración</h2>
+                <p>
+                  Esta ficha está en modo demostración y no admite reservas
+                  reales. Los precios y la disponibilidad están pendientes de
+                  confirmación.
+                </p>
+                <Link to={origin || "/"}>Seguir explorando</Link>
+              </aside>
+            ) : (
+              <BookingPanel
+                key={`${id}:${user?.id || "guest"}:${location.search}`}
+                property={p}
+                user={user}
+                search={location.search}
+                availability={availability}
+              />
             )}
-          </section>
+            <section>
+              <h2>Antes de ir</h2>
+              <p>
+                Cancelación hasta {p.cancellationHours} horas antes. Se cobra
+                por hora iniciada.
+              </p>
+              <p>
+                Estadía de {p.minHours} a {p.maxHours} horas. Los horarios se
+                muestran en Paraguay.
+              </p>
+              <details className="property-rules">
+                <summary>Reglas del espacio</summary>
+                <p className="description">
+                  {p.rules || "Sin reglas adicionales publicadas."}
+                </p>
+              </details>
+            </section>
+            <section>
+              <h2>Opiniones de quienes estuvieron</h2>
+              {p.reviews.length ? (
+                p.reviews.map((r) => (
+                  <article className="review" key={r.id}>
+                    <span>
+                      <Star size={16} />
+                      {r.rating}/5
+                    </span>
+                    <p>{r.comment}</p>
+                  </article>
+                ))
+              ) : (
+                <p className="muted">
+                  Este espacio todavía no tiene opiniones.
+                </p>
+              )}
+              {p.socials.length > 0 && (
+                <div className="socials">
+                  {p.socials.map((s) => (
+                    <a
+                      key={s.platform}
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {s.platform}
+                      <ArrowRight size={15} />
+                    </a>
+                  ))}
+                </div>
+              )}
+            </section>
+          </div>
         </div>
-      </div>
+      </article>
       <section className="similar">
         <h2>Seguí explorando</h2>
         <ErrorMessage error={similar.error} />

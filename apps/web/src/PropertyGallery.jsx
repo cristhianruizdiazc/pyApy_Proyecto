@@ -23,52 +23,67 @@ export default function PropertyGallery({ property }) {
   return (
     <>
       <section
-        className={`property-gallery gallery-count-${Math.min(3, images.length)}`}
+        className="property-gallery"
         aria-label={`Fotos de ${property.name}`}
       >
-        {images.slice(0, 3).map((image, i) => (
-          <button
-            className={i === 0 ? "gallery-cover" : "gallery-preview"}
-            key={image.id || image.url}
-            aria-label={
-              i === 0
-                ? `Ver todas las fotos de ${property.name}`
-                : `Ampliar foto ${i + 1} de ${property.name}`
-            }
-            onClick={() => open(i)}
+        <button
+          className="gallery-cover"
+          aria-label={`Ver todas las fotos de ${property.name}: ${images.length} ${images.length === 1 ? "foto" : "fotos"}`}
+          onClick={() => open(current)}
+        >
+          <Photo
+            src={images[current].url}
+            alt={images[current].alt || `${property.name}, foto ${current + 1}`}
+            loading="eager"
+          />
+          <span className="gallery-open">
+            <Images size={17} /> {images.length}{" "}
+            {images.length === 1 ? "foto" : "fotos"}
+            <Expand size={16} />
+          </span>
+        </button>
+        <p className="gallery-caption">
+          Foto {current + 1} de {images.length} ·{" "}
+          {images[current].alt || property.name}
+        </p>
+        {images.length > 1 && (
+          <div
+            className="gallery-previews"
+            role="group"
+            aria-label="Vista previa de fotos"
           >
-            <Photo
-              src={image.url}
-              alt={image.alt || `${property.name}, foto ${i + 1}`}
-              loading={i === 0 ? "eager" : "lazy"}
-            />
-            {i === 0 && (
-              <span className="gallery-open">
-                <Images size={17} /> {images.length}{" "}
-                {images.length === 1 ? "foto" : "fotos"}
-                <Expand size={16} />
-              </span>
-            )}
-          </button>
-        ))}
+            {images.map((image, i) => (
+              <button
+                key={image.id || image.url}
+                aria-label={`Seleccionar foto ${i + 1}`}
+                aria-pressed={i === current}
+                onClick={() => setIndex(i)}
+              >
+                <Photo
+                  src={image.url}
+                  alt={image.alt || `${property.name}, foto ${i + 1}`}
+                  loading="lazy"
+                />
+              </button>
+            ))}
+          </div>
+        )}
       </section>
       {opened && (
         <Modal
           title={`Fotos de ${property.name}`}
           onClose={() => setOpened(false)}
+          onKeyDown={(event) => {
+            if (
+              images.length < 2 ||
+              !["ArrowLeft", "ArrowRight"].includes(event.key)
+            )
+              return;
+            event.preventDefault();
+            move(event.key === "ArrowLeft" ? -1 : 1);
+          }}
         >
-          <div
-            className="gallery-viewer"
-            onKeyDown={(event) => {
-              if (
-                images.length < 2 ||
-                !["ArrowLeft", "ArrowRight"].includes(event.key)
-              )
-                return;
-              event.preventDefault();
-              move(event.key === "ArrowLeft" ? -1 : 1);
-            }}
-          >
+          <div className="gallery-viewer">
             <Photo
               src={images[current]?.url}
               alt={

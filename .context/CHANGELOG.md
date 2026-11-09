@@ -1,5 +1,111 @@
 # Historial de trabajo
 
+## 2026-11-08 — Fase 7 del rediseño
+
+- Cierre integrado de las fases 0–7, matriz por rol y comparativas antes/prototipo/después.
+- Variantes lossless del logo tras redimensionar; favicon y tamaños por DPR. Se conserva el PNG original.
+- Fila horaria adaptable para controles nativos Firefox; títulos/calendario legibles con texto al 200% en 320 px. Nueva cadena real de alternativa a cancelación y regresión de texto ampliado.
+- Fase 7 del rediseño completada en su alcance local: comparación visual, recorridos por rol y correcciones de reflow en Firefox y con texto ampliado. Logo responsive transparente de 10/30/56 KB, original conservado. Lint/build/formato, 36/36 API/contratos, **241 escenarios distintos aprobados en Chrome y siete omisiones duplicadas**, más **42 aprobados en Firefox**. 95 capturas reales, 44 Axe reales sin violaciones detectadas y 24 corridas comparativas Lighthouse aceptadas con tres repeticiones por caso (40 ejecuciones contando diagnóstico, resultados reemplazados y sondas finales). Sin cambios de API/DB/dependencias ni despliegue. HTTPS de staging no ejecutado por Docker detenido; dispositivos, lectores reales y WCAG integral pendientes. [Informe y límites](phases/rediseno-fase-7-2026-11-08.md).
+
+## 2026-11-08 — Fase 6 del rediseño
+
+- Propietario: navegación adaptable, espacios/formularios, fotos, datos de llegada privados, redes, calendario/agenda, reservas/bloqueos y planes.
+- Administración: nueve secciones operativas, tablas desplazables por teclado y formularios con el sistema visual. URLs, límites cargados, permisos y acciones conservados.
+- Ayuda con pasos y FAQ; estados comunes de incorporación, sesión, acceso y 404. Retirados 68 bloques CSS exclusivos reemplazados; controles de cuenta preservados.
+- Lint/build/formato, 36/36 API y 132 E2E aprobados más cuatro omisiones duplicadas. 84 capturas reales; 36 Axe reales y 26 simulados sin violaciones detectadas. Reflow 320–1920, incluidos 1080/1081.
+- [Entrega e incidencias](phases/rediseno-fase-6-2026-11-08.md), contexto y resguardo actualizados. Sin cambios de esquema/API/dependencias ni despliegue. Fase 7 pendiente.
+
+## 2026-11-08 — Fase 5 del rediseño
+
+- Acceso/registro con hoja del sistema visual, modo en URL y retorno conservado; formulario bloqueado mientras envía y errores con foco.
+- Cuenta con navegación, bienvenida, accesos y perfil de consulta; notificaciones con estado y controles contextualizados. Guardados reutiliza tarjetas/precio horario; reservas y diálogos adoptan composición personal conservando operaciones y permisos.
+- Recuperación explícita tras 401 al quitar favorito, guard de envíos repetidos y foco en avisos consecutivos. Etiquetas acentuadas y localizadores ajustados; retiradas 41 reglas exclusivas antiguas y preservados consumidores de gestión.
+- Lint/build y 36/36 API/contratos aprobados; ocho suites E2E con 138 escenarios distintos aprobados y cuatro omisiones de barridos duplicados. 68 capturas con API real aislada en 12 anchos, 14 Axe reales y 20 de la suite nueva simulada sin violaciones detectadas.
+- [Entrega y límites](phases/rediseno-fase-5-2026-11-08.md). Resguardo y contexto actualizados. Sin cambios de esquema/API, dependencias o despliegue. Fases 6–7 pendientes.
+
+
+## 2026-11-07 — Fase 4 del rediseño
+
+- Ficha con hoja blanca y barra/anclas, galería lateral de foto completa y miniaturas, selección/visor accesible; distribución apilada hasta 980 px.
+- Reserva con precio horario e intervalo/duración/personas antes de consultar; cotización, confirmación y recuperación originales preservadas. Mapa diferido, muestras, reglas, opiniones, redes, similares y retorno conservados.
+- Retiradas 53 reglas exclusivas antiguas; controles/redes compartidos preservados. Flechas de galería operables desde Cerrar. Pruebas de autenticación actualizadas a la navegación/anuncios vigentes.
+- Lint/build, 36/36 API/contratos y 97 escenarios E2E distintos aprobados más una omisión de barrido duplicado, combinando general y revalidación de interés. 30 capturas de aplicación con API real aislada y dos del prototipo; 12 anchos de 320 a 1920, ocho Axe reales y siete simulados sin violaciones detectadas.
+- [Entrega y límites](phases/rediseno-fase-4-2026-11-07.md); contexto y guía visual actualizados. Sin cambios de DB/API ni despliegue. Fases 5–7 pendientes.
+
+
+## 2026-11-07 — Fase 3 del rediseño
+
+- Resultados con resumen, orden/página y tarjetas con foto 4:3, tipo/muestra, datos/servicios/valoraciones existentes, favorito, estimación de API y precio horario. Alternativas por etapa, diferencias, interés y retorno conservados.
+- Mapa Leaflet/OSM explícito y diferido, limitado a exactas de la página. Panel lateral desde 1181 px y alternancia lista/mapa hasta 1180; selección/teclado, foco, resize y encuadre sin recortar popup. El desplazamiento bajo un puntero estacionario no sustituye la selección del marcador.
+- `SearchPropertyCard.jsx` y `results.css` separan los resultados de cuenta/similares aún pendientes. Se retira `home-reference.css` y 38 selectores exclusivos de resultados de las hojas anteriores; utilidades compartidas conservadas.
+- Lint/build y 36/36 API aprobados. 108 E2E distintos aprobados más cuatro omisiones duplicadas, combinando la general con revalidación de imágenes; intentos iniciales y bloqueos del navegador documentados. 24 capturas reales en 12 anchos, cuatro Axe reales y cuatro nuevos simulados sin violaciones detectadas.
+- [Cierre y evidencia](phases/rediseno-fase-3-2026-11-07.md), guía visual y continuidad actualizados. Sin cambios de DB/API/negocio, dependencias ni despliegue. Fases 4–7 pendientes.
+
+## 2026-11-05 — Fase 2 del rediseño
+
+- Hero con buscador integrado, beneficios, anfitriones/pasos y anclas; publicación real por sesión/rol, ayuda y sponsors conservados.
+- Intervalo/duración visibles con filtros cerrados; precio por hora, presupuesto total con fecha y estimado sin ella. Conservados URL/borrador, 18 personas, 24 h inicial, horario nocturno, tipos y servicios/requisitos. Se muestran requisitos desconocidos recibidos por URL.
+- `home.css` sustituye 253 selectores migrados de tres hojas; WebP del hero y foto ilustrativa de anfitriones con atribución. No hay dependencias nuevas, API, migraciones ni despliegue.
+- Envío enfoca resultados y anuncia su estado/conteo. Pruebas adaptadas a destinos, muestras reservables, etiquetas y fuentes estables; historial de fallos conservado.
+- Lint/build, 36/36 API y 87 E2E distintos aprobados, tres omisiones duplicadas; retorno final 20/20. 13 capturas completas reales, cinco Axe reales y ocho simulados sin violaciones detectadas en sus estados.
+- [Cierre y límites](phases/rediseno-fase-2-2026-11-04.md), guía visual y continuidad actualizados. Fases 3–7 pendientes.
+
+## 2026-11-04 — Fase 1 del rediseño
+
+- Tokens del HTML principal y siete fuentes locales Fraunces/Poppins; retiradas carga externa e imposiciones tipográficas que impedían el diseño.
+- Nuevos `SiteLayout.jsx`/`site-layout.css`: marca elegida, cabecera/menú/cuenta por rol y pie con enlaces reales. Retiradas sus reglas duplicadas de tres hojas anteriores.
+- Base coherente de formularios, botones, carga/error/vacío/éxito y diálogos; salto al contenido enfocable, foco visible, Escape y recuperación al cambiar distribución; scroll de documento bloqueado durante modal.
+- 36/36 API, 64/64 regresiones y 18 E2E compartidas/focalizadas aprobadas; dos barridos duplicados omitidos. 24 capturas con API aislada, 14 Axe reales y cuatro simulados sin violaciones detectadas en esos estados. Corridas iniciales y corrección del foco documentadas.
+- [Cierre de fase 1](phases/rediseno-fase-1-2026-11-04.md), [guía efectiva](design/SISTEMA-VISUAL.md), resguardo previo y `.context` actualizados. Sin cambios de esquema, API, contratos o despliegue; fases 2–7 pendientes.
+
+## 2026-11-04 — Fase 0 del rediseño
+
+- Fijada la referencia principal del ZIP por SHA-256, separadas capturas/variante anidada y documentadas las adaptaciones de precio horario, OpenStreetMap, reserva y funciones reales.
+- Inventario por ruta/rol/acción/destino y matriz de tamaños, estados y recorridos en [entrega de fase 0](phases/rediseno-fase-0-2026-11-04/INFORME.md).
+- Resguardados los cambios previos y archivos sin seguimiento; bundle Git verificado y 50/50 archivos restaurados con hashes coincidentes en directorio aparte.
+- 111 capturas locales, 16 controles Axe sin violaciones detectadas en esos estados, cuatro corridas Lighthouse, 36/36 pruebas API y 104/110 E2E originales aprobadas. Seis fallos anteriores al rediseño conservados con diagnóstico y seguimiento; no se presentan como corregidos.
+- Base y uploads de prueba aislados antes de iniciar sesiones/eventos/escrituras. Añadido capturador local reutilizable; sin cambios en componentes, estilos, contratos ni pruebas existentes. Plan y estado actualizados: fase 0 completada, fases 1–7 pendientes.
+
+## 2026-11-03 — Plan de rediseño del frontend
+
+- Registrada la dirección elegida por el usuario: replicar lo máximo posible la estructura del prototipo preservando funciones, cálculo horario y OpenStreetMap. Descartados precio nocturno y mapa esquemático.
+- Creado [plan de ocho fases](phases/rediseno-frontend-2026-11-03.md), desde referencia e inventario hasta validación integrada; todas las fases están pendientes de implementación.
+- Adoptado [ADR-013](decisions/ADR-013-frontend-redesign.md). TAREAS.md deja de ser la guía de mejora web y se conserva como evidencia histórica; no se copian automáticamente sus pendientes.
+- Actualizados índices de contexto, decisiones y estado. Esta entrega modifica únicamente documentación; no cambia la aplicación ni declara verificaciones funcionales ejecutadas.
+
+## 2026-10-30 — T08: continuar la tarea después de ingresar
+
+- Ingreso y registro conservan un destino local validado y reemplazan el formulario en el historial. Búsqueda/ficha mantienen filtros, selección de reserva y contexto de T07; cuenta, reservas, guardados y publicación vuelven a su destino.
+- Interés y favorito muestran una confirmación pendiente con foco, opción de descarte y resultado/error visibles. Revisar la ficha conserva el favorito pendiente. Sin escrituras ni consultas de reserva automáticas por ingresar; se preserva también la acción de quitar favorito tras una sesión vencida.
+- Publicación respeta roles: panel para owner/admin, alta explícita para client. Consultas privadas vencidas ofrecen reingreso sin bucles y la cotización conserva el borrador. Sin cambios en contratos, permisos del servidor ni idempotencia de reserva.
+- La continuación tiene precedencia sobre la posición recordada de T07 para mantener visible el aviso. Se conservó la restauración normal al comparar fichas.
+- T08 marcada como completada en TAREAS.md. **76/76 pruebas Playwright aprobadas**, lint, build, formato y diff comprobados. Evidencia en `.local/t08/QA.md`; Chromium con API simulada. Autenticación/persistencia real en entorno aislado sigue en T13; otros motores/dispositivos y lectores en T14.
+
+## 2026-10-30 — T07: retorno a resultados con contexto
+
+- Tarjetas y mapa trasladan la URL completa de búsqueda en `returnTo`. La ficha muestra «Volver a resultados» con origen válido, también en error; las fichas similares y el retorno de ingreso de reserva conservan el contexto.
+- Validación de origen limitada a la raíz local; acceso directo o destino inválido ofrecen «Explorar espacios». Los enlaces funcionan al recargar, compartir y abrir una pestaña nueva.
+- Restauración de posición por URL en memoria después de renderizar resultados; no persiste entre recargas. Conservados filtros, selección de reserva, contratos y cambios previos.
+- Cobertura reproducible en `tests/e2e/search-return.spec.js`; alcance y evidencia en `.local/t07/QA.md`. Chromium con API simulada; backend real y otros navegadores/dispositivos siguen en T13/T14.
+- T07 marcada como completada en TAREAS.md. 42/42 pruebas aprobadas (10 de retorno y 32 de regresión), lint, build, formato y diff comprobados.
+
+## 2026-10-30 — T06: acceso único al mapa
+
+- Unificado el acceso de portada/resultados en «Ver mapa / Ver espacios», visible antes del contenido, con altura mínima de 44 px y separación propia. Eliminados el botón duplicado, la fila de altura cero y la dependencia de hover que provocaban superposición.
+- El cambio de vista conserva filtros, URL y resultados y mantiene la carga diferida. Vacío/error muestran la causa de indisponibilidad; el retorno a espacios sigue disponible si el mapa ya estaba abierto.
+- Pruebas reproducibles de geometría a 360/390/768/1440 px, teclado, toque emulado, recuperación y carga diferida en `tests/e2e/search-map.spec.js`. Evidencia local y alcance en `.local/t06/QA.md`; TAREAS.md actualizado. API y teselas simuladas, sin escrituras en datos habituales.
+- 32/32 pruebas aprobadas: 18 de mapa y 14 de regresión de etiquetas/personas; lint, build, formato y diff aprobados.
+
+## 2026-10-30 — Buscador compacto
+
+- Alineación de etiquetas y valores del buscador: separación uniforme de 6 px, etiquetas con línea de 20 px, controles de 32 px y centrado interno de los selectores `base-select`. Eliminadas diferencias entre Horario, Personas y el resto. Inspección visual y geometría a 1440 px: cinco controles con la misma coordenada vertical y altura; verificación responsive y build.
+- Personas ahora acepta únicamente dígitos (también al pegar), sin signos, decimales ni exponentes. Campo de texto con `inputMode="numeric"` y flechas arriba/abajo bloqueadas, sin controles nativos de incremento. Se conserva validación 1–1000, vacío opcional, foco de error y continuidad de URL/ficha/cotización. 14/14 pruebas de personas/etiquetas aprobadas en Chromium escritorio/móvil emulado con API simulada; lint, build y formato aprobados.
+- Ajuste visual posterior solicitado: campos sin bordes redondeados ni fondos individuales; líneas verticales entre campos de una misma fila y horizontales en móvil. Placeholder «Sin cantidad» con `var(--ink)` y opacidad 1, igual a los valores de la fila. Verificados 16 escenarios responsive adicionales con API simulada, build, formato y diff.
+- A pedido del usuario, los cinco campos y Buscar comparten una fila cuando el contenedor dispone de al menos 1080 px (aproximadamente 1368 px de ventana con el ancho actual). Se mantienen tres/dos/una columnas en espacios menores, controles de 14 px y etiquetas accesibles existentes.
+- Distribución con anchos distintos por campo, menos separación vertical y botón ajustado al contenido. «Día completo (24 h)» conserva el turno de 24 horas; el horario personalizado muestra su intervalo completo, incluidos segundos cuando existen.
+- Chromium con API interceptada: 32 escenarios responsive de portada/resultados aprobados, incluidos ciudad larga, horario con segundos y presupuesto de mil millones; 12/12 pruebas existentes de etiquetas/personas aprobadas. Lint, build, formato y diff comprobados.
+- Panel principal de 175,4 a 91,7 px a 1440 px; 176 a 92 px a 1920 px. Inspección visual a 390/1368/1440 px y comprobación de reflow equivalente a reducción de viewport por zoom. Evidencias locales en `.local/compact-search/QA.md`; otros motores/dispositivos y backend real siguen pendientes.
+
 ## 2026-10-26 - Lanzador de Windows
 
 - Detectada copia del BAT en el Escritorio: buscaba `node_modules` junto a esa copia y fallaba aunque el proyecto tuviera Vite instalado.

@@ -93,7 +93,10 @@ const test = base.extend({
   },
 });
 
-test("el mapa de ficha se descarga solo al solicitarlo", async ({ page, space }) => {
+test("el mapa de ficha se descarga solo al solicitarlo", async ({
+  page,
+  space,
+}) => {
   await page.goto(`/espacios/${space.p.id}`);
   await expect(
     page.getByRole("heading", { name: space.p.name, exact: true }),
@@ -101,7 +104,9 @@ test("el mapa de ficha se descarga solo al solicitarlo", async ({ page, space })
   await expect(page.locator(".detail-info .property-map")).toHaveCount(0);
   await page.getByRole("button", { name: "Ver mapa aproximado" }).click();
   await expect(page.locator(".detail-info .property-map")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Ocultar mapa" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Ocultar mapa" }),
+  ).toBeVisible();
 });
 
 async function openForQuote(page, p) {
@@ -136,7 +141,7 @@ test("búsqueda lleva fecha y personas a la ficha y las conserva al registrarse"
     .getByLabel("Email", { exact: true })
     .fill(`selection-${randomUUID()}@example.invalid`);
   await page
-    .getByLabel("Contrasena", { exact: true })
+    .getByLabel("Contraseña", { exact: true })
     .fill("Seleccion-testing-password-123");
   await page.getByRole("button", { name: "Crear mi cuenta" }).click();
   await expect(page).toHaveURL(/\/espacios\/.+startsAt=/);

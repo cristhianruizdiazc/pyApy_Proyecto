@@ -18,6 +18,7 @@ test("marketplace carga fotos, filtra, abre mapa y no desborda", async ({
         .evaluate((img) => img.complete && img.naturalWidth > 500),
     )
     .toBeTruthy();
+  await page.locator(".rail-item .card-image").first().scrollIntoViewIfNeeded();
   await expect
     .poll(() =>
       page
@@ -38,13 +39,14 @@ test("marketplace carga fotos, filtra, abre mapa y no desborda", async ({
   });
   await page.getByRole("button", { name: "Espacios siguientes" }).click();
   await page.getByRole("button", { name: "Espacios anteriores" }).click();
-  await page.getByRole("button", { name: "Explorar el mapa" }).click();
+  await page.getByRole("button", { name: "Ver mapa", exact: true }).click();
   await expect(page.locator(".leaflet-container")).toBeVisible();
   await expect(page.locator(".leaflet-interactive").first()).toBeVisible();
   await page.locator('select[name="city"]').selectOption({ label: "Aregua" });
-  await page.getByLabel("Tamaño del grupo").selectOption("2");
+  await page.getByRole("textbox", { name: "Personas", exact: true }).fill("2");
   await page.getByRole("button", { name: "Buscar espacios" }).click();
   await expect(page.getByRole("heading", { name: /1 espacios/ })).toBeVisible();
+  await page.getByRole("button", { name: "Ver espacios", exact: true }).click();
   await page.getByRole("link", { name: "Casa del Lago", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Casa del Lago", exact: true }),
@@ -116,7 +118,7 @@ test("cliente crea cuenta, guarda favorito, reserva y cancela con backend real",
       .getByLabel("Email", { exact: true })
       .fill(`e2e-${randomUUID()}@example.invalid`);
     await page
-      .getByLabel("Contrasena", { exact: true })
+      .getByLabel("Contraseña", { exact: true })
       .fill("Browser-testing-password-123");
     await page.getByRole("button", { name: "Crear mi cuenta" }).click();
     await expect(page).toHaveURL("/");
@@ -152,6 +154,9 @@ test("cliente crea cuenta, guarda favorito, reserva y cancela con backend real",
       .getByRole("button", { name: "Cancelar reserva", exact: true })
       .click();
     await expect(page.locator(".reservation-row")).toContainText("Cancelada");
+    if (info.project.name === "mobile")
+      await page.getByRole("button", { name: "Abrir menú" }).click();
+    else await page.locator(".account-menu summary").click();
     await expect(
       page.getByRole("button", { name: "Cerrar sesión", exact: true }),
     ).toBeVisible();
@@ -184,7 +189,7 @@ test("paneles autorizados muestran datos y calendario", async ({
     await page.goto("/ingresar");
     await page.getByLabel("Email", { exact: true }).fill(accounts[role].email);
     await page
-      .getByLabel("Contrasena", { exact: true })
+      .getByLabel("Contraseña", { exact: true })
       .fill(accounts[role].password);
     await page
       .locator("form")

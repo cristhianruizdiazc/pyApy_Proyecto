@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Check,
@@ -10,33 +10,75 @@ import {
   Plus,
   Save,
   X,
+  LayoutDashboard,
+  Users,
+  House,
+  Star,
+  Wallet,
+  BadgeCheck,
+  Megaphone,
+  SlidersHorizontal,
+  FileClock,
 } from "lucide-react";
 import { money } from "@pyapy/contracts";
 import { api } from "./api.js";
 import { useSession, Loading, ErrorMessage, Empty, Modal } from "./ui.jsx";
 import { QueryState, RecordList, WorkspaceTabs } from "./Workspace.jsx";
 import { formatStay } from "./booking-selection.js";
+import { returnState } from "./auth-return.js";
+import PageState from "./PageState.jsx";
 const sections = [
-  ["overview", "Resumen"],
-  ["users", "Usuarios"],
-  ["properties", "Espacios"],
-  ["reviews", "Reseñas"],
-  ["plans", "Planes"],
-  ["subscriptions", "Suscripciones"],
-  ["sponsors", "Sponsors"],
-  ["weights", "Matching"],
-  ["audit", "Auditoría"],
+  ["overview", "Resumen", LayoutDashboard],
+  ["users", "Usuarios", Users],
+  ["properties", "Espacios", House],
+  ["reviews", "Reseñas", Star],
+  ["plans", "Planes", Wallet],
+  ["subscriptions", "Suscripciones", BadgeCheck],
+  ["sponsors", "Sponsors", Megaphone],
+  ["weights", "Matching", SlidersHorizontal],
+  ["audit", "Auditoría", FileClock],
 ];
 export default function Admin() {
   const { user, session } = useSession();
-  if (session.isPending) return <Loading />;
+  const location = useLocation();
+  if (session.isPending)
+    return (
+      <main className="page workspace-loading" aria-busy="true">
+        <Loading />
+      </main>
+    );
+  if (session.isError && !user)
+    return (
+      <PageState title="No pudimos comprobar tu sesión.">
+        <p>Reintentá para continuar con tu panel.</p>
+        <button className="primary" onClick={() => session.refetch()}>
+          Reintentar sesión
+        </button>
+      </PageState>
+    );
   if (user?.role !== "admin")
     return (
-      <main className="page">
-        <h1>Acceso administrativo</h1>
+      <PageState
+        title="Acceso administrativo"
+        kicker="GESTIÓN DE PYAPY"
+        icon={ShieldCheck}
+      >
         <p>Esta sección requiere una cuenta autorizada.</p>
-        <Link to="/">Volver a explorar</Link>
-      </main>
+        <div className="state-actions">
+          {!user && (
+            <Link
+              className="primary"
+              to="/ingresar"
+              state={returnState(location)}
+            >
+              Ingresar
+            </Link>
+          )}
+          <Link className="secondary" to="/">
+            Volver a explorar
+          </Link>
+        </div>
+      </PageState>
     );
   return <AdminWorkspace key={user.id} user={user} />;
 }
@@ -59,6 +101,7 @@ function AdminWorkspace({ user }) {
         </span>
       </div>
       <WorkspaceTabs
+        navigation
         items={sections}
         value={tab}
         onChange={(section) => setParams({ section })}
@@ -172,7 +215,7 @@ function AdminSection({ tab, user }) {
                   <thead>
                     <tr>
                       <th>Ciudad</th>
-                      <th>Busquedas guardadas</th>
+                      <th>Búsquedas guardadas</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -186,7 +229,7 @@ function AdminSection({ tab, user }) {
                 </table>
               </div>
             ) : (
-              <Empty title="Sin solicitudes de busqueda guardadas." />
+              <Empty title="Sin solicitudes de búsqueda guardadas." />
             )}
           </>
         ) : tab === "weights" ? (
@@ -241,7 +284,7 @@ function AdminSection({ tab, user }) {
                 onClick={() => setEdit({ type: "sponsor" })}
               >
                 <Plus size={17} />
-                Nueva campana
+                Nueva campaña
               </button>
             )}
             {items.length ? (
@@ -311,13 +354,13 @@ function AdminSection({ tab, user }) {
                               ? [
                                   "Espacio",
                                   "Estado",
-                                  "Verificacion",
+                                  "Verificación",
                                   "Acciones",
                                 ]
                               : tab === "reviews"
                                 ? [
-                                    "Opinion",
-                                    "Puntuacion",
+                                    "Opinión",
+                                    "Puntuación",
                                     "Visibilidad",
                                     "Acciones",
                                   ]
@@ -339,8 +382,8 @@ function AdminSection({ tab, user }) {
                                     : tab === "sponsors"
                                       ? [
                                           "Sponsor",
-                                          "Campana",
-                                          "Periodo",
+                                          "Campaña",
+                                          "Período",
                                           "Estado",
                                           "Acciones",
                                         ]
@@ -423,8 +466,8 @@ function AdminSection({ tab, user }) {
                                   <div className="row-actions">
                                     <button
                                       className="icon-button"
-                                      title="Cambiar verificacion"
-                                      aria-label={`Cambiar verificacion de ${i.name}`}
+                                      title="Cambiar verificación"
+                                      aria-label={`Cambiar verificación de ${i.name}`}
                                       disabled={pending}
                                       onClick={() =>
                                         mutate(`/admin/properties/${i.id}`, {
@@ -471,7 +514,7 @@ function AdminSection({ tab, user }) {
                               <>
                                 <td>{i.comment}</td>
                                 <td>{i.rating}/5</td>
-                                <td>{i.visible ? "Publica" : "Oculta"}</td>
+                                <td>{i.visible ? "Pública" : "Oculta"}</td>
                                 <td>
                                   <button
                                     className="icon-button"
@@ -531,8 +574,8 @@ function AdminSection({ tab, user }) {
                                 <td>
                                   <button
                                     className="icon-button"
-                                    title="Gestionar suscripcion"
-                                    aria-label="Gestionar suscripcion"
+                                    title="Gestionar suscripción"
+                                    aria-label="Gestionar suscripción"
                                     onClick={() =>
                                       setEdit({ type: "subscription", ...i })
                                     }
@@ -558,8 +601,8 @@ function AdminSection({ tab, user }) {
                                 <td>
                                   <button
                                     className="icon-button"
-                                    title="Cambiar estado de campana"
-                                    aria-label="Cambiar estado de campana"
+                                    title="Cambiar estado de campaña"
+                                    aria-label="Cambiar estado de campaña"
                                     disabled={pending}
                                     onClick={() =>
                                       mutate(`/admin/sponsors/${i.id}`, {
@@ -602,19 +645,20 @@ function AdminSection({ tab, user }) {
                 )}
               </RecordList>
             ) : (
-              <Empty title="Sin registros en esta seccion." />
+              <Empty title="Sin registros en esta sección." />
             )}
           </>
         )}
       </QueryState>
       {edit && (
         <Modal
+          className="management-dialog"
           title={
             edit.type === "plan"
               ? "Editar plan"
               : edit.type === "subscription"
-                ? "Gestionar suscripcion"
-                : "Nueva campana"
+                ? "Gestionar suscripción"
+                : "Nueva campaña"
           }
           onClose={() => setEdit(null)}
         >
@@ -693,7 +737,7 @@ function AdminSection({ tab, user }) {
                   <input name="url" type="url" required />
                 </label>
                 <label>
-                  Titulo de campana
+                  Título de campaña
                   <input name="title" minLength={3} maxLength={150} required />
                 </label>
                 <div className="form-row">

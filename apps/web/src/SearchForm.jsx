@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import {
   Building2,
   CalendarDays,
@@ -21,18 +21,11 @@ import {
   ZONE,
 } from "@pyapy/contracts";
 
-const guestOptions = [
-  ["2", "En pareja"],
-  ["4", "Más de 3 personas"],
-  ["6", "Más de 5 personas"],
-  ["11", "Más de 10 personas"],
-  ["21", "Más de 20 personas"],
-  ["31", "Más de 30 personas"],
-];
+const guestsMessage = "Indicá una cantidad entera de personas entre 1 y 1000.";
 const shifts = [
   {
     value: "full",
-    label: "Día completo (24 horas)",
+    label: "Día completo (24 h)",
     start: "09:00",
     end: "09:00",
     hours: 24,
@@ -172,9 +165,12 @@ export default function SearchForm({ catalog, params, onSearch }) {
   const [draft, setDraft] = useState(() => initialDraft(params));
   const [expanded, setExpanded] = useState(false);
   const [error, setError] = useState("");
+  const guestsRef = useRef(null);
   const id = useId();
   const panelId = `${id}-filters`;
   const errorId = `${id}-error`;
+  const scheduleId = `${id}-schedule`;
+  const priceId = `${id}-price`;
   const today = localParts(new Date()).date;
   const period = previewPeriod(draft, today);
   const message = error || period.error;
@@ -182,11 +178,16 @@ export default function SearchForm({ catalog, params, onSearch }) {
   const amenities = catalog?.amenities || [];
   const amenityOptions = [
     ...amenities,
-    ...draft.amenities
+    ...[...new Set([...draft.amenities, ...draft.requiredAmenities])]
       .filter((code) => !amenities.some((amenity) => amenity.code === code))
       .map((code) => ({ code, label: code })),
   ];
   const crossesMidnight = period.start && period.end.date !== period.start.date;
+  const hours = period.interval
+    ? (Date.parse(period.interval.endsAt) -
+        Date.parse(period.interval.startsAt)) /
+      3600000
+    : null;
   const schedule = period.interval
     ? `Desde ${period.start.time} – Hasta ${period.end.time}${
         crossesMidnight
@@ -236,6 +237,11 @@ export default function SearchForm({ catalog, params, onSearch }) {
   }
 
   function search(values) {
+    if (!/^[0-9]*$/.test(values.guests)) {
+      setError(guestsMessage);
+      guestsRef.current.focus();
+      return;
+    }
     const selectedPeriod = previewPeriod(values, today);
     if (selectedPeriod.error) {
       setError(selectedPeriod.error);
@@ -283,7 +289,7 @@ export default function SearchForm({ catalog, params, onSearch }) {
       const field = validated.error.issues[0]?.path[0];
       const messages = {
         city: "La ciudad debe tener como máximo 100 caracteres.",
-        guests: "Indicá una cantidad entera de personas entre 1 y 1000.",
+        guests: guestsMessage,
         budget:
           "Indicá un presupuesto total entero entre 1.000 y 1.000.000.000 Gs.",
         kind: "Elegí uno de los tipos de espacio disponibles.",
@@ -294,7 +300,8 @@ export default function SearchForm({ catalog, params, onSearch }) {
       setError(
         messages[field] || "Revisá la fecha y los horarios de la búsqueda.",
       );
-      setExpanded(true);
+      if (field === "guests") guestsRef.current?.focus();
+      else setExpanded(true);
       return;
     }
     setError("");
@@ -306,19 +313,30 @@ export default function SearchForm({ catalog, params, onSearch }) {
       <form
         className="search-form"
         noValidate
-        aria-describedby={message ? errorId : undefined}
+        aria-labelledby={`${id}-title`}
+        aria-describedby={`${scheduleId} ${priceId}${message ? ` ${errorId}` : ""}`}
         onSubmit={(event) => {
           event.preventDefault();
           search(draft);
         }}
       >
+        <div className="search-head">
+          <h2 id={`${id}-title`}>Encontrá tu espacio</h2>
+          <p id={priceId}>
+            Precios por hora en guaraníes ·{" "}
+            {draft.date
+              ? "Presupuesto total del intervalo"
+              : "Sin fecha, valores estimados"}
+          </p>
+        </div>
         <div className="search-main">
-          <label>
+          <label htmlFor={`${id}-city`}>
             <span>
               <MapPin size={16} aria-hidden="true" />
               Zona / Ciudad
             </span>
             <select
+              id={`${id}-city`}
               name="city"
               value={draft.city}
               onChange={(event) => update("city", event.target.value)}
@@ -335,29 +353,29 @@ export default function SearchForm({ catalog, params, onSearch }) {
               ))}
             </select>
           </label>
-          <label>
+          <label htmlFor={`${id}-date`}>
             <span>
               <CalendarDays size={16} aria-hidden="true" />
-              Fecha de salida
+              Fecha de entrada
             </span>
             <input
+              id={`${id}-date`}
               name="date"
               type="date"
               min={today}
               value={draft.date}
-              aria-label="Fecha de la escapada"
               onChange={(event) => update("date", event.target.value)}
             />
           </label>
           <div className="search-shift">
-            <label>
+            <label htmlFor={`${id}-shift`}>
               <span>
                 <Clock3 size={17} aria-hidden="true" />
                 Horario / Turno
               </span>
               <select
+                id={`${id}-shift`}
                 name="shift"
-                aria-label="Horario / Turno"
                 value={selectedShift}
                 onChange={(event) => updateShift(event.target.value)}
               >
@@ -368,41 +386,58 @@ export default function SearchForm({ catalog, params, onSearch }) {
                 ))}
                 <option value="custom">
                   {selectedShift === "custom"
-                    ? "Personalizado: " + draft.start + "–" + draft.end
+                    ? draft.start + "–" + draft.end
                     : "Personalizar horario"}
                 </option>
               </select>
             </label>
           </div>
           <div className="guest-search-field">
-            <span>
+            <span id={`${id}-guests-label`}>
               <Users size={16} aria-hidden="true" />
               Personas
             </span>
-            <select
-              aria-label="Tamaño del grupo"
+            <input
+              id={`${id}-guests`}
+              ref={guestsRef}
+              name="guests"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              placeholder="Sin cantidad"
+              aria-labelledby={`${id}-guests-label`}
+              aria-invalid={error === guestsMessage || undefined}
+              aria-describedby={error === guestsMessage ? errorId : undefined}
               value={draft.guests}
-              onChange={(event) => update("guests", event.target.value)}
-            >
-              <option value="">Cantidad de personas</option>
-              {draft.guests &&
-                !guestOptions.some(([value]) => value === draft.guests) && (
-                  <option value={draft.guests}>{draft.guests} personas</option>
-                )}
-              {guestOptions.map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
+              onKeyDown={(event) => {
+                if (
+                  event.key === "ArrowUp" ||
+                  event.key === "ArrowDown" ||
+                  (!event.ctrlKey &&
+                    !event.metaKey &&
+                    !event.altKey &&
+                    event.key.length === 1 &&
+                    !/^[0-9]$/.test(event.key))
+                )
+                  event.preventDefault();
+              }}
+              onPaste={(event) => {
+                if (!/^[0-9]*$/.test(event.clipboardData.getData("text")))
+                  event.preventDefault();
+              }}
+              onChange={(event) => {
+                if (/^[0-9]*$/.test(event.target.value))
+                  update("guests", event.target.value);
+              }}
+            />
           </div>
-          <label>
+          <label htmlFor={`${id}-budget-preset`}>
             <span>
               <SlidersHorizontal size={17} aria-hidden="true" />
               Presupuesto máx.
             </span>
             <select
-              aria-label="Presupuesto máximo total"
+              id={`${id}-budget-preset`}
               value={
                 ["", "300000", "500000", "1000000"].includes(draft.budget)
                   ? draft.budget
@@ -431,46 +466,50 @@ export default function SearchForm({ catalog, params, onSearch }) {
             <span className="sr-only">Buscar espacios</span>
           </button>
         </div>
+        <div className="search-summary">
+          <p className="search-schedule" id={scheduleId}>
+            <Clock3 size={16} aria-hidden="true" />
+            <span>
+              Horario de búsqueda:{" "}
+              <strong>
+                {draft.date &&
+                  `${draft.date.split("-").reverse().join("/")} · `}
+                {schedule}
+              </strong>
+              {hours !== null &&
+                ` · ${Number(hours.toFixed(2)).toLocaleString("es-PY")} h`}
+              {!draft.date && (
+                <small>
+                  Sin fecha, el presupuesto usa la duración mínima de cada
+                  espacio. Elegí una fecha para comprobar disponibilidad.
+                </small>
+              )}
+            </span>
+          </p>
+          <button
+            type="button"
+            className="text-button more-filters"
+            aria-expanded={expanded}
+            aria-controls={panelId}
+            onClick={() => setExpanded((v) => !v)}
+          >
+            <SlidersHorizontal size={16} aria-hidden="true" /> Más filtros
+          </button>
+        </div>
         {message && (
           <p className="search-error" id={errorId} role="alert">
             {message}
           </p>
         )}
-        <button
-          type="button"
-          className="text-button"
-          aria-expanded={expanded}
-          aria-controls={panelId}
-          onClick={() => setExpanded((v) => !v)}
-        >
-          Más filtros
-        </button>
         <div
           id={panelId}
           className={`advanced-filters${expanded ? " expanded" : ""}`}
           hidden={!expanded}
         >
-          <p className="search-schedule">
-            <Clock3 size={15} /> Horario de búsqueda:{" "}
-            <strong>{schedule}</strong>
-          </p>
-          <label>
-            Cantidad exacta de personas{" "}
-            <input
-              name="guests"
-              type="number"
-              min="1"
-              max="1000"
-              step="1"
-              value={draft.guests}
-              placeholder="Cantidad de personas"
-              aria-label="Cantidad de personas"
-              onChange={(event) => update("guests", event.target.value)}
-            />
-          </label>
-          <label>
+          <label htmlFor={`${id}-start`}>
             Desde
             <input
+              id={`${id}-start`}
               name="start"
               type="time"
               step="1"
@@ -481,9 +520,10 @@ export default function SearchForm({ catalog, params, onSearch }) {
               }
             />
           </label>
-          <label>
+          <label htmlFor={`${id}-end`}>
             Hasta
             <input
+              id={`${id}-end`}
               name="end"
               type="time"
               step="1"
@@ -492,9 +532,10 @@ export default function SearchForm({ catalog, params, onSearch }) {
               onChange={(event) => update("end", event.target.value || "17:00")}
             />
           </label>
-          <label>
+          <label htmlFor={`${id}-budget`}>
             Presupuesto total (Gs.)
             <input
+              id={`${id}-budget`}
               name="budget"
               type="number"
               min="1000"
@@ -505,9 +546,10 @@ export default function SearchForm({ catalog, params, onSearch }) {
               onChange={(event) => update("budget", event.target.value)}
             />
           </label>
-          <label>
+          <label htmlFor={`${id}-kind`}>
             Tipo
             <select
+              id={`${id}-kind`}
               name="kind"
               value={draft.kind}
               onChange={(event) => update("kind", event.target.value)}
@@ -525,16 +567,18 @@ export default function SearchForm({ catalog, params, onSearch }) {
           </label>
           <fieldset className="amenity-filters">
             <legend>Requisitos indispensables</legend>
-            <label>
+            <label htmlFor={`${id}-strict-city`}>
               <input
+                id={`${id}-strict-city`}
                 type="checkbox"
                 checked={draft.strictCity}
                 onChange={(e) => update("strictCity", e.target.checked)}
               />
               Mantener estrictamente la ciudad
             </label>
-            <label>
+            <label htmlFor={`${id}-strict-budget`}>
               <input
+                id={`${id}-strict-budget`}
                 type="checkbox"
                 checked={draft.strictBudget}
                 onChange={(e) => update("strictBudget", e.target.checked)}
@@ -542,8 +586,12 @@ export default function SearchForm({ catalog, params, onSearch }) {
               Mantener estrictamente el presupuesto
             </label>
             {amenityOptions.map((a) => (
-              <label key={a.code}>
+              <label
+                key={a.code}
+                htmlFor={`${id}-required-${encodeURIComponent(a.code)}`}
+              >
                 <input
+                  id={`${id}-required-${encodeURIComponent(a.code)}`}
                   type="checkbox"
                   checked={draft.requiredAmenities.includes(a.code)}
                   onChange={(e) =>
@@ -562,8 +610,12 @@ export default function SearchForm({ catalog, params, onSearch }) {
           <fieldset className="amenity-filters">
             <legend>Servicios opcionales preferidos</legend>
             {amenityOptions.map((amenity) => (
-              <label key={amenity.code}>
+              <label
+                key={amenity.code}
+                htmlFor={`${id}-preferred-${encodeURIComponent(amenity.code)}`}
+              >
                 <input
+                  id={`${id}-preferred-${encodeURIComponent(amenity.code)}`}
                   type="checkbox"
                   name="amenities"
                   value={amenity.code}
