@@ -194,6 +194,7 @@ export function Header({ user }) {
             Anfitriones
           </Link>
           <Link to="/#como-funciona">Cómo funciona</Link>
+          <NavLink to="/ayuda#ayuda">Preguntas frecuentes</NavLink>
           <div className="mobile-nav-actions">
             <Link
               className="host-link mobile-host-link"
@@ -209,17 +210,9 @@ export function Header({ user }) {
                 pending={logoutPending}
               />
             ) : (
-              <>
-                <Link to="/ingresar" state={returnState(location)}>
-                  Ingresar
-                </Link>
-                <Link
-                  to="/ingresar?mode=registro"
-                  state={returnState(location)}
-                >
-                  Crear cuenta
-                </Link>
-              </>
+              <Link to="/ingresar" state={returnState(location)}>
+                Ingresar
+              </Link>
             )}
           </div>
         </nav>
@@ -259,22 +252,13 @@ export function Header({ user }) {
               </Link>
             </>
           ) : (
-            <>
-              <Link
-                className="login-link"
-                to="/ingresar"
-                state={returnState(location)}
-              >
-                Ingresar
-              </Link>
-              <Link
-                className="register-link"
-                to="/ingresar?mode=registro"
-                state={returnState(location)}
-              >
-                Crear cuenta
-              </Link>
-            </>
+            <Link
+              className="login-link"
+              to="/ingresar"
+              state={returnState(location)}
+            >
+              Ingresar
+            </Link>
           )}
           <button
             ref={menuButtonRef}
@@ -336,7 +320,10 @@ export function Footer({ user }) {
                 </Link>
               </li>
               <li>
-                <Link to="/ayuda#ayuda">Cómo funciona</Link>
+                <Link to="/#como-funciona">Cómo funciona</Link>
+              </li>
+              <li>
+                <Link to="/ayuda#ayuda">Preguntas frecuentes</Link>
               </li>
               <li>
                 <Link to="/">Explorar espacios</Link>

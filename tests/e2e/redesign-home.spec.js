@@ -133,7 +133,7 @@ test("portada compuesta, anclas, reflow y teclado", async ({ page }, info) => {
   await expect(page).toHaveURL(/\/#anfitriones$/);
   await expect(
     page.getByRole("heading", {
-      name: "Tu quinta puede ser el próximo plan de alguien.",
+      name: "Tus espacios pueden ser el próximo plan de alguien.",
     }),
   ).toBeInViewport();
   await nav.getByRole("link", { name: "Cómo funciona", exact: true }).click();
@@ -291,7 +291,7 @@ test("sponsors conservan impresiones y clics con la nueva composición", async (
 });
 
 for (const role of [null, "customer", "owner", "admin"]) {
-  test(`Publicá tu quinta conserva el flujo real para ${role || "invitado"}`, async ({
+  test(`Publicá tus espacios conserva el flujo real para ${role || "invitado"}`, async ({
     page,
   }) => {
     const mock = await mockApi(page, role);

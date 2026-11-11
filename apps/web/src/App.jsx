@@ -100,7 +100,7 @@ export default function App() {
                         Volver a explorar
                       </Link>
                       <Link className="secondary" to="/ayuda">
-                        Cómo funciona
+                        Preguntas frecuentes
                       </Link>
                     </div>
                   </PageState>

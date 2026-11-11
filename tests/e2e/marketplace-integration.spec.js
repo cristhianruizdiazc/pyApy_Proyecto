@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { localInterval } from "../../packages/contracts/index.mjs";
 
-test("Cómo funciona abre los pasos y conserva el acceso a ayuda", async ({
+test("Cómo funciona y Preguntas frecuentes tienen contenidos y accesos propios", async ({
   page,
 }) => {
   await page.goto("/");
@@ -13,11 +13,49 @@ test("Cómo funciona abre los pasos y conserva el acceso a ayuda", async ({
   await link.click();
   await expect(page).toHaveURL(/\/#como-funciona$/);
   await expect(page.locator("#como-funciona .steps-grid li")).toHaveCount(3);
-  await page.getByRole("link", { name: "Más ayuda para reservar" }).click();
+  await page.getByRole("link", { name: "Ver preguntas frecuentes" }).click();
   await expect(page).toHaveURL(/\/ayuda#ayuda$/);
   await expect(
-    page.getByRole("heading", { name: "Cómo funciona pyApy", exact: true }),
+    page.getByRole("heading", { name: "Preguntas frecuentes", exact: true }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Pasos para reservar" }),
+  ).toHaveCount(0);
+  const question = page.getByText("¿Qué pasa después de reservar?", {
+    exact: true,
+  });
+  await question.click();
+  await expect(
+    page.getByText(/Cuando tu reserva queda confirmada/),
+  ).toBeVisible();
+  await page
+    .getByRole("link", { name: "Ver cómo funciona", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/#como-funciona$/);
+  await expect(page.locator("#steps-title")).toBeInViewport();
+  const faqLink = page
+    .getByRole("navigation", { name: "Navegación principal" })
+    .getByRole("link", { name: "Preguntas frecuentes", exact: true });
+  if (!(await faqLink.isVisible()))
+    await page.getByRole("button", { name: "Abrir menú" }).click();
+  await faqLink.click();
+  await expect(page).toHaveURL(/\/ayuda#ayuda$/);
+  if (!(await faqLink.isVisible()))
+    await page.getByRole("button", { name: "Abrir menú" }).click();
+  await expect(faqLink).toHaveAttribute("aria-current", "page");
+  await page.keyboard.press("Escape");
+  const footer = page.getByRole("contentinfo");
+  await footer
+    .getByRole("link", { name: "Cómo funciona", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/#como-funciona$/);
+  await expect(page.locator("#steps-title")).toBeInViewport();
+  await footer
+    .getByRole("link", { name: "Preguntas frecuentes", exact: true })
+    .click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Preguntas frecuentes",
+  );
 });
 
 test("la portada ofrece los tipos del HTML y explora ubicaciones en el mapa", async ({

@@ -410,10 +410,10 @@ test("ayuda, acceso denegado y página inexistente mantienen salidas operables",
   );
   await page
     .getByRole("main")
-    .getByRole("link", { name: "Cómo funciona", exact: true })
+    .getByRole("link", { name: "Preguntas frecuentes", exact: true })
     .click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Cómo funciona pyApy",
+    "Preguntas frecuentes",
   );
   await page.getByText("¿Cómo se calcula el precio?", { exact: true }).click();
   await expect(page.getByText(/La tarifa es por hora iniciada/)).toBeVisible();

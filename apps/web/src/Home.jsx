@@ -140,7 +140,7 @@ function Hosts({ user }) {
       <div className="hosts-panel">
         <p className="eyebrow">Para anfitriones</p>
         <h2 id="hosts-title">
-          Tu quinta puede ser el próximo plan de alguien.
+          Tus espacios pueden ser el próximo plan de alguien.
         </h2>
         <p>
           Sumá tu espacio a pyApy y hacelo visible para quienes buscan una
@@ -163,7 +163,7 @@ function Hosts({ user }) {
           to={user ? "/propietario" : "/ingresar"}
           state={{ from: "/propietario" }}
         >
-          Publicá tu quinta <ArrowRight size={18} aria-hidden="true" />
+          Publicá tus espacios <ArrowRight size={18} aria-hidden="true" />
         </Link>
       </div>
     </section>
@@ -205,7 +205,7 @@ function Steps() {
           ))}
         </ol>
         <Link className="steps-help" to="/ayuda#ayuda">
-          Más ayuda para reservar <ArrowRight size={16} aria-hidden="true" />
+          Ver preguntas frecuentes <ArrowRight size={16} aria-hidden="true" />
         </Link>
       </div>
     </section>
